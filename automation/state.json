@@ -176,11 +176,12 @@
       ],
       "actualEntityKeys": [],
       "whyInteresting": "Viewers instantly recognize each ball, and the dramatic jump from a few centimeters to a foot‑plus sphere creates a visual wow factor that fits perfectly into a 30‑second silent comparison.",
-      "status": "needs-review",
-      "attempts": 1,
+      "status": "retry-later",
+      "attempts": 2,
       "createdAt": "2026-11-10T19:26:56.802Z",
-      "updatedAt": "2026-11-10T19:27:15.251Z",
-      "error": "motion failed validation after three attempts: Every new concept needs a shared background environment and a reason tied to the overall video idea."
+      "updatedAt": "2026-11-10T20:04:00.765Z",
+      "retryAt": "2026-11-10T21:04:00.765Z",
+      "error": "HTTP 429: Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m706w2zce8zag40bs25d85cf` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198826, Requested 3214. Please try again in 14m41.28s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing. Retry later with --resume; server requests a wait longer than 60 seconds."
     }
   ],
   "queue": [
