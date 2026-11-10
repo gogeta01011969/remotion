@@ -3,7 +3,7 @@ import {strict as assert} from 'node:assert';
 import {mkdtempSync,rmSync,writeFileSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
-import {comparisonIdeasSchema} from '../src/shorts/comparison-editorial';
+import {comparisonIdeasSchema,comparisonIdeasGenerationSchema} from '../src/shorts/comparison-editorial';
 import {sizeDatasetSchema} from '../src/shorts/size-data';
 import {planComparisonStory} from '../src/pipeline/comparison-story';
 import {compileSizeComparison,defaultSizeEpisode} from '../src/pipeline/size-comparison';
@@ -19,6 +19,32 @@ function fixture(){
   const data=sizeDatasetSchema.parse({template:'size-comparison',id:'editorial-test',title:'Synthetic reference to the extreme',metric:'height',unit:'m',basis:'Synthetic complete-object heights on one ground baseline.',context:'Synthetic editorial contract test',items:[1,2,4,10].map((value,i)=>({id:`item-${i}`,label:`Reference ${i}`,value,color:'#AABBCC',sourceIds:['s1'],visual:{kind:'box',widthToHeight:.5,depthToHeight:.5}})),sources:[{id:'s1',title:'Synthetic test reference',url:'https://example.com/source'}]});
   return sizeDatasetSchema.parse({...data,editorial:editorialFixture(data)});
 }
+test('new idea output requires contextual backgrounds while saved legacy plans remain readable',()=>{
+  const legacy=ideaFixture();legacy.concepts.forEach(c=>{delete c.background;});
+  assert.equal(comparisonIdeasSchema.safeParse(legacy).success,true);
+  assert.equal(comparisonIdeasGenerationSchema.safeParse(legacy).success,false);
+  assert.equal(comparisonIdeasGenerationSchema.safeParse(ideaFixture()).success,true);
+  const duplicate=ideaFixture();duplicate.concepts[1].id=duplicate.concepts[0].id;
+  assert.equal(comparisonIdeasGenerationSchema.safeParse(duplicate).success,false);
+});
+test('the model contract requires a non-null background and repairs an omitted setting',async()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'required-concept-bg-'));const calls:ChatRequest[]=[];
+  try{
+    const ideas=await planComparisonIdeas({topic:'Synthetic object heights',id:'required-bg',root,directory:root,log:()=>{}},{config:{apiKey:'test',researchModel:'test',scriptModel:'test',motionModel:'test'},client:{chat:async request=>{
+      calls.push(request);const draft=ideaFixture();if(calls.length===1)draft.concepts.forEach(c=>{delete c.background;});
+      return {choices:[{message:{content:JSON.stringify({...draft,...(calls.length===2?{$schema:'https://json-schema.org/draft/2020-12/schema'}:{})})}}]};
+    }}});
+    assert.equal(calls.length,2);assert.ok(ideas.concepts.every(c=>c.background));
+    const objects:Record<string,any>[]=[];
+    const visit=(v:any)=>{if(v&&typeof v==='object'){if(v.properties?.background)objects.push(v);Object.values(v).forEach(visit);}};
+    assert.equal(calls[0].response_format?.type,'json_object');
+    const contract=JSON.parse(calls[0].messages[0].content.split('Match this schema; do not repeat schema keywords in the output:\n')[1]);
+    assert.equal(contract.$schema,undefined);visit(contract);
+    assert.equal(objects.length,1);assert.ok(objects[0].required.includes('background'));
+    assert.equal(objects[0].properties.background.anyOf,undefined);
+    assert.ok(calls[1].messages.some(m=>m.content.includes('background')));
+  }finally{rmSync(root,{recursive:true,force:true});}
+});
 test('concept plans reject incompatible dimensions and unsupported visual approaches',()=>{
   const ideas=ideaFixture();assert.equal(comparisonIdeasSchema.safeParse(ideas).success,true);
   for(const changes of [{metric:'wingspan',visualApproach:'textured-spheres'},{metric:'area',unit:'km2',visualApproach:'side-cutouts'},{metric:'volume',unit:'m',visualApproach:'equivalent-volume-models'},{metric:'length',visualApproach:'grounded-cutouts'}]){

@@ -18,6 +18,9 @@ extraction remain available.
    No `.env.local` file is needed on the runner.
 4. Run **Create a comparison Short → mode: auto** on the default branch.
    Leave `topic` blank for automatic selection, or supply a comparison topic.
+   To retry a known job after fixing a validation failure, leave `topic` blank
+   and enter its ID in `resume_job`. This explicitly resumes the saved job and
+   restores its checkpoint; the existing attempt limit still applies.
 5. Download the `short-<job-id>` artifact from the run. Review the MP4, thumbnail,
    render inputs, metadata, sources and available editorial/background plans.
 6. After a successful hosted run, set repository Actions variable
@@ -93,8 +96,9 @@ created by the trusted workflow on the default branch. Missing/expired checkpoin
 may require regeneration for unfinished jobs. A job already marked `rendered`
 must restore a matching checkpoint to retry archival; it will not silently pay to
 regenerate. Changes to code/assets invalidate render receipts. Review a
-`needs-review` job's saved error and checkpoint before explicitly resetting it in
-the ledger; no automatic reset command is provided.
+`needs-review` job's saved error and checkpoint before retrying it explicitly with
+`resume_job` (or local `--resume`). Jobs that exhausted the attempt limit still
+require manual review of the ledger; no automatic attempt-reset command is provided.
 
 Final video artifacts last 30 days. Download them or add permanent storage later;
 the ledger retains their artifact IDs but cannot extend artifact retention. A
@@ -152,8 +156,13 @@ request budgets, checkpoint boundaries, archive retry without regeneration,
 cleanup ordering and GitHub state conflicts. The Python test runs real CPU
 foreground inference. Linux workflow syntax can also be checked with `actionlint`.
 
-The first hosted Linux execution remains a deployment check. Offline tests do
-not prove a fresh live Groq topic will pass research/schema validation or fit
+The first hosted Linux verification passed on November 11, 2026 (Asia/Kolkata):
+[run 42876349482](https://github.com/gogeta01011969/remotion/actions/runs/42876349482),
+commit `bbdeb7f`. Dependency setup, typechecking/tests, real CPU foreground
+extraction, offline video rendering and artifact upload all succeeded.
+The downloadable artifact is `linux-smoke-42876349482-1`.
+
+This offline run does not prove a fresh live Groq topic will pass research/schema validation or fit
 account quotas. Current live runs previously encountered quota/schema failures;
 the controller now records and handles them, but does not guarantee content
 accuracy or editorial quality. Review initial hosted outputs before scheduling.

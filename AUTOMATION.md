@@ -22,8 +22,10 @@ workflow is [Create a comparison Short](.github/workflows/create-short.yml); its
 `smoke` mode runs without API credentials. Production generation is opt-in and
 runs on Ubuntu 24.04. Existing local comparison commands remain supported.
 
-Hosted execution still requires pushing this workspace to a GitHub repository
-and configuring the three generation secrets. A successful render/archive is
+The repository is now connected, and [the first hosted Linux verification](https://github.com/gogeta01011969/remotion/actions/runs/42876349482)
+passed dependency setup, tests, CPU foreground extraction, offline rendering and
+artifact upload. Full automatic generation still needs its three Actions secrets
+and a live validation run. A successful render/archive is
 not a YouTube upload. Fresh live research remains subject to validation and API
 quotas; the workflows preserve failures and defer retries rather than claiming
 those jobs succeeded.

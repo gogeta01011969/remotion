@@ -29,7 +29,10 @@ export async function structuredStage<T>(options: {
     if(!value||typeof value!=='object')return value;
     return Object.fromEntries(Object.entries(value).filter(([key])=>!['$schema','default','minLength','maxLength','minimum','maximum','exclusiveMinimum','exclusiveMaximum','minItems','maxItems','additionalProperties'].includes(key)).map(([key,item])=>[key,compact(item)]));
   };
-  const promptSchema=options.compactSchema?compact(jsonSchema):jsonSchema;
+  // The draft schema URI describes the contract, not a field in a data instance.
+  // Leaving it in JSON-mode prompts encourages models to echo it into results.
+  const {$schema: schemaDialect,...instanceSchema}=jsonSchema;
+  const promptSchema=options.compactSchema?compact(instanceSchema):instanceSchema;
   let editorialFeedback = '';
   let targetWords = 96;
   let timedStructure = false;

@@ -42,6 +42,11 @@ export const comparisonIdeasSchema=z.object({
   if(new Set(ideas.concepts.map(c=>c.id)).size!==3||!ideas.concepts.some(c=>c.id===ideas.selectedId))ctx.addIssue({code:'custom',message:'Use three unique concept IDs and select one of them.'});
   if(new Set(ideas.concepts.map(c=>c.viewerQuestion.toLowerCase())).size!==3)ctx.addIssue({code:'custom',message:'Propose three different viewer questions, not the same list under different titles.'});
 });
+// Legacy saved plans can omit a background. New model output must supply it:
+// a nullable optional in the strict decoder otherwise permits repeated nulls.
+export const comparisonIdeasGenerationSchema=comparisonIdeasSchema.safeExtend({
+  concepts:z.array(concept.safeExtend({background:concept.shape.background.unwrap()})).length(3),
+});
 export type ComparisonIdeas=z.infer<typeof comparisonIdeasSchema>;
 export type ComparisonConcept=ComparisonIdeas['concepts'][number];
 

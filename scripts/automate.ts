@@ -28,17 +28,22 @@ async function main(){
     // Configuration/key lookup is deferred for checkpoint-only operations.
     const groqConfig=loadGroqConfig(),client=budgetClient(new GroqClient({apiKey:groqConfig.apiKey,onRetry:line=>console.error(line)}),config);
     job??=await reserveTopic({ledger,config,root,directory:path.dirname(resultFile),client,model:groqConfig.scriptModel,log:line=>console.error(line),topic:values.topic});
-    saveLedger(stateFile,ledger);output({status:'reserved',id:job.id,topic:job.topic});
+    saveLedger(stateFile,ledger);output({status:job.status,id:job.id,topic:job.topic});
+    const summary=()=>{if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### Comparison job ${job!.id}\n\nTopic: ${job!.topic.replace(/[\r\n]/g,' ')}\n\nStatus: ${job!.status}\n${job!.error?`\nError: ${job!.error.replace(/[\r\n]/g,' ')}\n`:''}`);};
     if(!values['select-only']){
       const archiveTarget=process.env.AUTOMATION_ARCHIVE_TARGET==='github'?'github':'local';
       try{
         const result=await createAutomationVideo({root,stateFile,ledger,job,config,client,groqConfig,archiveTarget,log:line=>console.error(line)});
         output(result);
+      }catch(error){
+        output({status:job.status,id:job.id,topic:job.topic,error:job.error});
+        throw error;
       }finally{
         writeJson(path.join(root,'out/comparisons',job.id,'automation-usage.json'),client.usage());
+        summary();
       }
     }
-    if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### Comparison job ${job.id}\n\nTopic: ${job.topic.replace(/[\r\n]/g,' ')}\n\nStatus: ${job.status}\n`);
+    else summary();
   }finally{release();}
 }
 main().catch(error=>{if(error instanceof AutomationDeferredError){const result={status:'deferred',retryAt:error.retryAt};mkdirSync('out/automation',{recursive:true});writeJson('out/automation/result.json',result);console.log(JSON.stringify(result));return;}console.error(error instanceof Error?error.message:error);process.exitCode=1;});

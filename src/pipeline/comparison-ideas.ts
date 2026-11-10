@@ -1,7 +1,7 @@
 import {existsSync,mkdirSync,readFileSync} from 'node:fs';
 import path from 'node:path';
 import {z} from 'zod';
-import {comparisonIdeasSchema,comparisonEditorialSchema,type ComparisonConcept} from '../shorts/comparison-editorial';
+import {comparisonIdeasSchema,comparisonIdeasGenerationSchema,comparisonEditorialSchema,type ComparisonConcept} from '../shorts/comparison-editorial';
 import {sizeDatasetSchema,sizeItemSchema,type SizeDataset} from '../shorts/size-data';
 import {comparisonVisualSchema} from '../shorts/comparison-visual';
 import {resolveSizeBackground} from '../shorts/size-environment';
@@ -62,9 +62,13 @@ export async function planComparisonIdeas(options:ComparisonRequest,dependencies
   const client=dependencies.client??new GroqClient({apiKey:config.apiKey,onRetry:options.log});
   const researchFile=path.join(options.directory,'research.json');
   const existingResearch=existsSync(researchFile)?JSON.parse(readFileSync(researchFile,'utf8')):undefined;
-  const ideas=await structuredStage({stage:'motion',artifact:'comparison-ideas',model:config.scriptModel,client,maxCompletionTokens:4800,constrained:true,nullableOptionals:true,schema:comparisonIdeasSchema,system:comparisonIdeasPrompt,input:JSON.stringify({topic:options.topic,existingResearch}),directory:options.directory,log:options.log,repairInstruction:'Keep the requested scope and propose three distinct feasible concepts. Correct the concept IDs, exact candidate names, dimension or visual approach identified below.',validate:raw=>{
-    const ideas=comparisonIdeasSchema.parse(raw);
-    if(ideas.concepts.some(c=>!c.background))throw new Error('Every new concept needs a shared background environment and a reason tied to the overall video idea.');
+  // Groq's constrained decoder repeatedly rejected these multi-concept plans.
+  // Start in JSON mode, then enforce the complete generation contract locally.
+  const ideas=await structuredStage({stage:'motion',artifact:'comparison-ideas',model:config.scriptModel,client,maxCompletionTokens:4800,constrained:false,compactSchema:true,nullableOptionals:true,schema:comparisonIdeasGenerationSchema,system:comparisonIdeasPrompt,input:JSON.stringify({topic:options.topic,existingResearch}),directory:options.directory,log:options.log,repairInstruction:'Keep the requested scope and propose three distinct feasible concepts. Every concept must include background: {environment: a supported setting, reason: why it relates to the overall video}. Correct the concept IDs, exact candidate names, dimension or visual approach identified below.',validate:raw=>{
+    // JSON-mode fallback can echo the schema's annotation alongside valid data.
+    // Ignore only this metadata key; retain strict validation of all content.
+    const normalized=raw&&typeof raw==='object'&&!Array.isArray(raw)?Object.fromEntries(Object.entries(raw).filter(([key])=>key!=='$schema')):raw;
+    const ideas=comparisonIdeasGenerationSchema.parse(normalized);
     if(!/\b(studio|neutral|plain)\b/i.test(options.topic))for(const c of ideas.concepts){
       const inferred=resolveSizeBackground({environment:'auto',items:[],title:`${options.topic} ${c.title}`,metric:c.metric});
       if(c.background!.environment==='studio'&&inferred.environment!=='studio')throw new Error(`Choose a contextual background for ${c.id}; ${inferred.environment} supports this topic. Reserve studio for genuinely abstract or unclassified ideas.`);

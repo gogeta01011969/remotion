@@ -11,6 +11,10 @@ on:
         type: string
         default: ''
         description: Optional topic override (auto mode); blank chooses a new topic
+      resume_job:
+        type: string
+        default: ''
+        description: Optional saved job ID to retry after fixing a needs-review failure
   schedule:
     - cron: '17 3 * * *'
 permissions:
@@ -71,6 +75,7 @@ jobs:
         id: select
         env:
           REQUESTED_TOPIC: ${{ inputs.topic }}
+          REQUESTED_RESUME_JOB: ${{ inputs.resume_job }}
           GROQCLOUD_API_KEY: ${{ secrets.GROQCLOUD_API_KEY }}
         run: node --import tsx .github/scripts/select-topic.ts
       - name: Persist reservation before creating assets

@@ -3,6 +3,7 @@ import {strict as assert} from 'node:assert';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,rmSync,symlinkSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {automationConfigSchema,ledgerSchema,jobSchema,canonicalTopic,duplicateReason,reserveTopic,saveLedger,lockAutomation,budgetClient,AutomationDeferredError,type TopicLedger} from '../src/pipeline/topic-automation';
 import {createAutomationVideo,digest,confirmArchive,cleanupJob,stageCheckpoint,restoreCheckpoint,runPaths} from '../src/pipeline/automation-run';
 import {GitHubStateStore} from '../src/pipeline/github-state';
@@ -18,6 +19,24 @@ const proposals=[
  {topic:'Which flying objects have the widest wings?',metric:'wingspan',scopeKey:'extended-flight-wings',entityKeys:['Bee','Albatross','Cessna','A380'],whyInteresting:'A familiar flying animal connects to giant aircraft wings.'},
  {topic:'How much can familiar containers hold?',metric:'volume',scopeKey:'nominal-storage-capacity',entityKeys:['Bottle','Drum','IBC','Cargo'],whyInteresting:'Show surprising differences using equivalent-capacity cubes.'}
 ];
+test('failed CLI generation writes the final status, error and usage to Actions diagnostics',()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'automation-cli-failure-')),current=job();
+  try{
+    mkdirSync(path.join(root,'automation'),{recursive:true});
+    writeFileSync(path.join(root,'automation/config.json'),JSON.stringify({...config,allowedMetrics:['volume']}));
+    saveLedger(path.join(root,'.automation/state.json'),{...empty(),jobs:[current]});
+    const generated=path.join(root,'out/comparisons',current.id);mkdirSync(generated,{recursive:true});
+    writeFileSync(path.join(generated,'dataset.raw.json'),JSON.stringify(data()));
+    const summary=path.join(root,'summary.md'),output=path.join(root,'outputs.txt');
+    const result=spawnSync(process.execPath,['--import',path.resolve('node_modules/tsx/dist/loader.mjs'),path.resolve('scripts/automate.ts'),'--resume',current.id],{cwd:root,env:{...process.env,GROQCLOUD_API_KEY:'unused-offline-test',GITHUB_STEP_SUMMARY:summary,GITHUB_OUTPUT:output},encoding:'utf8',timeout:30000});
+    assert.equal(result.status,1,result.stderr);
+    assert.match(readFileSync(summary,'utf8'),/Status: needs-review/);
+    assert.match(readFileSync(summary,'utf8'),/Error: This metric needs an asset provider/);
+    assert.equal(JSON.parse(readFileSync(path.join(root,'out/automation/result.json'),'utf8')).status,'needs-review');
+    assert.match(readFileSync(output,'utf8'),/status=needs-review/);
+    assert.equal(JSON.parse(readFileSync(path.join(generated,'automation-usage.json'),'utf8')).stageRequests,0);
+  }finally{rmSync(root,{recursive:true,force:true});}
+});
 test('de-duplication catches rewritten titles, stable scopes and reordered near-identical object sets',()=>{
   assert.equal(canonicalTopic('World’s tallest statues'),canonicalTopic('Compare the highest statues in the world'));
   const old={...job(),topic:'World’s tallest statues',entityKeys:['a','b','c','d','e','f','g','h'],status:'complete' as const};
