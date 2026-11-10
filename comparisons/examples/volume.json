@@ -1,0 +1,116 @@
+{
+  "template": "size-comparison",
+  "id": "suite-volume",
+  "title": "Capacity comparison: equivalent volume cubes",
+  "subject": "generic",
+  "metric": "volume",
+  "unit": "L",
+  "basis": "Nominal internal capacity, not exterior size. Each object is represented by an equivalent-volume cube: edge length is proportional to the cube root of capacity. Cubes deliberately do not depict actual container shapes.",
+  "environment": "storage",
+  "context": "Capacity comparison: equivalent volume cubes",
+  "items": [
+    {
+      "id": "bottle",
+      "label": "Bottle capacity",
+      "value": 1,
+      "color": "#91DCE8",
+      "sourceIds": [
+        "nalgene"
+      ],
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1,
+        "projection": "isometric"
+      },
+      "note": "Equivalent-capacity cube, not the physical shape or exterior dimensions of this container."
+    },
+    {
+      "id": "water-can",
+      "label": "Water can capacity",
+      "value": 20,
+      "color": "#A5DFC7",
+      "sourceIds": [
+        "scepter"
+      ],
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1,
+        "projection": "isometric"
+      },
+      "note": "Equivalent-capacity cube, not the physical shape or exterior dimensions of this container."
+    },
+    {
+      "id": "ibc",
+      "label": "IBC capacity",
+      "value": 1000,
+      "color": "#A6C6FA",
+      "sourceIds": [
+        "schuetz"
+      ],
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1,
+        "projection": "isometric"
+      },
+      "note": "Equivalent-capacity cube, not the physical shape or exterior dimensions of this container."
+    },
+    {
+      "id": "container-20",
+      "label": "20 ft cargo capacity",
+      "value": 33200,
+      "color": "#F1D294",
+      "sourceIds": [
+        "oocl"
+      ],
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1,
+        "projection": "isometric"
+      },
+      "note": "Equivalent-capacity cube, not the physical shape or exterior dimensions of this container."
+    },
+    {
+      "id": "container-40",
+      "label": "40 ft cargo capacity",
+      "value": 67700,
+      "color": "#EDB4A7",
+      "sourceIds": [
+        "oocl"
+      ],
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1,
+        "projection": "isometric"
+      },
+      "note": "Equivalent-capacity cube, not the physical shape or exterior dimensions of this container."
+    }
+  ],
+  "sources": [
+    {
+      "id": "nalgene",
+      "title": "Nalgene 1 L bottles",
+      "url": "https://nalgene.eu/product-category/by-size/1l/"
+    },
+    {
+      "id": "scepter",
+      "title": "Scepter 20 litre water can",
+      "url": "https://www.scepter.com/products/consumer-products/5-gallon-20-litre-water-can/"
+    },
+    {
+      "id": "schuetz",
+      "title": "SCHUETZ ECOBULK MX: nominal capacities",
+      "url": "https://www.schuetz-packaging.net/schuetz-germany-hq/de/ibc/ecobulk/ecobulk-mx/"
+    },
+    {
+      "id": "oocl",
+      "title": "OOCL general-purpose container internal capacities",
+      "url": "https://www.oocl.com/eng/ourservices/containers/containerspecifications/pages/generalpurpose.aspx"
+    }
+  ],
+  "backgroundReason": "Warehouse shelving connects nominal capacities from bottles through freight containers."
+}

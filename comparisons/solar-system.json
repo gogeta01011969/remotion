@@ -1,0 +1,127 @@
+{
+  "template": "size-comparison",
+  "id": "solar-system",
+  "title": "From Moon to Sun: how small are we?",
+  "metric": "diameter",
+  "unit": "km",
+  "context": "Approximate diameters \u00b7 mapped sphere surfaces",
+  "items": [
+    {
+      "id": "moon",
+      "label": "Moon",
+      "value": 3475,
+      "color": "#C7CFDD",
+      "material": "craters",
+      "sourceIds": [
+        "nasa-planets"
+      ],
+      "note": "NASA fact-sheet diameter, rounded to kilometres.",
+      "appearance": "moon",
+      "approximate": true
+    },
+    {
+      "id": "mercury",
+      "label": "Mercury",
+      "value": 4879,
+      "color": "#ADA59A",
+      "material": "plain",
+      "appearance": "mercury",
+      "approximate": true,
+      "sourceIds": [
+        "nasa-planets"
+      ],
+      "note": "NASA fact-sheet diameter rounded to kilometres; atmosphere map for Venus, surface map otherwise."
+    },
+    {
+      "id": "mars",
+      "label": "Mars",
+      "value": 6792,
+      "color": "#D8784D",
+      "material": "plain",
+      "appearance": "mars",
+      "approximate": true,
+      "sourceIds": [
+        "nasa-planets"
+      ],
+      "note": "NASA fact-sheet diameter rounded to kilometres; atmosphere map for Venus, surface map otherwise."
+    },
+    {
+      "id": "venus",
+      "label": "Venus",
+      "value": 12104,
+      "color": "#DFC498",
+      "material": "plain",
+      "appearance": "venus",
+      "approximate": true,
+      "sourceIds": [
+        "nasa-planets"
+      ],
+      "note": "NASA fact-sheet diameter rounded to kilometres; atmosphere map for Venus, surface map otherwise."
+    },
+    {
+      "id": "earth",
+      "label": "Earth",
+      "value": 12756,
+      "color": "#42BAF3",
+      "material": "ocean",
+      "sourceIds": [
+        "nasa-planets"
+      ],
+      "note": "Equatorial diameter; local Blue Marble-derived map and cloud layer projected onto a sphere.",
+      "appearance": "earth",
+      "approximate": true
+    },
+    {
+      "id": "neptune",
+      "label": "Neptune",
+      "value": 49528,
+      "color": "#557DED",
+      "material": "plain",
+      "sourceIds": [
+        "nasa-planets"
+      ],
+      "note": "Equatorial diameter; illustrative planetary map, not a live photograph.",
+      "appearance": "neptune",
+      "approximate": true
+    },
+    {
+      "id": "jupiter",
+      "label": "Jupiter",
+      "value": 142984,
+      "color": "#DBAF88",
+      "material": "bands",
+      "sourceIds": [
+        "nasa-planets"
+      ],
+      "note": "Equatorial diameter; simplified circular silhouette ignores oblateness.",
+      "appearance": "jupiter",
+      "approximate": true
+    },
+    {
+      "id": "sun",
+      "label": "Sun",
+      "value": 1391400,
+      "color": "#FFCA63",
+      "material": "glow",
+      "sourceIds": [
+        "nasa-sun"
+      ],
+      "note": "Derived diameter = 2 \u00d7 NASA volumetric mean radius 695,700 km. Comparisons are approximate, not precise shape models.",
+      "appearance": "sun",
+      "approximate": true
+    }
+  ],
+  "sources": [
+    {
+      "id": "nasa-planets",
+      "title": "NASA NSSDCA Planetary Fact Sheet \u2014 metric diameters",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/"
+    },
+    {
+      "id": "nasa-sun",
+      "title": "NASA Sun Fact Sheet \u2014 volumetric mean radius",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html"
+    }
+  ],
+  "environment": "auto"
+}

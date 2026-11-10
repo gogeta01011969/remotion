@@ -1,0 +1,11 @@
+{
+  "id": "laykyun-sekkya",
+  "model": "flux-2-klein-4b",
+  "steps": 4,
+  "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The Laykyun Sekkya standing Gautama Buddha near Monywa, Myanmar. An extremely tall slim upright Burmese Buddha, gold robe covering the body, distinct light peach/cream painted face and hands, dark tightly curled hair with a rounded pointed ushnisha. Long earlobes, calm lowered eyes. Both arms hang down close along the body with the hands near the thighs, robe in long vertical folds. Gold body and contrasting pale face are important. Full figure from hair top to feet, no lotus base and no reclining Buddha beside it. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions.",
+  "width": 1024,
+  "height": 1024,
+  "actualNeurons": 104.2,
+  "elapsedSeconds": 13.348,
+  "referenceImages": 0
+}

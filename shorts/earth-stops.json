@@ -1,0 +1,1515 @@
+{
+  "schemaVersion": 2,
+  "id": "earth-stops",
+  "topic": "What if Earth suddenly stopped rotating?",
+  "voice": "Daniel",
+  "wordsPerMinute": 172,
+  "seed": 24,
+  "accent": "#73E7FF",
+  "sources": [
+    {
+      "title": "NASA: Earth's equatorial rotation speed",
+      "url": "https://imagine.gsfc.nasa.gov/ask_astro/earth.html"
+    },
+    {
+      "title": "Smithsonian: If Earth stopped rotating",
+      "url": "https://howthingsfly.si.edu/ask-an-explainer/if-earth-stopped-rotating-its-axis-what-would-happen"
+    }
+  ],
+  "description": "What if the solid Earth stopped spinning in an instant, while people, air, and water retained their momentum? A simplified thought experiment, not a prediction. Earth's equatorial speed is rounded to about 1,600 km/h. A nonrotating Earth still orbiting the Sun would have a solar day of roughly one year. Visuals are illustrative, not physical simulations. Earth texture: NASA Blue Marble. #WhatIf #Science #Shorts",
+  "actors": [
+    {
+      "id": "earth",
+      "kind": "planet",
+      "diameter": 820,
+      "state": {
+        "x": 540,
+        "y": 850,
+        "phase": 0.5
+      }
+    },
+    {
+      "id": "hook",
+      "kind": "text",
+      "text": "What if Earth\nstopped spinning?",
+      "fontSize": 88,
+      "color": "#F3F7FA",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 340
+      }
+    },
+    {
+      "id": "air",
+      "kind": "particles",
+      "width": 1080,
+      "height": 650,
+      "color": "#73E7FF",
+      "count": 45,
+      "state": {
+        "x": 540,
+        "y": 900,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "coast",
+      "kind": "city",
+      "width": 1080,
+      "height": 360,
+      "color": "#73E7FF",
+      "buildings": 22,
+      "state": {
+        "x": 540,
+        "y": 1110,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "water",
+      "kind": "waves",
+      "width": 1320,
+      "height": 580,
+      "color": "#73E7FF",
+      "layers": 6,
+      "state": {
+        "x": 400,
+        "y": 1140,
+        "opacity": 0,
+        "amplitude": 12
+      }
+    },
+    {
+      "id": "object",
+      "kind": "shape",
+      "shape": "circle",
+      "width": 34,
+      "height": 34,
+      "color": "#FFB47A",
+      "state": {
+        "x": 400,
+        "y": 850,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "down",
+      "kind": "shape",
+      "shape": "arrow",
+      "width": 160,
+      "height": 50,
+      "color": "#73E7FF",
+      "state": {
+        "x": 540,
+        "y": 700,
+        "rotation": 90,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "momentum",
+      "kind": "shape",
+      "shape": "arrow",
+      "width": 230,
+      "height": 45,
+      "color": "#FFB47A",
+      "state": {
+        "x": 570,
+        "y": 940,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "speed",
+      "kind": "text",
+      "text": "",
+      "fontSize": 112,
+      "color": "#73E7FF",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 450,
+        "opacity": 0,
+        "value": 1600
+      },
+      "numeric": true,
+      "suffix": " km/h"
+    },
+    {
+      "id": "speed-label",
+      "kind": "text",
+      "text": "AT THE EQUATOR · APPROX.",
+      "fontSize": 22,
+      "color": "#87A7BA",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 555,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "ground-label",
+      "kind": "text",
+      "text": "SOLID GROUND",
+      "fontSize": 22,
+      "color": "#87A7BA",
+      "width": 880,
+      "state": {
+        "x": 320,
+        "y": 1320,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "air-label",
+      "kind": "text",
+      "text": "AIR + WATER KEEP MOVING →",
+      "fontSize": 28,
+      "color": "#FFB47A",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 490,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "gravity-label",
+      "kind": "text",
+      "text": "Gravity still acts.",
+      "fontSize": 65,
+      "color": "#F3F7FA",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 390,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "sun",
+      "kind": "shape",
+      "shape": "circle",
+      "width": 175,
+      "height": 175,
+      "color": "#FFD18C",
+      "state": {
+        "x": 540,
+        "y": 890,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "path",
+      "kind": "orbit",
+      "radiusX": 400,
+      "radiusY": 245,
+      "color": "#73E7FF",
+      "markerColor": "#73B8EE",
+      "markerRadius": 38,
+      "state": {
+        "x": 540,
+        "y": 890,
+        "opacity": 0,
+        "phase": -0.7
+      }
+    },
+    {
+      "id": "day",
+      "kind": "text",
+      "text": "",
+      "fontSize": 83,
+      "color": "#73E7FF",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 410,
+        "opacity": 0
+      },
+      "numeric": true,
+      "suffix": " Earth days"
+    },
+    {
+      "id": "day-label",
+      "kind": "text",
+      "text": "ONE SOLAR DAY · APPROX.",
+      "fontSize": 22,
+      "color": "#87A7BA",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 515,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "closing",
+      "kind": "text",
+      "text": "Still wish the world\nwould slow down?",
+      "fontSize": 70,
+      "color": "#F3F7FA",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 360,
+        "opacity": 0
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "title": "Rotation stops, momentum remains",
+      "cues": [
+        "What if Earth suddenly stopped spinning?",
+        "Not slowly. In a single instant."
+      ],
+      "motion": [
+        {
+          "actor": "earth",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0.5,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 1
+              },
+              "value": 1.8,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 1,
+                "offset": 1
+              },
+              "value": 1.8,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "earth",
+          "property": "scale",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0.95,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1.05,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "hook",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0.35
+              },
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "air",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0
+              },
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0.2
+              },
+              "value": 0.7,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "air",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0
+              },
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 0.6,
+              "easing": "linear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "The speed you already have",
+      "cues": [
+        "At the equator, you're moving east",
+        "at about sixteen hundred kilometres an hour."
+      ],
+      "motion": [
+        {
+          "actor": "earth",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1.8,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 3.1,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "earth",
+          "property": "scale",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1.05,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 0.85,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "earth",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 850,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 940,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "speed",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.15
+              },
+              "value": 1,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "speed-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "air",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0.6,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1.8,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "camera",
+          "property": "scale",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1.04,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Land stops while air and loose objects move",
+      "cues": [
+        "Imagine the solid ground stops,",
+        "but you, the air, and the oceans keep moving."
+      ],
+      "motion": [
+        {
+          "actor": "speed",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "speed-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "earth",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 3.1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.4
+              },
+              "value": 3.3,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 1,
+                "offset": 1
+              },
+              "value": 3.3,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "earth",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 940,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1570,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "earth",
+          "property": "scale",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0.85,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1.6,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "camera",
+          "property": "scale",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1.04,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "coast",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.65
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "ground-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "air-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "air",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1.8,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 3.7,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "object",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "object",
+          "property": "x",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0
+              },
+              "value": 400,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 950,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "momentum",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "momentum",
+          "property": "x",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0
+              },
+              "value": 570,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 900,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "earth",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 1
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Water deforms and overtops the coast",
+      "cues": [
+        "The result? Catastrophic winds and flooding.",
+        "Coastlines would face devastating surges."
+      ],
+      "motion": [
+        {
+          "actor": "water",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.3
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "water",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 5,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "water",
+          "property": "amplitude",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 12,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 86,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "water",
+          "property": "x",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 400,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 660,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "water",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1140,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 985,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "coast",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1110,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1210,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "coast",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0.8,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "air",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 3.7,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 6,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "object",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.3
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "momentum",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.3
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "ground-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.3
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "air-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.3
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Gravity downward, momentum sideways",
+      "cues": [
+        "Gravity wouldn't switch off.",
+        "You wouldn't float into space.",
+        "The danger is moving sideways."
+      ],
+      "motion": [
+        {
+          "actor": "water",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "coast",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0.8,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "air",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0.7,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "earth",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1570,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1200,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "earth",
+          "property": "scale",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1.6,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1.12,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "gravity-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.35
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "object",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.3
+              },
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "object",
+          "property": "x",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 450,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 2,
+                "offset": 0
+              },
+              "value": 450,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 950,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "object",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 590,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 1,
+                "offset": 1
+              },
+              "value": 930,
+              "easing": "accelerate"
+            },
+            {
+              "at": "end",
+              "value": 1100,
+              "easing": "accelerate"
+            }
+          ]
+        },
+        {
+          "actor": "down",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "down",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 700,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1000,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "earth",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "smooth"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.4
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Orbit continues without self rotation",
+      "cues": [
+        "If Earth stayed nonrotating while orbiting the Sun,",
+        "one day would last a year.",
+        "Still wish the world would slow down?"
+      ],
+      "motion": [
+        {
+          "actor": "earth",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.4
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "object",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "down",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "gravity-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "sun",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.4
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "path",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.4
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "path",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": -0.7,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 4.3,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "day",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0
+              },
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 2,
+                "offset": 0
+              },
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 2,
+                "offset": 0.3
+              },
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "day",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0
+              },
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 1,
+                "offset": 1
+              },
+              "value": 365,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "day-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0
+              },
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 2,
+                "offset": 0
+              },
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 2,
+                "offset": 0.3
+              },
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "closing",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 2,
+                "offset": 0
+              },
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 2,
+                "offset": 0.3
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

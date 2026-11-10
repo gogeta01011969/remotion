@@ -1,0 +1,11 @@
+{
+  "id": "spring-temple",
+  "model": "flux-2-klein-4b",
+  "steps": 4,
+  "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The Spring Temple Buddha in Lushan, Henan, China: the colossal standing Vairocana Buddha, warm copper-bronze golden-brown patina, tightly curled dark bronze hair, large rounded head bump and serene round face with long earlobes. RIGHT hand raised with palm facing forward at chest/shoulder level, LEFT hand held lower near waist with palm open upward. Heavy flowing robe with diagonal chest drape and vertical folds, robust standing proportions. Include full head, both hands and both feet; omit the lotus pedestal and all stepped architectural platforms. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions.",
+  "width": 1024,
+  "height": 1024,
+  "actualNeurons": 104.2,
+  "elapsedSeconds": 11.902,
+  "referenceImages": 0
+}

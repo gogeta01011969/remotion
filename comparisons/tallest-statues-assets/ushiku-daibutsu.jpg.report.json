@@ -1,0 +1,11 @@
+{
+  "id": "ushiku-daibutsu",
+  "model": "flux-2-klein-4b",
+  "steps": 4,
+  "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The Ushiku Daibutsu in Ibaraki, Japan, a standing Amitabha Buddha. Dark weathered gray-green bronze surface, rounded tightly curled hair with a smooth cranial bump, long earlobes and serene face. RIGHT hand raised around chest/shoulder level with palm outward, LEFT hand lower around waist with palm outward; thumb and index finger form circles in both hands. Heavy long Buddhist robe, standing straight with both feet together. Preserve the narrow upright silhouette. Full head and soles visible; no lotus throne or stone pedestal. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions.",
+  "width": 1024,
+  "height": 1024,
+  "actualNeurons": 104.2,
+  "elapsedSeconds": 10.673,
+  "referenceImages": 0
+}

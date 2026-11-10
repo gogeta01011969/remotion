@@ -1,0 +1,11 @@
+{
+  "id": "guishan-guanyin",
+  "model": "flux-2-klein-4b",
+  "steps": 4,
+  "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The Guishan Guanyin of the Thousand Hands and Eyes at Miyin Temple, Hunan, China. A gilded bronze standing Guanyin with a broad symmetrical radiating fan of many slender arms behind the torso, distinct hands arranged like a golden aureole, two central hands held in prayer at the chest, stacked multiple small crowned heads rising above the central serene face. Long ornate flowing golden robe. Preserve the famous elaborate many-armed outline; not a simple two-armed Buddha and not a seated statue. Full head ornament, every radiating hand, complete robe hem and feet visible. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions.",
+  "width": 1024,
+  "height": 1024,
+  "actualNeurons": 104.2,
+  "elapsedSeconds": 8.931,
+  "referenceImages": 0
+}

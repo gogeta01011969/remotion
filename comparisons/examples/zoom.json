@@ -1,0 +1,175 @@
+{
+  "template": "size-comparison",
+  "id": "suite-zoom",
+  "title": "From a nanoparticle to the Sun",
+  "subject": "generic",
+  "metric": "diameter",
+  "unit": "m",
+  "basis": "Diameter only, across all objects. Particle diameters are historical nominal reference-material sizes; sports balls are representative, celestial bodies approximate. Idealized particle surfaces and circular celestial silhouettes. Object spacing is illustrative, not astronomical distance.",
+  "environment": "space",
+  "context": "From a nanoparticle to the Sun",
+  "items": [
+    {
+      "id": "gold-particle",
+      "label": "Gold nanoparticle",
+      "value": 6e-08,
+      "color": "#E8C46B",
+      "sourceIds": [
+        "nist-particles"
+      ],
+      "material": "plain",
+      "approximate": true,
+      "note": "NIST RM 8013 nominal 60 nm gold particle. Idealized sphere; color illustrative, not a microscope photograph."
+    },
+    {
+      "id": "polymer-bead",
+      "label": "Polymer microbead",
+      "value": 3e-05,
+      "color": "#A6D6ED",
+      "sourceIds": [
+        "nist-particles"
+      ],
+      "material": "plain",
+      "approximate": true,
+      "note": "NIST SRM 1961 nominal 30 micrometre polystyrene sphere; idealized material visualization."
+    },
+    {
+      "id": "golf",
+      "label": "Golf",
+      "value": 0.0427,
+      "approximate": true,
+      "color": "#F1EDE5",
+      "material": "golf",
+      "sourceIds": [
+        "randa"
+      ],
+      "note": "Representative 42.7 mm ball; R&A specifies a minimum 42.67 mm, not a fixed universal diameter."
+    },
+    {
+      "id": "basketball",
+      "label": "Basketball \u00b7 Size 7",
+      "value": 0.2419155134996809,
+      "range": {
+        "min": 0.23873241463784303,
+        "max": 0.24509861236151884
+      },
+      "color": "#CA6C2E",
+      "material": "basketball",
+      "sourceIds": [
+        "fiba"
+      ],
+      "note": "FIBA 2024 equipment table 1: Size 7 circumference 750\u2013770 mm; representative midpoint divided by pi."
+    },
+    {
+      "id": "moon",
+      "label": "Moon",
+      "value": 3475000,
+      "color": "#C7CFDD",
+      "material": "craters",
+      "sourceIds": [
+        "nasa-planets"
+      ],
+      "note": "NASA fact-sheet diameter, rounded to kilometres.",
+      "appearance": "moon",
+      "approximate": true
+    },
+    {
+      "id": "earth",
+      "label": "Earth",
+      "value": 12756000,
+      "color": "#42BAF3",
+      "material": "ocean",
+      "sourceIds": [
+        "nasa-planets"
+      ],
+      "note": "Equatorial diameter; local Blue Marble-derived map and cloud layer projected onto a sphere.",
+      "appearance": "earth",
+      "approximate": true
+    },
+    {
+      "id": "jupiter",
+      "label": "Jupiter",
+      "value": 142984000,
+      "color": "#DBAF88",
+      "material": "bands",
+      "sourceIds": [
+        "nasa-planets"
+      ],
+      "note": "Equatorial diameter; simplified circular silhouette ignores oblateness.",
+      "appearance": "jupiter",
+      "approximate": true
+    },
+    {
+      "id": "sun",
+      "label": "Sun",
+      "value": 1391400000,
+      "color": "#FFCA63",
+      "material": "glow",
+      "sourceIds": [
+        "nasa-sun"
+      ],
+      "note": "Derived diameter = 2 \u00d7 NASA volumetric mean radius 695,700 km. Comparisons are approximate, not precise shape models.",
+      "appearance": "sun",
+      "approximate": true
+    }
+  ],
+  "sources": [
+    {
+      "id": "nist-particles",
+      "title": "NIST historical reference materials: nominal particle diameters",
+      "url": "https://www.nist.gov/pml/nanoscale-device-characterization-division/standard-reference-materials-nanoscale-device"
+    },
+    {
+      "id": "ittf",
+      "title": "ITTF Handbook 2022 \u2014 law 2.3.1, 40 mm diameter",
+      "url": "https://db.ittf.com/sites/default/files/public/2022-02/ITTF_HB_2022_tc_v1_0.pdf"
+    },
+    {
+      "id": "itf",
+      "title": "ITF Technical Booklet 2026 \u2014 Type 1/2 diameter limits",
+      "url": "https://www.itftennis.com/media/15648/2026-technical-booklet.pdf"
+    },
+    {
+      "id": "mcc",
+      "title": "MCC Laws 2026 \u2014 law 4.1, Size 1 circumference limits",
+      "url": "https://www.lords.org/getmedia/a4ef9f77-2a25-4f5b-a286-4601f08e6334/Laws-of-Cricket-2017-Code-4th-Edition-(2026)_5.pdf"
+    },
+    {
+      "id": "ifab",
+      "title": "IFAB 2026/27 Law 2 \u2014 ball circumference",
+      "url": "https://www.theifab.com/laws/2026-27/the-ball/"
+    },
+    {
+      "id": "randa",
+      "title": "R&A Equipment Rules \u2014 Part 4, minimum golf-ball diameter",
+      "url": "https://www.randa.org/en/roe/the-rules-of-equipment/part-4-conformance-of-balls"
+    },
+    {
+      "id": "mlb",
+      "title": "MLB Official Baseball Rules 2026 \u2014 rule 3.01",
+      "url": "https://mktg.mlbstatic.com/mlb/official-information/2026-official-baseball-rules.pdf"
+    },
+    {
+      "id": "wbsc",
+      "title": "WBSC Fast Pitch Rules 2026\u20132029 \u2014 12-inch ball circumference",
+      "url": "https://static.wbsc.org/uploads/federations/0/cms/documents/b5f6e3da-619d-2aa4-0d25-2ec00549b45d.pdf"
+    },
+    {
+      "id": "fiba",
+      "title": "FIBA Basketball Equipment 2024 \u2014 table 1, Size 7 circumference",
+      "url": "https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2024-official-basketball-rules-and-basketball-equipment.pdf"
+    },
+    {
+      "id": "nasa-planets",
+      "title": "NASA NSSDCA Planetary Fact Sheet \u2014 metric diameters",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/"
+    },
+    {
+      "id": "nasa-sun",
+      "title": "NASA Sun Fact Sheet \u2014 volumetric mean radius",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html"
+    }
+  ],
+  "displayUnits": "adaptive",
+  "scaleReference": true
+}

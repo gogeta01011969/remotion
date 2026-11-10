@@ -1,0 +1,10 @@
+{
+  "command": "node",
+  "timeoutMs": 1200000,
+  "args": [
+    "--import", "{projectRoot}/node_modules/tsx/dist/loader.mjs",
+    "{projectRoot}/scripts/cloudflare-asset-provider.ts",
+    "--model", "flux-2-klein-4b", "--steps", "4",
+    "--background-removal", "rembg", "--cutout-model", "isnet-general-use"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "id": "tallest-statues-klein",
+  "language": "en",
+  "presentation": "silent",
+  "description": "Eight selected giant statues, from shortest to tallest on one shared height scale. Approximate figure heights exclude separate architectural pedestals and lotus thrones. This is a curated selection, not an exhaustive world ranking. All statue illustrations were generated using Cloudflare FLUX.2 Klein 4B at its fixed 4 steps, then cut out locally. These are AI illustrations and can differ from the actual monuments; sourced measurements do not certify image accuracy. No narration or soundtrack. #Statues #SizeComparison #Shorts Spring Temple Buddha uses an estimated 108 m figure-only height (128 m published including its 20 m lotus throne); reported dimensions can vary by definition.",
+  "scenes": [
+    {
+      "itemId": "motherland-calls",
+      "heading": "The Motherland Calls",
+      "durationSeconds": 3,
+      "cues": []
+    },
+    {
+      "itemId": "wat-muang",
+      "heading": "Great Buddha of Thailand",
+      "durationSeconds": 3,
+      "cues": []
+    },
+    {
+      "itemId": "sendai-daikannon",
+      "heading": "Sendai Daikannon",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "guishan-guanyin",
+      "heading": "Guishan Guanyin",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "ushiku-daibutsu",
+      "heading": "Ushiku Daibutsu",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "spring-temple",
+      "heading": "Spring Temple Buddha",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "laykyun-sekkya",
+      "heading": "Laykyun Sekkya",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "statue-of-unity",
+      "heading": "Statue of Unity",
+      "durationSeconds": 8,
+      "cues": []
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "template": "size-comparison",
+  "id": "suite-wingspan",
+  "title": "Airliner wingspans: 737 to 747",
+  "subject": "vehicles",
+  "metric": "wingspan",
+  "unit": "m",
+  "basis": "Tip-to-tip wingspan in plan view. 737, 757 and 767 use baseline wings without optional retrofit winglets; approximate source-rounded values. Sourced outlines are simplified, not engineering drawings.",
+  "environment": "sky",
+  "context": "Airliner wingspans: 737 to 747",
+  "items": [
+    {
+      "id": "boeing-737-700",
+      "label": "Boeing 737-700",
+      "value": 34.3,
+      "color": "#A2DBEF",
+      "sourceIds": [
+        "boeing-spans"
+      ],
+      "approximate": true,
+      "note": "Sourced top-view silhouette; small details simplified. Baseline span, no optional retrofit winglets.",
+      "visual": {
+        "kind": "cutout",
+        "src": "boeing-737-700.png",
+        "view": "top",
+        "referenceUrls": [
+          "https://commons.wikimedia.org/wiki/File:Boeing_737-700_silhouette.svg"
+        ],
+        "attribution": "Peter James Lowden (FlyingPete), Wikimedia Commons, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/. Recolored and rasterized; adapted cutouts supplied under CC BY-SA 4.0."
+      }
+    },
+    {
+      "id": "boeing-757-200",
+      "label": "Boeing 757-200",
+      "value": 38.0,
+      "color": "#B6CCF3",
+      "sourceIds": [
+        "boeing-spans"
+      ],
+      "approximate": true,
+      "note": "Sourced top-view silhouette; small details simplified. Baseline span, no optional retrofit winglets.",
+      "visual": {
+        "kind": "cutout",
+        "src": "boeing-757-200.png",
+        "view": "top",
+        "referenceUrls": [
+          "https://commons.wikimedia.org/wiki/File:Boeing_757-200_silhouette.svg"
+        ],
+        "attribution": "Peter James Lowden (FlyingPete), Wikimedia Commons, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/. Recolored and rasterized; adapted cutouts supplied under CC BY-SA 4.0."
+      }
+    },
+    {
+      "id": "boeing-767-300",
+      "label": "Boeing 767-300",
+      "value": 47.6,
+      "color": "#E7CA9D",
+      "sourceIds": [
+        "boeing-spans"
+      ],
+      "approximate": true,
+      "note": "Sourced top-view silhouette; small details simplified. Baseline span, no optional retrofit winglets.",
+      "visual": {
+        "kind": "cutout",
+        "src": "boeing-767-300.png",
+        "view": "top",
+        "referenceUrls": [
+          "https://commons.wikimedia.org/wiki/File:Boeing_767-300_silhouette.svg"
+        ],
+        "attribution": "Peter James Lowden (FlyingPete), Wikimedia Commons, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/. Recolored and rasterized; adapted cutouts supplied under CC BY-SA 4.0."
+      }
+    },
+    {
+      "id": "boeing-747-8",
+      "label": "Boeing 747-8",
+      "value": 68.4,
+      "color": "#E8B9AA",
+      "sourceIds": [
+        "boeing-747"
+      ],
+      "approximate": true,
+      "note": "Sourced top-view silhouette; small details simplified. Baseline span, no optional retrofit winglets.",
+      "visual": {
+        "kind": "cutout",
+        "src": "boeing-747-8.png",
+        "view": "top",
+        "referenceUrls": [
+          "https://commons.wikimedia.org/wiki/File:Boeing_747-8_silhouette.svg"
+        ],
+        "attribution": "Peter James Lowden (FlyingPete), Wikimedia Commons, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/. Recolored and rasterized; adapted cutouts supplied under CC BY-SA 4.0."
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "boeing-spans",
+      "title": "Boeing baseline wingspans (no retrofit winglets)",
+      "url": "https://www.boeing.com/content/dam/boeing/v2/airports/faq/wingletspans.pdf"
+    },
+    {
+      "id": "boeing-747",
+      "title": "Boeing 747-8 passenger general arrangement",
+      "url": "https://www.boeing.com/content/dam/boeing/boeingdotcom/company/about_bca/startup/pdf/historical/747-8I_-_passenger.pdf"
+    }
+  ],
+  "backgroundReason": "A shared atmosphere links the aircraft throughout the wingspan comparison."
+}

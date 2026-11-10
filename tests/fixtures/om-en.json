@@ -1,0 +1,72 @@
+{
+  "throughline": "The Mandukya Upanishad maps the syllable Om to waking, dreaming, and deep sleep, pointing to a silent fourth state of pure awareness.",
+  "title": "The Four Quarters of Om",
+  "description": "This script explores the Mandukya Upanishad's teaching that the syllable Om corresponds to the three states of consciousness. It explains how A, U, and M represent waking, dreaming, and deep sleep, while the silence after the sound points to the fourth quarter, Turiya, as described in the text.",
+  "assumptions": [
+    "The interpretation relies on the Mandukya Upanishad and its traditional commentaries.",
+    "The visual representation of Om is symbolic, not a literal acoustic diagram.",
+    "The fourth state is presented as a philosophical concept, not a scientific claim."
+  ],
+  "scenes": [
+    {
+      "title": "Hook",
+      "cues": [
+        "Have you ever wondered why the Om symbol is considered sacred?"
+      ],
+      "visualIntent": "The Devanagari glyph for Om appears clearly in the center, static and distinct against a dark background.",
+      "sourceIds": [
+        "s1"
+      ]
+    },
+    {
+      "title": "Mystery",
+      "cues": [
+        "How can one simple syllable map the entire range of your daily human experience?",
+        "The Mandukya Upanishad suggests it contains the key to understanding your own consciousness."
+      ],
+      "visualIntent": "Subtle, slow ripples emanate from the center of the Om glyph, suggesting an inner expansion rather than physical sound waves.",
+      "sourceIds": [
+        "s1",
+        "s2"
+      ]
+    },
+    {
+      "title": "Explanation",
+      "cues": [
+        "The text links the first sound, A, to your waking state, where you perceive the world.",
+        "The middle sound, U, corresponds to the dream state, where your mind turns inward.",
+        "The final sound, M, represents deep sleep, a state of rest without distinct objects.",
+        "These three sounds together describe the common experiences of every human being.",
+        "Meditating on this sequence helps the seeker recognize the Self across all states."
+      ],
+      "visualIntent": "The letters A, U, and M appear sequentially next to the Om glyph, each with a small label: Waking, Dream, Deep Sleep.",
+      "sourceIds": [
+        "s3",
+        "s4"
+      ]
+    },
+    {
+      "title": "Payoff",
+      "cues": [
+        "But the teaching points beyond these three to a fourth, silent quarter called Turiya.",
+        "This is not deep sleep, but the awareness that remains when all sounds and states dissolve.",
+        "The silence after Om is the symbol for this underlying, non-dual reality."
+      ],
+      "visualIntent": "The A, U, and M labels fade away, leaving only the Om glyph, which then settles into a still, soundless visual state.",
+      "sourceIds": [
+        "s1",
+        "s3"
+      ]
+    },
+    {
+      "title": "Ending",
+      "cues": [
+        "When the sound fades, what are you still aware of?"
+      ],
+      "visualIntent": "The Om glyph remains centered, with a gentle, contemplative focus, inviting the viewer to reflect on their own awareness.",
+      "sourceIds": [
+        "s1"
+      ]
+    }
+  ]
+}

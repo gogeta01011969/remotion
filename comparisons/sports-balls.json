@@ -1,0 +1,166 @@
+{
+  "template": "size-comparison",
+  "id": "sports-balls",
+  "title": "Sports balls: a size comparison",
+  "metric": "diameter",
+  "unit": "mm",
+  "context": "Representative sizes \u00b7 equipment rules vary",
+  "items": [
+    {
+      "id": "table-tennis",
+      "label": "Table tennis",
+      "value": 40,
+      "color": "#F2ECE3",
+      "material": "plain",
+      "sourceIds": [
+        "ittf"
+      ],
+      "note": "Nominal diameter in ITTF 2022 Handbook, law 2.3.1; cited edition, not a claim about all subsequent editions."
+    },
+    {
+      "id": "golf",
+      "label": "Golf",
+      "value": 42.7,
+      "approximate": true,
+      "color": "#F1EDE5",
+      "material": "golf",
+      "sourceIds": [
+        "randa"
+      ],
+      "note": "Representative 42.7 mm ball; R&A specifies a minimum 42.67 mm, not a fixed universal diameter."
+    },
+    {
+      "id": "tennis",
+      "label": "Tennis",
+      "value": 67,
+      "range": {
+        "min": 65.4,
+        "max": 68.6
+      },
+      "color": "#D7EF57",
+      "material": "felt",
+      "sourceIds": [
+        "itf"
+      ],
+      "note": "Representative midpoint of ITF Type 1/2 permitted diameter range; not every tennis ball is exactly this size."
+    },
+    {
+      "id": "cricket",
+      "label": "Cricket \u00b7 Size 1",
+      "value": 72.0971892206286,
+      "range": {
+        "min": 71.30141450516912,
+        "max": 72.89296393608807
+      },
+      "color": "#D64C50",
+      "material": "seam",
+      "sourceIds": [
+        "mcc"
+      ],
+      "note": "2026 MCC Size 1, circumference 224\u2013229 mm. Diameter = circumference / pi; midpoint 226.5 / pi. Other cricket-ball sizes differ."
+    },
+    {
+      "id": "baseball",
+      "label": "Baseball",
+      "value": 73.77627387024808,
+      "range": {
+        "min": 72.76563998161456,
+        "max": 74.78690775888161
+      },
+      "color": "#F2E9D6",
+      "material": "baseball",
+      "sourceIds": [
+        "mlb"
+      ],
+      "note": "MLB 2026 rule 3.01: 9\u20139.25 inch circumference. Representative midpoint converted to mm then divided by pi."
+    },
+    {
+      "id": "softball",
+      "label": "Softball",
+      "value": 97.08451528605616,
+      "range": {
+        "min": 96.12958562750478,
+        "max": 98.03944494460752
+      },
+      "color": "#DCEB37",
+      "material": "baseball",
+      "sourceIds": [
+        "wbsc"
+      ],
+      "note": "WBSC 2026\u20132029 fast pitch: 302\u2013308 mm circumference for the 12-inch ball; midpoint / pi. Yellow cover, red stitches."
+    },
+    {
+      "id": "football",
+      "label": "Football",
+      "value": 219.63382146681556,
+      "range": {
+        "min": 216.45072260497764,
+        "max": 222.81692032865348
+      },
+      "color": "#E3E7EA",
+      "material": "panels",
+      "sourceIds": [
+        "ifab"
+      ],
+      "note": "IFAB circumference 680\u2013700 mm. Representative diameter = midpoint circumference 690 / pi."
+    },
+    {
+      "id": "basketball",
+      "label": "Basketball \u00b7 Size 7",
+      "value": 241.9155134996809,
+      "range": {
+        "min": 238.73241463784302,
+        "max": 245.09861236151883
+      },
+      "color": "#CA6C2E",
+      "material": "basketball",
+      "sourceIds": [
+        "fiba"
+      ],
+      "note": "FIBA 2024 equipment table 1: Size 7 circumference 750\u2013770 mm; representative midpoint divided by pi."
+    }
+  ],
+  "sources": [
+    {
+      "id": "ittf",
+      "title": "ITTF Handbook 2022 \u2014 law 2.3.1, 40 mm diameter",
+      "url": "https://db.ittf.com/sites/default/files/public/2022-02/ITTF_HB_2022_tc_v1_0.pdf"
+    },
+    {
+      "id": "itf",
+      "title": "ITF Technical Booklet 2026 \u2014 Type 1/2 diameter limits",
+      "url": "https://www.itftennis.com/media/15648/2026-technical-booklet.pdf"
+    },
+    {
+      "id": "mcc",
+      "title": "MCC Laws 2026 \u2014 law 4.1, Size 1 circumference limits",
+      "url": "https://www.lords.org/getmedia/a4ef9f77-2a25-4f5b-a286-4601f08e6334/Laws-of-Cricket-2017-Code-4th-Edition-(2026)_5.pdf"
+    },
+    {
+      "id": "ifab",
+      "title": "IFAB 2026/27 Law 2 \u2014 ball circumference",
+      "url": "https://www.theifab.com/laws/2026-27/the-ball/"
+    },
+    {
+      "id": "randa",
+      "title": "R&A Equipment Rules \u2014 Part 4, minimum golf-ball diameter",
+      "url": "https://www.randa.org/en/roe/the-rules-of-equipment/part-4-conformance-of-balls"
+    },
+    {
+      "id": "mlb",
+      "title": "MLB Official Baseball Rules 2026 \u2014 rule 3.01",
+      "url": "https://mktg.mlbstatic.com/mlb/official-information/2026-official-baseball-rules.pdf"
+    },
+    {
+      "id": "wbsc",
+      "title": "WBSC Fast Pitch Rules 2026\u20132029 \u2014 12-inch ball circumference",
+      "url": "https://static.wbsc.org/uploads/federations/0/cms/documents/b5f6e3da-619d-2aa4-0d25-2ec00549b45d.pdf"
+    },
+    {
+      "id": "fiba",
+      "title": "FIBA Basketball Equipment 2024 \u2014 table 1, Size 7 circumference",
+      "url": "https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2024-official-basketball-rules-and-basketball-equipment.pdf"
+    }
+  ],
+  "environment": "auto"
+}

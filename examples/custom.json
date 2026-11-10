@@ -1,0 +1,20 @@
+{
+  "width": 1280,
+  "height": 720,
+  "fps": 24,
+  "durationSeconds": 12,
+  "seed": 91,
+  "particleCount": 24,
+  "transition": "fade",
+  "colors": {
+    "background": "#EDEAF6",
+    "ink": "#242035",
+    "accent": "#F8C95B",
+    "secondary": "#A69BEB"
+  },
+  "scenes": [
+    {"type": "intro", "eyebrow": "01 / IMAGINE", "title": "Start with a spark.", "subtitle": "Simple rules. Unexpected possibilities.", "weight": 1, "intensity": 0.8},
+    {"type": "system", "eyebrow": "02 / EXPLORE", "title": "Find your rhythm.", "subtitle": "A flexible system of shapes, color, and movement.", "weight": 1.2, "intensity": 1.4},
+    {"type": "finale", "eyebrow": "03 / CREATE", "title": "Bring it to life.", "subtitle": "Make something worth moving for.", "weight": 0.8, "intensity": 1}
+  ]
+}

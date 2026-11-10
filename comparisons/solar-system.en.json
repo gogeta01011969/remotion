@@ -1,0 +1,56 @@
+{
+  "id": "moon-to-sun-comparison",
+  "language": "en",
+  "description": "From Moon to Sun: how small are we?. Eight objects on one linear diameter scale. Silent, names and stats only. Approximate or representative diameters; display spacing is illustrative. Sources and visual credits below. #SizeComparison #Shorts",
+  "scenes": [
+    {
+      "itemId": "moon",
+      "heading": "Moon",
+      "durationSeconds": 3,
+      "cues": []
+    },
+    {
+      "itemId": "mercury",
+      "heading": "Mercury",
+      "durationSeconds": 3,
+      "cues": []
+    },
+    {
+      "itemId": "mars",
+      "heading": "Mars",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "venus",
+      "heading": "Venus",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "earth",
+      "heading": "Earth",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "neptune",
+      "heading": "Neptune",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "jupiter",
+      "heading": "Jupiter",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "sun",
+      "heading": "Sun",
+      "durationSeconds": 4,
+      "cues": []
+    }
+  ],
+  "presentation": "silent"
+}

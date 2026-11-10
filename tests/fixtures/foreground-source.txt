@@ -1,0 +1,4 @@
+Foreground extraction fixture: resized to 384 x 384 from the project's existing
+Cloudflare Klein 4B / 4-step Motherland Calls illustration. This is an AI-generated
+illustration, not a photograph or an exact monument scan. No new image API call
+was made for this fixture. Used only to exercise local foreground extraction.

@@ -1,0 +1,12 @@
+node_modules/
+out/
+build/
+.DS_Store
+*.log
+.env*
+!.env.example
+public/shorts/
+.venv*/
+.cache/
+.automation/
+__pycache__/

@@ -1,0 +1,11 @@
+{
+  "id": "sendai-daikannon",
+  "model": "flux-2-klein-4b",
+  "steps": 4,
+  "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The real Sendai Daikannon in Miyagi, Japan. A very tall slender pure white statue of the female bodhisattva Kannon, standing upright, a small high ornate crown and tall head ornament, long flowing robe and veil. RIGHT hand holds a round wish-fulfilling jewel near the chest; LEFT hand holds a small water vase near the waist. White concrete, pale soft gray shadows. Calm gentle face, elongated proportions, simple narrow full-height silhouette. Include all head ornaments, the full robe hem and both feet. Do not add extra arms. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions.",
+  "width": 1024,
+  "height": 1024,
+  "actualNeurons": 104.2,
+  "elapsedSeconds": 10.314,
+  "referenceImages": 0
+}

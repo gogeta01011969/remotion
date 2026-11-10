@@ -1,0 +1,273 @@
+{
+  "template": "size-comparison",
+  "id": "tallest-statues-klein",
+  "title": "8 of the World’s Tallest Statues",
+  "metric": "height",
+  "unit": "m",
+  "basis": "Approximate reported sculpted-figure height, including sculptural head ornaments and held objects; separate buildings, lotus thrones and architectural pedestals excluded. This is a curated selection, not an exhaustive top-eight ranking.",
+  "asOf": "2026-11-10",
+  "environment": "architecture",
+  "context": "Eight selected giant statues; heights approximate and AI visuals illustrative.",
+  "items": [
+    {
+      "id": "motherland-calls",
+      "label": "The Motherland Calls",
+      "value": 85,
+      "color": "#D6B674",
+      "approximate": true,
+      "sourceIds": [
+        "motherland-calls",
+        "height-list"
+      ],
+      "note": "Height includes the held sword; reported nominal sculpture height, rounded.",
+      "visual": {
+        "kind": "cutout",
+        "src": "motherland-calls.png",
+        "view": "front",
+        "attribution": "AI-generated illustration, Cloudflare FLUX.2 Klein 4B, fixed 4 steps; text-only, not a photographic scan.",
+        "referenceUrls": [
+          "https://en.wikipedia.org/wiki/The_Motherland_Calls"
+        ],
+        "generation": {
+          "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The Motherland Calls monument in Volgograd, Russia. A dynamic monumental gray concrete woman in a windblown classical robe, standing in a wide stride. Her RIGHT hand raises a long straight sword high above her head, her LEFT arm reaches outward with an open hand. Mouth open in a rallying call. Preserve the famous sweeping diagonal body pose, sword and flowing cape silhouette. Matte weathered pale gray concrete, not metallic, no shield. Include the complete sword tip and every finger and both feet. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions."
+        }
+      },
+      "country": "Russia"
+    },
+    {
+      "id": "wat-muang",
+      "label": "Great Buddha of Thailand",
+      "value": 92,
+      "color": "#D6B674",
+      "approximate": true,
+      "sourceIds": [
+        "wat-muang",
+        "height-list"
+      ],
+      "note": "Reported seated figure height; no architectural base.",
+      "visual": {
+        "kind": "cutout",
+        "src": "wat-muang.png",
+        "view": "front",
+        "attribution": "AI-generated illustration, Cloudflare FLUX.2 Klein 4B, fixed 4 steps; text-only, not a photographic scan.",
+        "referenceUrls": [
+          "https://en.wikipedia.org/wiki/Great_Buddha_of_Thailand"
+        ],
+        "generation": {
+          "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The Great Buddha of Thailand at Wat Muang in Ang Thong. A colossal Thai seated golden Buddha, sitting cross-legged in the earth-touching Maravijaya posture. RIGHT hand rests over the right knee with long fingers pointing downward; LEFT hand rests palm up in the lap. Smooth bright gold surface, tightly curled hair, high pointed flame-like ushnisha, serene Thai face, long earlobes, robe over left shoulder. Wide crossed-leg silhouette. Do not turn it into a standing Buddha. Include the entire crossed legs and both knees, no lotus throne. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions."
+        }
+      },
+      "country": "Thailand"
+    },
+    {
+      "id": "sendai-daikannon",
+      "label": "Sendai Daikannon",
+      "value": 92,
+      "color": "#D6B674",
+      "approximate": true,
+      "sourceIds": [
+        "sendai-daikannon",
+        "height-list"
+      ],
+      "note": "Figure 92 m; total monument 100 m includes base, which is excluded.",
+      "visual": {
+        "kind": "cutout",
+        "src": "sendai-daikannon.png",
+        "view": "front",
+        "attribution": "AI-generated illustration, Cloudflare FLUX.2 Klein 4B, fixed 4 steps; text-only, not a photographic scan.",
+        "referenceUrls": [
+          "https://en.wikipedia.org/wiki/Sendai_Daikannon"
+        ],
+        "generation": {
+          "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The real Sendai Daikannon in Miyagi, Japan. A very tall slender pure white statue of the female bodhisattva Kannon, standing upright, a small high ornate crown and tall head ornament, long flowing robe and veil. RIGHT hand holds a round wish-fulfilling jewel near the chest; LEFT hand holds a small water vase near the waist. White concrete, pale soft gray shadows. Calm gentle face, elongated proportions, simple narrow full-height silhouette. Include all head ornaments, the full robe hem and both feet. Do not add extra arms. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions."
+        }
+      },
+      "country": "Japan"
+    },
+    {
+      "id": "guishan-guanyin",
+      "label": "Guishan Guanyin",
+      "value": 99,
+      "color": "#D6B674",
+      "approximate": true,
+      "sourceIds": [
+        "guishan-guanyin",
+        "height-list"
+      ],
+      "note": "Reported figure height; separate temple/platform architecture excluded.",
+      "visual": {
+        "kind": "cutout",
+        "src": "guishan-guanyin.png",
+        "view": "front",
+        "attribution": "AI-generated illustration, Cloudflare FLUX.2 Klein 4B, fixed 4 steps; text-only, not a photographic scan.",
+        "referenceUrls": [
+          "https://en.wikipedia.org/wiki/Guishan_Guanyin"
+        ],
+        "generation": {
+          "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The Guishan Guanyin of the Thousand Hands and Eyes at Miyin Temple, Hunan, China. A gilded bronze standing Guanyin with a broad symmetrical radiating fan of many slender arms behind the torso, distinct hands arranged like a golden aureole, two central hands held in prayer at the chest, stacked multiple small crowned heads rising above the central serene face. Long ornate flowing golden robe. Preserve the famous elaborate many-armed outline; not a simple two-armed Buddha and not a seated statue. Full head ornament, every radiating hand, complete robe hem and feet visible. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions."
+        }
+      },
+      "country": "China"
+    },
+    {
+      "id": "ushiku-daibutsu",
+      "label": "Ushiku Daibutsu",
+      "value": 100,
+      "color": "#D6B674",
+      "approximate": true,
+      "sourceIds": [
+        "ushiku-daibutsu",
+        "height-list",
+        "ushiku-record"
+      ],
+      "note": "100 m figure; 20 m lotus/pedestal excluded from the 120 m monument.",
+      "visual": {
+        "kind": "cutout",
+        "src": "ushiku-daibutsu.png",
+        "view": "front",
+        "attribution": "AI-generated illustration, Cloudflare FLUX.2 Klein 4B, fixed 4 steps; text-only, not a photographic scan.",
+        "referenceUrls": [
+          "https://en.wikipedia.org/wiki/Ushiku_Daibutsu"
+        ],
+        "generation": {
+          "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The Ushiku Daibutsu in Ibaraki, Japan, a standing Amitabha Buddha. Dark weathered gray-green bronze surface, rounded tightly curled hair with a smooth cranial bump, long earlobes and serene face. RIGHT hand raised around chest/shoulder level with palm outward, LEFT hand lower around waist with palm outward; thumb and index finger form circles in both hands. Heavy long Buddhist robe, standing straight with both feet together. Preserve the narrow upright silhouette. Full head and soles visible; no lotus throne or stone pedestal. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions."
+        }
+      },
+      "country": "Japan"
+    },
+    {
+      "id": "spring-temple",
+      "label": "Spring Temple Buddha",
+      "value": 108,
+      "color": "#D6B674",
+      "approximate": true,
+      "sourceIds": [
+        "spring-temple",
+        "height-list",
+        "spring-primary"
+      ],
+      "note": "Operator specifies figure 108 m, lotus 20 m; the commonly quoted 128 m includes the lotus. Architectural supports excluded.",
+      "visual": {
+        "kind": "cutout",
+        "src": "spring-temple.png",
+        "view": "front",
+        "attribution": "AI-generated illustration, Cloudflare FLUX.2 Klein 4B, fixed 4 steps; text-only, not a photographic scan.",
+        "referenceUrls": [
+          "https://en.wikipedia.org/wiki/Spring_Temple_Buddha"
+        ],
+        "generation": {
+          "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The Spring Temple Buddha in Lushan, Henan, China: the colossal standing Vairocana Buddha, warm copper-bronze golden-brown patina, tightly curled dark bronze hair, large rounded head bump and serene round face with long earlobes. RIGHT hand raised with palm facing forward at chest/shoulder level, LEFT hand held lower near waist with palm open upward. Heavy flowing robe with diagonal chest drape and vertical folds, robust standing proportions. Include full head, both hands and both feet; omit the lotus pedestal and all stepped architectural platforms. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions."
+        }
+      },
+      "country": "China"
+    },
+    {
+      "id": "laykyun-sekkya",
+      "label": "Laykyun Sekkya",
+      "value": 115.8,
+      "color": "#D6B674",
+      "approximate": true,
+      "sourceIds": [
+        "laykyun-sekkya",
+        "height-list"
+      ],
+      "note": "Figure approximately 115.8 m (often rounded to 116); architectural throne excluded.",
+      "visual": {
+        "kind": "cutout",
+        "src": "laykyun-sekkya.png",
+        "view": "front",
+        "attribution": "AI-generated illustration, Cloudflare FLUX.2 Klein 4B, fixed 4 steps; text-only, not a photographic scan.",
+        "referenceUrls": [
+          "https://en.wikipedia.org/wiki/Laykyun_Sekkya"
+        ],
+        "generation": {
+          "prompt": "Create a faithful photorealistic isolated rendering of the actual named monument, not a generic statue or a redesigned person. The Laykyun Sekkya standing Gautama Buddha near Monywa, Myanmar. An extremely tall slim upright Burmese Buddha, gold robe covering the body, distinct light peach/cream painted face and hands, dark tightly curled hair with a rounded pointed ushnisha. Long earlobes, calm lowered eyes. Both arms hang down close along the body with the hands near the thighs, robe in long vertical folds. Gold body and contrasting pale face are important. Full figure from hair top to feet, no lotus base and no reclining Buddha beside it. Straight-on near-orthographic front view at eye level, minimal perspective. The ENTIRE sculpted figure including every extremity must fit in the image with 12 percent clear white margin on every side; keep the subject to at most 76 percent of image height and width. Plain uniform pure white background. Soft even neutral studio light. No pedestal, no display plinth, no floor plane, no cast shadow, no scenery, no people, no added text, labels, watermark or frame. Preserve recognizable identity, materials, pose and real body proportions."
+        }
+      },
+      "country": "Myanmar"
+    },
+    {
+      "id": "statue-of-unity",
+      "label": "Statue of Unity",
+      "value": 182,
+      "color": "#D6B674",
+      "approximate": true,
+      "sourceIds": [
+        "statue-of-unity",
+        "height-list"
+      ],
+      "note": "Official figure height 182 m; architectural pedestal excluded.",
+      "visual": {
+        "kind": "cutout",
+        "src": "statue-of-unity.png",
+        "view": "front",
+        "attribution": "AI-generated illustration, Cloudflare FLUX.2 Klein 4B, fixed 4 steps; text-only, not a photographic scan.",
+        "referenceUrls": [
+          "https://narmada.nic.in/tourist-place/statue-of-unity-kevadia/"
+        ],
+        "generation": {
+          "prompt": "Product photograph of the bronze public monument called the Statue of Unity in Gujarat, India. Faithful full-length representation of the famous fully clothed Sardar Vallabhbhai Patel statue. The figure wears a long buttoned traditional coat, a shawl draped over both shoulders, traditional dhoti trousers and sandals. Bald head, solemn mature face, broad shoulders. Both arms hang straight down, hands beside the thighs, with one foot slightly forward. Dark weathered bronze sculpture material. Include the entire sculpted figure from head to the soles of both sandals. The figure occupies only the central 75 percent of the image, with generous white margins on all sides. Eye-level frontal view with minimal perspective. Isolate the statue on a uniform pure white background with soft even lighting. No stone pedestal, plinth, scenery, people, floor or shadow. No text, labels or watermark. This is a photograph of a public bronze sculpture, not a living person."
+        }
+      },
+      "country": "India"
+    }
+  ],
+  "sources": [
+    {
+      "id": "height-list",
+      "title": "List of tallest statues — figure and monument heights distinguished",
+      "url": "https://en.wikipedia.org/wiki/List_of_tallest_statues"
+    },
+    {
+      "id": "motherland-calls",
+      "title": "The Motherland Calls — dimensions and appearance reference",
+      "url": "https://en.wikipedia.org/wiki/The_Motherland_Calls"
+    },
+    {
+      "id": "wat-muang",
+      "title": "Great Buddha of Thailand — dimensions and appearance reference",
+      "url": "https://en.wikipedia.org/wiki/Great_Buddha_of_Thailand"
+    },
+    {
+      "id": "sendai-daikannon",
+      "title": "Sendai Daikannon — dimensions and appearance reference",
+      "url": "https://en.wikipedia.org/wiki/Sendai_Daikannon"
+    },
+    {
+      "id": "guishan-guanyin",
+      "title": "Guishan Guanyin — dimensions and appearance reference",
+      "url": "https://en.wikipedia.org/wiki/Guishan_Guanyin"
+    },
+    {
+      "id": "ushiku-daibutsu",
+      "title": "Ushiku Daibutsu — dimensions and appearance reference",
+      "url": "https://en.wikipedia.org/wiki/Ushiku_Daibutsu"
+    },
+    {
+      "id": "laykyun-sekkya",
+      "title": "Laykyun Sekkya — dimensions and appearance reference",
+      "url": "https://en.wikipedia.org/wiki/Laykyun_Sekkya"
+    },
+    {
+      "id": "spring-temple",
+      "title": "Spring Temple Buddha — dimensions and appearance reference",
+      "url": "https://en.wikipedia.org/wiki/Spring_Temple_Buddha"
+    },
+    {
+      "id": "statue-of-unity",
+      "title": "Statue of Unity — dimensions and appearance reference",
+      "url": "https://narmada.nic.in/tourist-place/statue-of-unity-kevadia/"
+    },
+    {
+      "id": "spring-primary",
+      "title": "Yaoshan scenic-area operator — component heights: figure 108 m, lotus 20 m",
+      "url": "https://www.yaoshanly.com/index.php?a=show&c=index&catid=15&id=131&m=content"
+    },
+    {
+      "id": "ushiku-record",
+      "title": "Japan Records Association — figure 100 m, pedestal 20 m",
+      "url": "https://japaneserecords.org/japanese-records/16544/"
+    }
+  ],
+  "subject": "statues"
+}

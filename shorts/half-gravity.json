@@ -1,0 +1,928 @@
+{
+  "schemaVersion": 2,
+  "id": "half-gravity",
+  "topic": "What if gravity were half as strong?",
+  "voice": "Daniel",
+  "wordsPerMinute": 172,
+  "seed": 37,
+  "accent": "#73E7FF",
+  "sources": [
+    {
+      "title": "NASA: mass and weight",
+      "url": "https://spaceplace.nasa.gov/planets-weight/en/"
+    }
+  ],
+  "description": "A simplified local thought experiment: halve near-surface gravitational acceleration while keeping mass and launch speed unchanged. Ignore air resistance. Weight halves; fall time for a fixed height increases by sqrt(2); maximum jump height doubles for the same takeoff speed. This does not model planetary restructuring or changes in biology. #WhatIf #Physics #Shorts",
+  "actors": [
+    {
+      "id": "question",
+      "kind": "text",
+      "text": "What if gravity\nwere half as strong?",
+      "fontSize": 82,
+      "color": "#F3F7FA",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 340
+      }
+    },
+    {
+      "id": "floor",
+      "kind": "shape",
+      "shape": "rectangle",
+      "width": 900,
+      "height": 3,
+      "color": "#73E7FF",
+      "state": {
+        "x": 540,
+        "y": 1210
+      }
+    },
+    {
+      "id": "normal",
+      "kind": "shape",
+      "shape": "circle",
+      "width": 64,
+      "height": 64,
+      "color": "#73E7FF",
+      "state": {
+        "x": 325,
+        "y": 620
+      }
+    },
+    {
+      "id": "half",
+      "kind": "shape",
+      "shape": "circle",
+      "width": 64,
+      "height": 64,
+      "color": "#FFB47A",
+      "state": {
+        "x": 740,
+        "y": 620
+      }
+    },
+    {
+      "id": "normal-label",
+      "kind": "text",
+      "text": "NORMAL GRAVITY",
+      "fontSize": 21,
+      "color": "#73E7FF",
+      "width": 880,
+      "state": {
+        "x": 325,
+        "y": 510
+      }
+    },
+    {
+      "id": "half-label",
+      "kind": "text",
+      "text": "HALF GRAVITY",
+      "fontSize": 21,
+      "color": "#FFB47A",
+      "width": 880,
+      "state": {
+        "x": 740,
+        "y": 510
+      }
+    },
+    {
+      "id": "weight",
+      "kind": "text",
+      "text": "",
+      "fontSize": 105,
+      "color": "#73E7FF",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 730,
+        "opacity": 0,
+        "value": 100
+      },
+      "numeric": true,
+      "suffix": "% weight"
+    },
+    {
+      "id": "same-mass",
+      "kind": "text",
+      "text": "Same mass. Less weight.",
+      "fontSize": 38,
+      "color": "#F3F7FA",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 980,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "fall-title",
+      "kind": "text",
+      "text": "Same height.\nSlower fall.",
+      "fontSize": 70,
+      "color": "#F3F7FA",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 310,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "jump-title",
+      "kind": "text",
+      "text": "Same launch speed.\nTwice the height.",
+      "fontSize": 68,
+      "color": "#F3F7FA",
+      "width": 880,
+      "state": {
+        "x": 540,
+        "y": 280,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "normal-height",
+      "kind": "shape",
+      "shape": "rectangle",
+      "width": 3,
+      "height": 400,
+      "color": "#73E7FF",
+      "state": {
+        "x": 220,
+        "y": 1000,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "half-height",
+      "kind": "shape",
+      "shape": "rectangle",
+      "width": 3,
+      "height": 800,
+      "color": "#FFB47A",
+      "state": {
+        "x": 850,
+        "y": 800,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "mass-ball",
+      "kind": "shape",
+      "shape": "circle",
+      "width": 80,
+      "height": 80,
+      "color": "#73E7FF",
+      "state": {
+        "x": 300,
+        "y": 1120,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "weight-force",
+      "kind": "shape",
+      "shape": "arrow",
+      "width": 170,
+      "height": 45,
+      "color": "#FFB47A",
+      "state": {
+        "x": 740,
+        "y": 1120,
+        "rotation": 90,
+        "opacity": 0
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "title": "Compare the same drop under two gravity strengths",
+      "cues": [
+        "What if gravity were half as strong?",
+        "Imagine gravity near the ground becomes weaker, while everything else stays the same."
+      ],
+      "motion": [
+        {
+          "actor": "normal",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0.1
+              },
+              "value": 620,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0.65
+              },
+              "value": 1175,
+              "easing": "accelerate"
+            }
+          ]
+        },
+        {
+          "actor": "half",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0.1
+              },
+              "value": 620,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0.88
+              },
+              "value": 1175,
+              "easing": "accelerate"
+            }
+          ]
+        },
+        {
+          "actor": "question",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 1,
+                "offset": 0.4
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Weight changes while mass stays the same",
+      "cues": [
+        "Your weight would be cut in half.",
+        "Your mass, the amount of matter in your body, would stay exactly the same."
+      ],
+      "motion": [
+        {
+          "actor": "normal",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.3
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "half",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.3
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "normal-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "half-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "floor",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0.25,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "weight",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "weight",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0
+              },
+              "value": 100,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 1
+              },
+              "value": 50,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "same-mass",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "mass-ball",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "weight-force",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "weight-force",
+          "property": "scale",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1
+            },
+            {
+              "at": "end",
+              "value": 0.5,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "The same height takes longer to fall",
+      "cues": [
+        "Drop a ball from the same height, and it would take about forty percent longer to reach the ground.",
+        "It would still fall."
+      ],
+      "motion": [
+        {
+          "actor": "weight",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.1
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "same-mass",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.1
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "normal",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.1
+              },
+              "value": 1,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "half",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.1
+              },
+              "value": 1,
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "actor": "normal",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 620,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.1
+              },
+              "value": 620,
+              "easing": "hold"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.66
+              },
+              "value": 1175,
+              "easing": "accelerate"
+            }
+          ]
+        },
+        {
+          "actor": "half",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 620,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.1
+              },
+              "value": 620,
+              "easing": "hold"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.89
+              },
+              "value": 1175,
+              "easing": "accelerate"
+            }
+          ]
+        },
+        {
+          "actor": "normal-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "half-label",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "fall-title",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "floor",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0.25,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "mass-ball",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "weight-force",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Compare two jumps with the same launch speed",
+      "cues": [
+        "With the same launch speed, a jump could reach twice the height.",
+        "That's the simplified physics: less weight, slower falls, and more air time."
+      ],
+      "motion": [
+        {
+          "actor": "fall-title",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.1
+              },
+              "value": 0,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "jump-title",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "normal-height",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "half-height",
+          "property": "opacity",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.2
+              },
+              "value": 1,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "normal",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1175,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.15
+              },
+              "value": 1175,
+              "easing": "hold"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.35
+              },
+              "value": 775,
+              "easing": "decelerate"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.55
+              },
+              "value": 1175,
+              "easing": "accelerate"
+            }
+          ]
+        },
+        {
+          "actor": "half",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1175,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.15
+              },
+              "value": 1175,
+              "easing": "hold"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.55
+              },
+              "value": 375,
+              "easing": "decelerate"
+            },
+            {
+              "at": {
+                "cue": 0,
+                "offset": 0.95
+              },
+              "value": 1175,
+              "easing": "accelerate"
+            }
+          ]
+        },
+        {
+          "actor": "normal-label",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1260,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1260,
+              "easing": "smooth"
+            }
+          ]
+        },
+        {
+          "actor": "half-label",
+          "property": "y",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1260,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 1260,
+              "easing": "smooth"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

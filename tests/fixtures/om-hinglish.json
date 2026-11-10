@@ -1,0 +1,94 @@
+{
+  "throughline": "Mandukya Upanishad ki teaching Om ko waking, dreaming aur deep sleep se relate karti hai, phir soundless fourth aspect ki taraf le jaati hai.",
+  "title": "Om: Sirf Ek Sound?",
+  "description": "Om ki sacred meaning ko Mandukya Upanishad ki ek traditional interpretation se samjhein: A, U, M aur soundless fourth aspect. Yeh ek philosophical teaching hai, science ya medical claim nahi.",
+  "assumptions": [
+    "Approved English explanation ka conversational Hinglish adaptation.",
+    "Self ka matlab is teaching mein aatma hai; Turiya ko deep sleep se alag rakha gaya hai.",
+    "Visual ripples symbolic hain; glyph ki curves ko sounds ka literal diagram nahi bataya gaya."
+  ],
+  "scenes": [
+    {
+      "title": "Hook",
+      "spokenCues": [
+        "कभी सोचा है, ओम को सेक्रेड क्यों कहते हैं?"
+      ],
+      "cues": [
+        "Kabhi socha hai, Om ko sacred kyun kehte hain?"
+      ],
+      "visualIntent": "The Devanagari glyph for Om appears clearly in the center, static and distinct against a dark background.",
+      "sourceIds": [
+        "s1"
+      ]
+    },
+    {
+      "title": "Mystery",
+      "spokenCues": [
+        "एक साउंड आपके वेकिंग, ड्रीम्स और डीप स्लीप को कैसे कनेक्ट कर सकता है?",
+        "मांडूक्य उपनिषद ओम को समझने का एक इंटरेस्टिंग नज़रिया देता है।"
+      ],
+      "cues": [
+        "Ek sound aapke waking, dreams aur deep sleep ko kaise connect kar sakta hai?",
+        "Mandukya Upanishad Om ko samajhne ka ek interesting nazariya deta hai."
+      ],
+      "visualIntent": "Subtle, slow ripples emanate from the center of the Om glyph, suggesting an inner expansion rather than physical sound waves.",
+      "sourceIds": [
+        "s1",
+        "s2"
+      ]
+    },
+    {
+      "title": "Explanation",
+      "spokenCues": [
+        "'अ' वेकिंग स्टेट को रेप्रिज़ेंट करता है, जब आपका अटेंशन बाहर की दुनिया पर होता है।",
+        "'उ' ड्रीम स्टेट से जुड़ा है, जहाँ आपका माइंड अपनी ही एक अलग वर्ल्ड क्रिएट करता है।",
+        "'म' डीप स्लीप को रेप्रिज़ेंट करता है, जहाँ ड्रीम्स और डेली एक्सपीरियंसेज़ शांत हो जाते हैं।",
+        "इस टीचिंग में ओम, इन तीन चेंजिंग एक्सपीरियंसेज़ को एक साथ देखने का एक तरीका बन जाता है।",
+        "ओम पर ध्यान देना, इस ट्रेडिशन में, सेल्फ यानी आत्मा को समझने का रास्ता माना जाता है।"
+      ],
+      "cues": [
+        "'A' waking state ko represent karta hai, jab aapka attention bahar ki duniya par hota hai.",
+        "'U' dream state se juda hai, jahan aapka mind apni hi ek alag world create karta hai.",
+        "'M' deep sleep ko represent karta hai, jahan dreams aur daily experiences shaant ho jaate hain.",
+        "Is teaching mein Om, in teen changing experiences ko ek saath dekhne ka ek tareeka ban jaata hai.",
+        "Om par dhyaan dena, is tradition mein, Self yaani aatma ko samajhne ka raasta maana jaata hai."
+      ],
+      "visualIntent": "The letters A, U, and M appear sequentially next to the Om glyph, each with a small label: Waking, Dream, Deep Sleep.",
+      "sourceIds": [
+        "s3",
+        "s4"
+      ]
+    },
+    {
+      "title": "Payoff",
+      "spokenCues": [
+        "लेकिन टीचिंग यहीं ख़त्म नहीं होती। टेक्स्ट एक फ़ोर्थ, साउंडलेस ऐस्पेक्ट की बात करता है: तुरीय।",
+        "तुरीय डीप स्लीप नहीं; इस टीचिंग में यह तीनों स्टेट्स से परे सेल्फ है।",
+        "ओम के बाद की साइलेंस, इसी की तरफ़ इशारा करती है।"
+      ],
+      "cues": [
+        "Lekin teaching yahin khatam nahi hoti. Text ek fourth, soundless aspect ki baat karta hai: Turiya.",
+        "Turiya deep sleep nahi; is teaching mein yeh teenon states se pare Self hai.",
+        "Om ke baad ki silence, isi ki taraf ishara karti hai."
+      ],
+      "visualIntent": "The A, U, and M labels fade away, leaving only the Om glyph, which then settles into a still, soundless visual state.",
+      "sourceIds": [
+        "s1",
+        "s3"
+      ]
+    },
+    {
+      "title": "Ending",
+      "spokenCues": [
+        "साउंड फेड होने के बाद भी, आप क्या नोटिस कर रहे होते हैं?"
+      ],
+      "cues": [
+        "Sound fade hone ke baad bhi, aap kya notice kar rahe hote hain?"
+      ],
+      "visualIntent": "The Om glyph remains centered, with a gentle, contemplative focus, inviting the viewer to reflect on their own awareness.",
+      "sourceIds": [
+        "s1"
+      ]
+    }
+  ]
+}

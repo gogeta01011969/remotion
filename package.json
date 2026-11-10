@@ -1,0 +1,44 @@
+{
+  "name": "motion-lab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Configurable, deterministic motion graphics built with React and Remotion.",
+  "scripts": {
+    "dev": "remotion studio src/index.ts",
+    "start": "npm run dev",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "render": "remotion render src/index.ts MotionLab out/motion-lab.mp4",
+    "still": "remotion still src/index.ts MotionLab out/preview.png --frame=75",
+    "short": "node --import tsx scripts/build-short.ts",
+    "short:prepare": "node --import tsx scripts/build-short.ts --prepare-only",
+    "short:studio": "remotion studio src/index.ts --props=public/shorts/earth-stops/video.json",
+    "short:schema": "node --import tsx scripts/export-short-schema.ts",
+    "generate": "node --import tsx scripts/generate-short.ts",
+    "compare": "node --import tsx scripts/compare.ts",
+    "automate": "node --import tsx scripts/automate.ts",
+    "compare:examples": "node --import tsx scripts/comparison-suite.ts",
+    "compare:examples:assets": "node --import tsx scripts/prepare-comparison-examples.ts",
+    "image:test": "node --import tsx scripts/test-cloudflare-images.ts"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.542",
+    "@remotion/cli": "4.0.542",
+    "@remotion/renderer": "4.0.542",
+    "@remotion/transitions": "4.0.542",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "remotion": "4.0.542",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=20.12"
+  }
+}

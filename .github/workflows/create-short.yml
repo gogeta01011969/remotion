@@ -1,0 +1,161 @@
+name: Create a comparison Short
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [smoke, auto]
+        default: smoke
+        description: Offline smoke test or automatic topic-to-video run
+      topic:
+        type: string
+        default: ''
+        description: Optional topic override (auto mode); blank chooses a new topic
+  schedule:
+    - cron: '17 3 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: comparison-short-production
+  cancel-in-progress: false
+jobs:
+  smoke:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'smoke'
+    uses: ./.github/workflows/linux-smoke.yml
+  create:
+    if: >-
+      github.ref_name == github.event.repository.default_branch &&
+      ((github.event_name == 'workflow_dispatch' && inputs.mode == 'auto') ||
+       (github.event_name == 'schedule' && vars.AUTOMATION_ENABLED == 'true'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      actions: read
+    env:
+      AUTOMATION_ARCHIVE_TARGET: github
+      BACKGROUND_REMOVAL_PYTHON: python
+      OMP_NUM_THREADS: '2'
+      RENDER_CONCURRENCY: '2'
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-linux.txt
+      - run: npm ci
+      - uses: actions/cache@v6.1.0
+        with:
+          path: .cache/rembg
+          key: rembg-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('requirements-linux.txt') }}
+      - run: bash scripts/ci/setup-linux.sh
+      - name: Check generation configuration
+        env:
+          GROQCLOUD_API_KEY: ${{ secrets.GROQCLOUD_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node --import tsx .github/scripts/check-config.ts
+      - name: Restore durable topic ledger
+        id: ledger
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node --import tsx .github/scripts/state.ts restore
+      - name: Select or resume one topic
+        id: select
+        env:
+          REQUESTED_TOPIC: ${{ inputs.topic }}
+          GROQCLOUD_API_KEY: ${{ secrets.GROQCLOUD_API_KEY }}
+        run: node --import tsx .github/scripts/select-topic.ts
+      - name: Persist reservation before creating assets
+        if: steps.select.outputs.job_id != ''
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node --import tsx .github/scripts/state.ts save
+      - name: Find the most recent trusted checkpoint
+        if: steps.select.outputs.job_id != ''
+        id: checkpoint
+        env:
+          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node --import tsx .github/scripts/find-checkpoint.ts
+      - uses: actions/download-artifact@v8.0.2
+        if: steps.checkpoint.outputs.run_id != ''
+        with:
+          name: ${{ steps.checkpoint.outputs.artifact_name }}
+          run-id: ${{ steps.checkpoint.outputs.run_id }}
+          github-token: ${{ github.token }}
+          path: .automation/restored
+      - name: Restore only this job's generated files
+        if: steps.checkpoint.outputs.run_id != ''
+        env:
+          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+        run: npm run automate -- --resume "$CURRENT_JOB_ID" --restore .automation/restored
+      - name: Research, create assets and render
+        id: create
+        if: steps.select.outputs.job_id != ''
+        continue-on-error: true
+        env:
+          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+          GROQCLOUD_API_KEY: ${{ secrets.GROQCLOUD_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npm run automate -- --resume "$CURRENT_JOB_ID"
+      - name: Stage checkpoint even after generation failure
+        if: always() && steps.select.outputs.job_id != ''
+        env:
+          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+        run: npm run automate -- --resume "$CURRENT_JOB_ID" --package
+      - uses: actions/upload-artifact@v7.0.2
+        if: always() && steps.select.outputs.job_id != ''
+        with:
+          name: checkpoint-${{ steps.select.outputs.job_id }}
+          path: out/automation/checkpoint/
+          retention-days: 7
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v7.0.2
+        id: video
+        if: steps.create.outputs.status == 'rendered'
+        with:
+          name: short-${{ steps.select.outputs.job_id }}
+          path: out/automation/delivery/${{ steps.select.outputs.job_id }}/
+          retention-days: 30
+          compression-level: 0
+          if-no-files-found: error
+      - name: Confirm successful artifact archival
+        id: confirm
+        if: steps.video.outputs.artifact-id != ''
+        env:
+          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+          VIDEO_ARTIFACT_ID: ${{ steps.video.outputs.artifact-id }}
+        run: npm run automate -- --resume "$CURRENT_JOB_ID" --archive-confirmed "$VIDEO_ARTIFACT_ID"
+      - name: Persist final status (including failures)
+        id: persist
+        if: always() && steps.ledger.outcome == 'success'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node --import tsx .github/scripts/state.ts save
+      - name: Clean archived job intermediates
+        if: always() && steps.confirm.outcome == 'success' && steps.persist.outcome == 'success'
+        env:
+          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+        run: npm run automate -- --resume "$CURRENT_JOB_ID" --cleanup
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: automation-result-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            out/automation/result.json
+            .automation/state.json
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Surface generation failure
+        if: always() && steps.create.outcome == 'failure'
+        run: exit 1

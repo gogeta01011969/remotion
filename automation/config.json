@@ -1,0 +1,25 @@
+{
+  "niche": "Silent, visually engaging physical-size comparison YouTube Shorts",
+  "allowedMetrics": [
+    "diameter",
+    "height",
+    "length",
+    "width",
+    "wingspan",
+    "volume"
+  ],
+  "candidatesPerBatch": 3,
+  "maxAttemptsPerJob": 3,
+  "retryAfterMinutes": 60,
+  "maxStageRequests": 12,
+  "maxReportedTokens": 65000,
+  "assetProvider": "comparisons/cloudflare-linux.provider.json",
+  "seedDatasets": [
+    "comparisons/examples/diameter.json",
+    "comparisons/examples/height.json",
+    "comparisons/examples/wingspan.json",
+    "comparisons/examples/area.json",
+    "comparisons/examples/volume.json",
+    "comparisons/examples/zoom.json"
+  ]
+}

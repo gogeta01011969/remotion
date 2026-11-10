@@ -1,0 +1,45 @@
+{
+  "model": "flux-2-klein-4b",
+  "steps": 4,
+  "referenceImages": 0,
+  "objects": 7,
+  "newNeuronsThisInvocation": 0,
+  "totalReportedNeurons": 729.4000000000001,
+  "items": [
+    {
+      "id": "motherland-calls",
+      "neurons": 104.2,
+      "seconds": 11.163
+    },
+    {
+      "id": "wat-muang",
+      "neurons": 104.2,
+      "seconds": 9.81
+    },
+    {
+      "id": "sendai-daikannon",
+      "neurons": 104.2,
+      "seconds": 10.314
+    },
+    {
+      "id": "guishan-guanyin",
+      "neurons": 104.2,
+      "seconds": 8.931
+    },
+    {
+      "id": "ushiku-daibutsu",
+      "neurons": 104.2,
+      "seconds": 10.673
+    },
+    {
+      "id": "spring-temple",
+      "neurons": 104.2,
+      "seconds": 11.902
+    },
+    {
+      "id": "laykyun-sekkya",
+      "neurons": 104.2,
+      "seconds": 13.348
+    }
+  ]
+}

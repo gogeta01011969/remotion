@@ -1,0 +1,12 @@
+{
+  "command": "node",
+  "args": [
+    "--import",
+    "{projectRoot}/node_modules/tsx/dist/loader.mjs",
+    "{projectRoot}/scripts/cloudflare-asset-provider.ts",
+    "--model",
+    "flux-2-klein-4b",
+    "--steps",
+    "4"
+  ]
+}

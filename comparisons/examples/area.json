@@ -1,0 +1,152 @@
+{
+  "template": "size-comparison",
+  "id": "suite-area",
+  "title": "Island countries: how much land?",
+  "subject": "geography",
+  "metric": "area",
+  "unit": "km2",
+  "basis": "World Bank / FAO 2024 land area excluding inland waters. Whole-country generalized outlines include major detached islands. Locally centered Lambert cylindrical equal-area projection; each filled silhouette is normalized to its reported land area. A curated selection, not a ranking.",
+  "environment": "geography",
+  "context": "Island countries: how much land?",
+  "items": [
+    {
+      "id": "sri-lanka",
+      "label": "Sri Lanka",
+      "value": 61860,
+      "color": "#7FE3CC",
+      "sourceIds": [
+        "world-bank"
+      ],
+      "approximate": true,
+      "note": "2024 reported land area. Generalized equal-area outline; occupied silhouette is normalized to the sourced land area.",
+      "visual": {
+        "kind": "cutout",
+        "src": "sri-lanka.png",
+        "view": "top",
+        "projection": "equal-area",
+        "referenceUrls": [
+          "https://www.naturalearthdata.com/about/terms-of-use/"
+        ],
+        "attribution": "Natural Earth, public-domain 1:50m country polygons; Locally centered Lambert cylindrical equal-area projection, recolored/rasterized locally. Coastlines are generalized; inland waters are not individually traced."
+      }
+    },
+    {
+      "id": "iceland",
+      "label": "Iceland",
+      "value": 100830,
+      "color": "#A9D8FF",
+      "sourceIds": [
+        "world-bank"
+      ],
+      "approximate": true,
+      "note": "2024 reported land area. Generalized equal-area outline; occupied silhouette is normalized to the sourced land area.",
+      "visual": {
+        "kind": "cutout",
+        "src": "iceland.png",
+        "view": "top",
+        "projection": "equal-area",
+        "referenceUrls": [
+          "https://www.naturalearthdata.com/about/terms-of-use/"
+        ],
+        "attribution": "Natural Earth, public-domain 1:50m country polygons; Locally centered Lambert cylindrical equal-area projection, recolored/rasterized locally. Coastlines are generalized; inland waters are not individually traced."
+      }
+    },
+    {
+      "id": "cuba",
+      "label": "Cuba",
+      "value": 103800,
+      "color": "#FFD293",
+      "sourceIds": [
+        "world-bank"
+      ],
+      "approximate": true,
+      "note": "2024 reported land area. Generalized equal-area outline; occupied silhouette is normalized to the sourced land area.",
+      "visual": {
+        "kind": "cutout",
+        "src": "cuba.png",
+        "view": "top",
+        "projection": "equal-area",
+        "referenceUrls": [
+          "https://www.naturalearthdata.com/about/terms-of-use/"
+        ],
+        "attribution": "Natural Earth, public-domain 1:50m country polygons; Locally centered Lambert cylindrical equal-area projection, recolored/rasterized locally. Coastlines are generalized; inland waters are not individually traced."
+      }
+    },
+    {
+      "id": "japan",
+      "label": "Japan",
+      "value": 364500,
+      "color": "#FFA7A7",
+      "sourceIds": [
+        "world-bank"
+      ],
+      "approximate": true,
+      "note": "2024 reported land area. Generalized equal-area outline; occupied silhouette is normalized to the sourced land area.",
+      "visual": {
+        "kind": "cutout",
+        "src": "japan.png",
+        "view": "top",
+        "projection": "equal-area",
+        "referenceUrls": [
+          "https://www.naturalearthdata.com/about/terms-of-use/"
+        ],
+        "attribution": "Natural Earth, public-domain 1:50m country polygons; Locally centered Lambert cylindrical equal-area projection, recolored/rasterized locally. Coastlines are generalized; inland waters are not individually traced."
+      }
+    },
+    {
+      "id": "madagascar",
+      "label": "Madagascar",
+      "value": 581800,
+      "color": "#B5E39A",
+      "sourceIds": [
+        "world-bank"
+      ],
+      "approximate": true,
+      "note": "2024 reported land area. Generalized equal-area outline; occupied silhouette is normalized to the sourced land area.",
+      "visual": {
+        "kind": "cutout",
+        "src": "madagascar.png",
+        "view": "top",
+        "projection": "equal-area",
+        "referenceUrls": [
+          "https://www.naturalearthdata.com/about/terms-of-use/"
+        ],
+        "attribution": "Natural Earth, public-domain 1:50m country polygons; Locally centered Lambert cylindrical equal-area projection, recolored/rasterized locally. Coastlines are generalized; inland waters are not individually traced."
+      }
+    },
+    {
+      "id": "australia",
+      "label": "Australia",
+      "value": 7688287,
+      "color": "#EBC177",
+      "sourceIds": [
+        "world-bank"
+      ],
+      "approximate": true,
+      "note": "2024 reported land area. Generalized equal-area outline; occupied silhouette is normalized to the sourced land area.",
+      "visual": {
+        "kind": "cutout",
+        "src": "australia.png",
+        "view": "top",
+        "projection": "equal-area",
+        "referenceUrls": [
+          "https://www.naturalearthdata.com/about/terms-of-use/"
+        ],
+        "attribution": "Natural Earth, public-domain 1:50m country polygons; Locally centered Lambert cylindrical equal-area projection, recolored/rasterized locally. Coastlines are generalized; inland waters are not individually traced."
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "world-bank",
+      "title": "World Bank / FAO: land area, 2024 (CC BY 4.0)",
+      "url": "https://data.worldbank.org/indicator/AG.LND.TOTL.K2"
+    },
+    {
+      "id": "natural-earth",
+      "title": "Natural Earth country geometry (public domain)",
+      "url": "https://www.naturalearthdata.com/about/terms-of-use/"
+    }
+  ],
+  "asOf": "2024-12-31"
+}

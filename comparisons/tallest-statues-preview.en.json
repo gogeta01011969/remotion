@@ -1,0 +1,50 @@
+{
+  "id": "tallest-statues-klein-preview",
+  "language": "en",
+  "presentation": "silent",
+  "description": "Seven selected giant statues rendered with text-generated Cloudflare FLUX.2 Klein 4B images at fixed 4 steps. All images are AI illustrations; recognizable details and proportions may differ from actual monuments. Shared linear height scale, approximate sourced figure heights, no narration or soundtrack. Sculptural head ornaments and held objects are included; separate architectural pedestals and lotus thrones are excluded. Spring Temple Buddha uses the operator-reported 108 m figure-only height. This is an experimental curated selection, not an exhaustive tallest-statue ranking. The planned Statue of Unity image could not be completed because Cloudflare exhausted its daily free allowance. #Statues #SizeComparison #Shorts",
+  "scenes": [
+    {
+      "itemId": "motherland-calls",
+      "heading": "The Motherland Calls",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "wat-muang",
+      "heading": "Great Buddha of Thailand",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "sendai-daikannon",
+      "heading": "Sendai Daikannon",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "guishan-guanyin",
+      "heading": "Guishan Guanyin",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "ushiku-daibutsu",
+      "heading": "Ushiku Daibutsu",
+      "durationSeconds": 4,
+      "cues": []
+    },
+    {
+      "itemId": "spring-temple",
+      "heading": "Spring Temple Buddha",
+      "durationSeconds": 5,
+      "cues": []
+    },
+    {
+      "itemId": "laykyun-sekkya",
+      "heading": "Laykyun Sekkya",
+      "durationSeconds": 8,
+      "cues": []
+    }
+  ]
+}

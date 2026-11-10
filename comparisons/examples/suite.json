@@ -1,0 +1,39 @@
+[
+  {
+    "key": "diameter",
+    "id": "suite-diameter-comparison",
+    "data": "comparisons/examples/diameter.json",
+    "assetRoot": "comparisons/examples/assets"
+  },
+  {
+    "key": "height",
+    "id": "suite-height-comparison",
+    "data": "comparisons/examples/height.json",
+    "assetRoot": "comparisons/tallest-statues-assets"
+  },
+  {
+    "key": "wingspan",
+    "id": "suite-wingspan-comparison",
+    "data": "comparisons/examples/wingspan.json",
+    "assetRoot": "comparisons/examples/assets"
+  },
+  {
+    "key": "area",
+    "id": "suite-area-comparison",
+    "data": "comparisons/examples/area.json",
+    "assetRoot": "comparisons/examples/assets"
+  },
+  {
+    "key": "volume",
+    "id": "suite-volume-comparison",
+    "data": "comparisons/examples/volume.json",
+    "assetRoot": "comparisons/examples/assets"
+  },
+  {
+    "key": "zoom",
+    "id": "suite-zoom-comparison",
+    "data": "comparisons/examples/zoom.json",
+    "assetRoot": "comparisons/examples/assets",
+    "episode": "comparisons/examples/zoom.en.json"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "endWithQuestion": true,
+  "hook": "Have you ever wondered why the Om symbol is considered sacred?",
+  "beats": [
+    {"name": "Hook", "durationSeconds": 3},
+    {"name": "Mystery", "durationSeconds": 9},
+    {"name": "Explanation", "durationSeconds": 28},
+    {"name": "Payoff", "durationSeconds": 15},
+    {"name": "Ending", "durationSeconds": 5}
+  ]
+}

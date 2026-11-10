@@ -1,0 +1,44 @@
+{
+  "renderer": "sacred-symbol",
+  "symbol": "om",
+  "reference": "Mandukya Upanishad",
+  "associations": [
+    {
+      "sound": "A",
+      "cue": 0,
+      "meaning": "Waking"
+    },
+    {
+      "sound": "U",
+      "cue": 1,
+      "meaning": "Dreaming"
+    },
+    {
+      "sound": "M",
+      "cue": 2,
+      "meaning": "Deep sleep"
+    }
+  ],
+  "scenes": [
+    {
+      "mode": "reveal",
+      "heading": "The Om Question"
+    },
+    {
+      "mode": "resonate",
+      "heading": "Ek Sound, Teen Experiences"
+    },
+    {
+      "mode": "states",
+      "heading": "Waking, Dreams, Deep Sleep"
+    },
+    {
+      "mode": "silence",
+      "heading": "Sound Ke Baad"
+    },
+    {
+      "mode": "reflect",
+      "heading": "Aap Kya Notice Karte Hain?"
+    }
+  ]
+}

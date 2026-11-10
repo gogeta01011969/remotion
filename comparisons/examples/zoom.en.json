@@ -1,0 +1,56 @@
+{
+  "id": "suite-zoom-comparison",
+  "language": "en",
+  "presentation": "silent",
+  "description": "From a nominal 60 nm gold particle to the Sun. One diameter scale, continuous logarithmic camera zoom and a live calibrated scale ruler. Particle colors are illustrative; tiny objects are allowed to become subpixel. The closing frame preserves true relative size and cannot keep microscopic objects visible.",
+  "scenes": [
+    {
+      "itemId": "gold-particle",
+      "heading": "Gold nanoparticle",
+      "durationSeconds": 5,
+      "cues": []
+    },
+    {
+      "itemId": "polymer-bead",
+      "heading": "Polymer microbead",
+      "durationSeconds": 5,
+      "cues": []
+    },
+    {
+      "itemId": "golf",
+      "heading": "Golf",
+      "durationSeconds": 5,
+      "cues": []
+    },
+    {
+      "itemId": "basketball",
+      "heading": "Basketball \u00b7 Size 7",
+      "durationSeconds": 5,
+      "cues": []
+    },
+    {
+      "itemId": "moon",
+      "heading": "Moon",
+      "durationSeconds": 5,
+      "cues": []
+    },
+    {
+      "itemId": "earth",
+      "heading": "Earth",
+      "durationSeconds": 5,
+      "cues": []
+    },
+    {
+      "itemId": "jupiter",
+      "heading": "Jupiter",
+      "durationSeconds": 5,
+      "cues": []
+    },
+    {
+      "itemId": "sun",
+      "heading": "Sun",
+      "durationSeconds": 10,
+      "cues": []
+    }
+  ]
+}

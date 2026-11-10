@@ -1,0 +1,3 @@
+# Local CPU foreground extraction. Select isnet-general-use explicitly;
+# rembg's default model is intentionally not used.
+rembg[cpu]==2.0.87

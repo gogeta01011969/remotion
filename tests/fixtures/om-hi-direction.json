@@ -1,0 +1,44 @@
+{
+  "renderer": "sacred-symbol",
+  "symbol": "om",
+  "reference": "मांडूक्य उपनिषद",
+  "associations": [
+    {
+      "sound": "A",
+      "cue": 0,
+      "meaning": "जागती अवस्था"
+    },
+    {
+      "sound": "U",
+      "cue": 1,
+      "meaning": "स्वप्न"
+    },
+    {
+      "sound": "M",
+      "cue": 2,
+      "meaning": "गहरी नींद"
+    }
+  ],
+  "scenes": [
+    {
+      "mode": "reveal",
+      "heading": "ओम की पवित्रता"
+    },
+    {
+      "mode": "resonate",
+      "heading": "एक ध्वनि, अनेक अनुभव"
+    },
+    {
+      "mode": "states",
+      "heading": "अनुभव की तीन अवस्थाएँ"
+    },
+    {
+      "mode": "silence",
+      "heading": "चौथा, ध्वनिरहित पक्ष"
+    },
+    {
+      "mode": "reflect",
+      "heading": "क्या शेष रह जाता है?"
+    }
+  ]
+}
