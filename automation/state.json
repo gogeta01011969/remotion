@@ -1,0 +1,215 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "seed-suite-diameter",
+      "topic": "From Moon to Sun: how small are we?",
+      "metric": "diameter",
+      "scopeKey": "suite-diameter",
+      "entityKeys": [
+        "Moon",
+        "Mercury",
+        "Mars",
+        "Venus",
+        "Earth",
+        "Neptune",
+        "Jupiter",
+        "Sun"
+      ],
+      "actualEntityKeys": [
+        "Moon",
+        "Mercury",
+        "Mars",
+        "Venus",
+        "Earth",
+        "Neptune",
+        "Jupiter",
+        "Sun"
+      ],
+      "status": "seeded",
+      "attempts": 0,
+      "createdAt": "2026-11-10T19:26:56.176Z",
+      "updatedAt": "2026-11-10T19:26:56.176Z"
+    },
+    {
+      "id": "seed-suite-height",
+      "topic": "7 Giant Statues — Klein 4B Test",
+      "metric": "height",
+      "scopeKey": "suite-height",
+      "entityKeys": [
+        "The Motherland Calls",
+        "Great Buddha of Thailand",
+        "Sendai Daikannon",
+        "Guishan Guanyin",
+        "Ushiku Daibutsu",
+        "Spring Temple Buddha",
+        "Laykyun Sekkya"
+      ],
+      "actualEntityKeys": [
+        "The Motherland Calls",
+        "Great Buddha of Thailand",
+        "Sendai Daikannon",
+        "Guishan Guanyin",
+        "Ushiku Daibutsu",
+        "Spring Temple Buddha",
+        "Laykyun Sekkya"
+      ],
+      "status": "seeded",
+      "attempts": 0,
+      "createdAt": "2026-11-10T19:26:56.176Z",
+      "updatedAt": "2026-11-10T19:26:56.176Z"
+    },
+    {
+      "id": "seed-suite-wingspan",
+      "topic": "Airliner wingspans: 737 to 747",
+      "metric": "wingspan",
+      "scopeKey": "suite-wingspan",
+      "entityKeys": [
+        "Boeing 737-700",
+        "Boeing 757-200",
+        "Boeing 767-300",
+        "Boeing 747-8"
+      ],
+      "actualEntityKeys": [
+        "Boeing 737-700",
+        "Boeing 757-200",
+        "Boeing 767-300",
+        "Boeing 747-8"
+      ],
+      "status": "seeded",
+      "attempts": 0,
+      "createdAt": "2026-11-10T19:26:56.176Z",
+      "updatedAt": "2026-11-10T19:26:56.176Z"
+    },
+    {
+      "id": "seed-suite-area",
+      "topic": "Island countries: how much land?",
+      "metric": "area",
+      "scopeKey": "suite-area",
+      "entityKeys": [
+        "Sri Lanka",
+        "Iceland",
+        "Cuba",
+        "Japan",
+        "Madagascar",
+        "Australia"
+      ],
+      "actualEntityKeys": [
+        "Sri Lanka",
+        "Iceland",
+        "Cuba",
+        "Japan",
+        "Madagascar",
+        "Australia"
+      ],
+      "status": "seeded",
+      "attempts": 0,
+      "createdAt": "2026-11-10T19:26:56.176Z",
+      "updatedAt": "2026-11-10T19:26:56.176Z"
+    },
+    {
+      "id": "seed-suite-volume",
+      "topic": "Capacity comparison: equivalent volume cubes",
+      "metric": "volume",
+      "scopeKey": "suite-volume",
+      "entityKeys": [
+        "Bottle capacity",
+        "Water can capacity",
+        "IBC capacity",
+        "20 ft cargo capacity",
+        "40 ft cargo capacity"
+      ],
+      "actualEntityKeys": [
+        "Bottle capacity",
+        "Water can capacity",
+        "IBC capacity",
+        "20 ft cargo capacity",
+        "40 ft cargo capacity"
+      ],
+      "status": "seeded",
+      "attempts": 0,
+      "createdAt": "2026-11-10T19:26:56.176Z",
+      "updatedAt": "2026-11-10T19:26:56.176Z"
+    },
+    {
+      "id": "seed-suite-zoom",
+      "topic": "From a nanoparticle to the Sun",
+      "metric": "diameter",
+      "scopeKey": "suite-zoom",
+      "entityKeys": [
+        "Gold nanoparticle",
+        "Polymer microbead",
+        "Golf",
+        "Basketball · Size 7",
+        "Moon",
+        "Earth",
+        "Jupiter",
+        "Sun"
+      ],
+      "actualEntityKeys": [
+        "Gold nanoparticle",
+        "Polymer microbead",
+        "Golf",
+        "Basketball · Size 7",
+        "Moon",
+        "Earth",
+        "Jupiter",
+        "Sun"
+      ],
+      "status": "seeded",
+      "attempts": 0,
+      "createdAt": "2026-11-10T19:26:56.176Z",
+      "updatedAt": "2026-11-10T19:26:56.176Z"
+    },
+    {
+      "id": "short-2026-11-10-13aa5c76fe1b",
+      "topic": "World's biggest sports balls: from ping‑pong to soccer",
+      "metric": "diameter",
+      "scopeKey": "suite-sports-balls-diameter",
+      "entityKeys": [
+        "Table tennis ball",
+        "Baseball",
+        "Tennis ball",
+        "Basketball",
+        "Volleyball",
+        "Soccer ball"
+      ],
+      "actualEntityKeys": [],
+      "whyInteresting": "Viewers instantly recognize each ball, and the dramatic jump from a few centimeters to a foot‑plus sphere creates a visual wow factor that fits perfectly into a 30‑second silent comparison.",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-10T19:26:56.802Z",
+      "updatedAt": "2026-11-10T19:26:56.802Z"
+    }
+  ],
+  "queue": [
+    {
+      "topic": "Giant everyday objects vs. a standard shipping container",
+      "metric": "height",
+      "scopeKey": "suite-objects-height",
+      "entityKeys": [
+        "Standard 20‑ft container",
+        "Refrigerated truck",
+        "Two‑story house",
+        "Wind turbine tower",
+        "Statue of Liberty (torch height only)",
+        "Eiffel Tower (first level)"
+      ],
+      "whyInteresting": "Stacking familiar, human‑scale items against a common industrial benchmark lets the audience instantly gauge scale, while the vertical progression builds tension toward the towering Eiffel Tower segment."
+    },
+    {
+      "topic": "Wingspan showdown: birds, bats, and aircraft",
+      "metric": "wingspan",
+      "scopeKey": "suite-wingspan-animals",
+      "entityKeys": [
+        "Hummingbird",
+        "Peregrine falcon",
+        "Albatross",
+        "Flying fox (large bat)",
+        "Glider (Sailplane)",
+        "Cessna 172"
+      ],
+      "whyInteresting": "Mixing natural flyers with human‑made gliders highlights surprising overlaps—like a bat rivaling a small aircraft—creating curiosity and a memorable visual contrast in a silent short."
+    }
+  ]
+}
