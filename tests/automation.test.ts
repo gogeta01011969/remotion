@@ -9,6 +9,7 @@ import {createAutomationVideo,digest,confirmArchive,cleanupJob,stageCheckpoint,r
 import {GitHubStateStore} from '../src/pipeline/github-state';
 import {cutoutBackend,cutoutMethod,removalCommand} from '../src/pipeline/background-removal';
 import {sizeDatasetSchema} from '../src/shorts/size-data';
+import {quotaDeferral} from '../src/pipeline/quota-retry';
 const now='2026-11-10T00:00:00.000Z';
 const config=automationConfigSchema.parse({niche:'Silent physical comparisons',allowedMetrics:['height','wingspan','volume'],assetProvider:'unused.json'});
 const job=()=>jobSchema.parse({id:'short-test-123',topic:'A new synthetic height ladder',metric:'height',scopeKey:'synthetic-ladder',entityKeys:['one','two','three','four'],status:'reserved',attempts:0,createdAt:now,updatedAt:now});
@@ -94,10 +95,49 @@ test('archive failure resumes a verified render without new generation; completi
 test('failure state is resumable and archive-only runs refuse missing or changed checkpoints',async()=>{
   const root=mkdtempSync(path.join(tmpdir(),'retry-lifecycle-')),run=lifecycle(root);
   try{
-    await assert.rejects(()=>createAutomationVideo(run.options,{...run.dependencies,generateData:async()=>{throw new Error('HTTP 429 quota');}}),/quota/);
+    const deferred=await createAutomationVideo(run.options,{...run.dependencies,generateData:async()=>{throw new Error('HTTP 429 quota');}});
+    assert.equal(deferred.status,'retry-later');assert.equal(run.current.attempts,0);
     assert.equal(run.current.status,'retry-later');assert.ok(run.current.retryAt);
     run.current.status='rendered';run.current.videoSha256='old';const before=run.current.attempts;
     await assert.rejects(()=>createAutomationVideo(run.options,run.dependencies),/checkpoint restored/);assert.equal(run.current.status,'needs-review');assert.equal(run.current.attempts,before);
+  }finally{rmSync(root,{recursive:true,force:true});}
+});
+test('quota retry time honors compound provider intervals; oversized requests are not quota deferrals',()=>{
+  const start=Date.parse(now);
+  assert.equal(quotaDeferral('HTTP 429 tokens per day. Please try again in 14m41.28s.',start),new Date(start+896280).toISOString());
+  assert.equal(quotaDeferral('Rate limit reached. Try again in 1h2m3.5s',start),new Date(start+3738500).toISOString());
+  assert.equal(quotaDeferral('HTTP 429 quota',start,60),new Date(start+3600000).toISOString());
+  assert.equal(quotaDeferral('HTTP 429 Request too large for tokens per minute',start),null);
+  assert.equal(quotaDeferral('Invalid comparison schema',start),null);
+});
+test('quota exhaustion preserves the final content attempt and repeated resumes make no new API calls',async()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'quota-preserve-attempt-')),run=lifecycle(root);let calls=0;
+  try{
+    run.current.attempts=config.maxAttemptsPerJob-1;
+    const dependencies={...run.dependencies,generateData:async()=>{calls++;throw new Error('HTTP 429 tokens per day. Please try again in 14m41.28s.');}};
+    const first=await createAutomationVideo(run.options,dependencies);
+    assert.equal(first.status,'retry-later');assert.equal(run.current.attempts,config.maxAttemptsPerJob-1);
+    const retryAt=run.current.retryAt;
+    const second=await createAutomationVideo(run.options,dependencies);
+    assert.equal(second.status,'retry-later');assert.equal(calls,1);assert.equal(run.current.retryAt,retryAt);
+  }finally{rmSync(root,{recursive:true,force:true});}
+});
+test('CLI resume during backoff exits successfully, reports deferral and omits stale selection summaries',()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'automation-cli-deferred-')),current=job();
+  try{
+    current.status='retry-later';current.retryAt='2099-01-01T00:00:00.000Z';current.error='Saved HTTP 429 quota error';current.attempts=2;
+    mkdirSync(path.join(root,'automation'),{recursive:true});writeFileSync(path.join(root,'automation/config.json'),JSON.stringify(config));
+    saveLedger(path.join(root,'.automation/state.json'),{...empty(),jobs:[current]});
+    const summary=path.join(root,'summary.md'),output=path.join(root,'outputs.txt');
+    const args=['--import',path.resolve('node_modules/tsx/dist/loader.mjs'),path.resolve('scripts/automate.ts'),'--resume',current.id];
+    const options={cwd:root,env:{...process.env,GROQCLOUD_API_KEY:'unused-offline-test',GITHUB_STEP_SUMMARY:summary,GITHUB_OUTPUT:output},encoding:'utf8' as const,timeout:30000};
+    const selection=spawnSync(process.execPath,[...args,'--select-only'],options);
+    assert.equal(selection.status,0,selection.stderr);assert.equal(existsSync(summary),false);
+    const run=spawnSync(process.execPath,args,options);assert.equal(run.status,0,run.stderr);
+    const text=readFileSync(summary,'utf8');assert.match(text,/Generation deferred/);assert.equal(text.match(/### Comparison job/g)?.length,1);
+    assert.equal(JSON.parse(readFileSync(path.join(root,'out/automation/result.json'),'utf8')).status,'retry-later');
+    assert.equal(JSON.parse(readFileSync(path.join(root,'out/comparisons',current.id,'automation-usage.json'),'utf8')).stageRequests,0);
+    assert.equal(JSON.parse(readFileSync(path.join(root,'.automation/state.json'),'utf8')).jobs[0].attempts,2);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
 test('checkpoints restore only their own generated paths and cleanup rejects symlink ancestors',()=>{

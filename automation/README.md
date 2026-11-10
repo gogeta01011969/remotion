@@ -73,10 +73,15 @@ until a reliable real-outline acquisition provider is connected. Existing author
 area comparisons still work. Generated cutouts approximate real objects and still
 need visual review; they are not verified scans.
 
-Quota/network failures use a 60-minute retry delay, with at most three automatic
-attempts per job. A future run resumes a due job before choosing another topic.
+Quota exhaustion is a deferred outcome, with a notice rather than a failed
+workflow. No finished video is claimed, and it does not consume a content attempt.
+The retry time uses the provider's reported interval plus a small buffer, or a
+60-minute fallback. Explicit resumes during backoff make no API calls. Quota
+deferral also applies when topic selection has not yet reserved a job.
+Network failures retain a 60-minute delay and count toward the three automatic
+content attempts per job. A future run resumes a due job before choosing another topic.
 Validation failures move to `needs-review`; an actual duplicate is skipped before
-asset creation. The schedule is daily, so a one-hour delay does not itself trigger
+asset creation. The schedule is daily, so a retry delay does not itself trigger
 another run. Trigger one manually to retry sooner once due.
 
 The default budget allows at most 12 logical Groq stage requests and 65,000 reported

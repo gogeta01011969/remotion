@@ -8,6 +8,7 @@ import {redact,type GroqClient,loadGroqConfig} from './groq';
 import {writeJson} from './stages';
 import {actualDuplicate,saveLedger,type AutomationJob,type AutomationConfig,type TopicLedger} from './topic-automation';
 import {sizeDatasetSchema} from '../shorts/size-data';
+import {quotaDeferral} from './quota-retry';
 
 export const digest=(file:string)=>createHash('sha256').update(readFileSync(file)).digest('hex');
 function treeFiles(dir:string):string[]{if(!existsSync(dir))return [];const stat=lstatSync(dir);if(stat.isSymbolicLink())throw new Error('Generated archives cannot contain symlinks.');return stat.isDirectory()?readdirSync(dir).sort().flatMap(name=>treeFiles(path.join(dir,name))):[dir];}
@@ -72,6 +73,7 @@ export type AutomationRunOptions={root:string;stateFile:string;ledger:TopicLedge
 export async function createAutomationVideo(options:AutomationRunOptions,dependencies:{generateData?:typeof generateComparisonData;build?:typeof build;verify?:typeof verifyVideo;fingerprint?:(root:string)=>string}={}){
   const {root,job,ledger,config,stateFile}=options;
   if(job.status==='complete')return {status:'complete',id:job.id,artifactId:job.artifactId};
+  if(job.status==='retry-later'&&job.retryAt&&Date.parse(job.retryAt)>Date.now())return {status:'retry-later',id:job.id,retryAt:job.retryAt,reason:'Saved backoff is still active; no generation or API calls were made.'};
   if(job.attempts>=config.maxAttemptsPerJob&&job.status!=='rendered')throw new Error('Job attempt limit reached; review the saved failure instead of spending more API quota.');
   const archiveOnly=job.status==='rendered';
   const dir=path.join(root,'out/comparisons',job.id);mkdirSync(dir,{recursive:true});
@@ -107,6 +109,12 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
   }catch(error){
     const secrets=[process.env.GROQCLOUD_API_KEY,process.env.CLOUDFLARE_API_TOKEN,process.env.CLOUDFARE_API_TOKEN,process.env.GITHUB_TOKEN].filter(Boolean) as string[];
     const message=redact(error instanceof Error?error.message:String(error),secrets).slice(-1500);
+    const quotaRetryAt=quotaDeferral(message,Date.now(),config.retryAfterMinutes);
+    if(quotaRetryAt){
+      if(!archiveOnly)job.attempts--;
+      job.status='retry-later';job.error=message;job.updatedAt=new Date().toISOString();job.retryAt=quotaRetryAt;saveLedger(stateFile,ledger);
+      return {status:'retry-later',id:job.id,retryAt:job.retryAt,reason:message};
+    }
     const retry=/429|rate.limit|quota|budget|timeout|timed out|network|HTTP 5\d\d/i.test(message)&&job.attempts<config.maxAttemptsPerJob;
     job.status=retry?'retry-later':'needs-review';job.error=message;job.updatedAt=new Date().toISOString();if(retry)job.retryAt=new Date(Date.now()+config.retryAfterMinutes*60000).toISOString();saveLedger(stateFile,ledger);throw new Error(message);
   }
