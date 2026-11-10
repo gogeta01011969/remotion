@@ -176,10 +176,11 @@
       ],
       "actualEntityKeys": [],
       "whyInteresting": "Viewers instantly recognize each ball, and the dramatic jump from a few centimeters to a foot‑plus sphere creates a visual wow factor that fits perfectly into a 30‑second silent comparison.",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "needs-review",
+      "attempts": 1,
       "createdAt": "2026-11-10T19:26:56.802Z",
-      "updatedAt": "2026-11-10T19:26:56.802Z"
+      "updatedAt": "2026-11-10T19:27:15.251Z",
+      "error": "motion failed validation after three attempts: Every new concept needs a shared background environment and a reason tied to the overall video idea."
     }
   ],
   "queue": [
