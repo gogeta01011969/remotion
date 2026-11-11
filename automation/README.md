@@ -44,9 +44,10 @@ and Groq/Cloudflare usage still depend on your accounts' allowances.
 1. Restore the durable ledger from `automation-state:automation/state.json`.
    An unavailable/malformed existing ledger causes failure rather than resetting
    history. The first ledger seeds the six curated comparison examples.
-2. Resume an unfinished eligible job, take a queued topic, or ask Groq for three
-   feasible ideas. Candidates include a curiosity angle, measurement scope and
-   proposed objects. Remaining candidates stay in the queue for later runs.
+2. Resume an unfinished eligible job, rank queued topics by recent subject/angle
+   coverage, or ask Groq for three feasible ideas. Candidates include a subject
+   family, angle, depth, measurement scope and proposed objects. Remaining
+   candidates stay in the queue for later runs.
 3. Check normalized titles, stable scope keys and substantially repeated object
    sets. Save the reservation remotely **before** paid generation work begins.
 4. Use the existing concept → research → editorial selection → data pipeline.
@@ -81,6 +82,50 @@ smoke test keep their local visuals. No comparison measurement is inferred from
 an AI image.
 
 ## Configuration and recovery
+
+### Topic horizon
+
+The topic engine now explores 17 subject families: worlds, stars, sports equipment,
+landmarks, infrastructure, aircraft, land vehicles, watercraft, land animals,
+marine life, winged life, trees/plants, everyday objects, machines, microscopic
+subjects, storage capacity and compatible cross-category comparisons. These are
+subject/measurement policies, not fixed catalogs of objects or images.
+
+Eight angles provide depth within those families: familiar-to-extreme,
+unexpected-neighbors, hidden-differences, record-ladder, orders-of-magnitude,
+through-history, within-one-family and natural-vs-engineered. Depth levels are
+accessible, specialist and extreme-scale; specialist topics still need a familiar
+reference, and extreme-scale topics must remain legible in the current template.
+
+For example, supported topic directions include a whale versus familiar vehicles
+on one length scale, mature trees versus landmarks on one height scale, and
+historical/current aircraft on one consistent wingspan scale. These directions
+still need source verification; proposed records, sizes and winners are not facts.
+
+Selection favours underused families, angles and depths within recent completed
+history, with extra penalties for immediately repeating a family or measurement.
+It does not simply choose the first eligible proposal. Legacy queued topics and
+jobs remain readable; missing family metadata is inferred conservatively for
+rotation. Deduplication still checks the complete durable ledger. Only a compact
+eight-job history is sent to Groq, keeping prompt size bounded as history grows.
+
+The chosen brief and provisional objects are passed into concept planning and
+saved with the request. A concept may correct an unsuitable angle rather than
+force a misleading story. Model editorial judgment and variety guide selection;
+there is still no YouTube-trend or channel-performance scoring.
+
+Optional `enabledFamilies` and `enabledAngles` arrays in `config.json` narrow the
+catalog. Both default to all supported entries. Families are filtered by allowed
+metrics; invalid combinations are rejected before research. See
+`src/pipeline/comparison-horizon.ts` for stable IDs and capability policies.
+
+Mass, speed, population/counts, timelines and energy/power are listed as future
+dimensions, not enabled size topics. They need quantity/race/timeline templates
+that represent those dimensions honestly. Geographic area still needs reliable
+outline acquisition before automatic selection is enabled. Broadening topics
+does not change measured size into a stand-in for another quantity.
+
+### Run settings
 
 Edit [`config.json`](config.json) to change the niche, eligible measurements,
 idea-batch size, retry policy, request budget and asset provider. Default unattended

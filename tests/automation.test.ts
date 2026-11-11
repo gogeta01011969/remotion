@@ -16,9 +16,9 @@ const job=()=>jobSchema.parse({id:'short-test-123',topic:'A new synthetic height
 const empty=():TopicLedger=>({version:1,jobs:[],queue:[]});
 const data=()=>sizeDatasetSchema.parse({template:'size-comparison',id:'synthetic-data',title:'A useful synthetic comparison',metric:'height',unit:'m',basis:'Synthetic test dimensions only',context:'Lifecycle test',items:[1,2,4,8].map((value,i)=>({id:`item-${i}`,label:`Reference ${i}`,value,color:'#AABBCC',sourceIds:['s1'],visual:{kind:'box',widthToHeight:1,depthToHeight:1}})),sources:[{id:'s1',title:'Synthetic source',url:'https://example.com'}]});
 const proposals=[
- {topic:'How tall are iconic towers compared?',metric:'height',scopeKey:'iconic-structure-heights',entityKeys:['Eiffel','Burj','Shanghai','Skytree'],whyInteresting:'Use familiar landmarks to make extreme heights relatable.'},
- {topic:'Which flying objects have the widest wings?',metric:'wingspan',scopeKey:'extended-flight-wings',entityKeys:['Bee','Albatross','Cessna','A380'],whyInteresting:'A familiar flying animal connects to giant aircraft wings.'},
- {topic:'How much can familiar containers hold?',metric:'volume',scopeKey:'nominal-storage-capacity',entityKeys:['Bottle','Drum','IBC','Cargo'],whyInteresting:'Show surprising differences using equivalent-capacity cubes.'}
+ {family:'landmarks',angle:'record-ladder',depth:'accessible',topic:'How tall are iconic towers compared?',metric:'height',scopeKey:'iconic-structure-heights',entityKeys:['Eiffel','Burj','Shanghai','Skytree'],whyInteresting:'Use familiar landmarks to make extreme heights relatable.'},
+ {family:'cross-category',angle:'unexpected-neighbors',depth:'accessible',topic:'Which flying objects have the widest wings?',metric:'wingspan',scopeKey:'extended-flight-wings',entityKeys:['Bee','Albatross','Cessna','A380'],whyInteresting:'A familiar flying animal connects to giant aircraft wings.'},
+ {family:'storage-capacity',angle:'familiar-to-extreme',depth:'accessible',topic:'How much can familiar containers hold?',metric:'volume',scopeKey:'nominal-storage-capacity',entityKeys:['Bottle','Drum','IBC','Cargo'],whyInteresting:'Show surprising differences using equivalent-capacity cubes.'}
 ];
 test('failed CLI generation writes the final status, error and usage to Actions diagnostics',()=>{
   const root=mkdtempSync(path.join(tmpdir(),'automation-cli-failure-')),current=job();

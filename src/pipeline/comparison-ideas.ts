@@ -11,7 +11,7 @@ import {comparisonIdeasPrompt} from './comparison-prompts';
 import type {Research} from './contracts';
 import type {WebFetch} from './research-web';
 
-export type ComparisonRequest={topic:string;id:string;directory:string;root:string;log:(s:string)=>void};
+export type ComparisonRequest={topic:string;id:string;directory:string;root:string;log:(s:string)=>void;topicBrief?:{family?:string;angle?:string;depth?:string;whyInteresting?:string;proposedObjects?:string[]}};
 export type ComparisonDependencies={client?:Pick<GroqClient,'chat'>;config?:ReturnType<typeof loadGroqConfig>;webFetch?:WebFetch;research?:(request:ComparisonRequest,concept:ComparisonConcept,urls:string[])=>Promise<Research>};
 
 // Visual variants/calibration make the full renderer schema unnecessarily
@@ -52,7 +52,8 @@ export function ensureComparisonRequest(options:ComparisonRequest){
   if(existsSync(requestPath)){
     const request=JSON.parse(readFileSync(requestPath,'utf8'));
     if(request.topic!==options.topic||request.id!==options.id)throw new Error('Comparison job already exists with a different request; use a new ID.');
-  }else writeJson(requestPath,{id:options.id,topic:options.topic,planningVersion:2,createdAt:new Date().toISOString()});
+    if(options.topicBrief&&!request.topicBrief)writeJson(requestPath,{...request,topicBrief:options.topicBrief});
+  }else writeJson(requestPath,{id:options.id,topic:options.topic,topicBrief:options.topicBrief,planningVersion:2,createdAt:new Date().toISOString()});
 }
 
 export async function planComparisonIdeas(options:ComparisonRequest,dependencies:ComparisonDependencies={}){
@@ -67,7 +68,7 @@ export async function planComparisonIdeas(options:ComparisonRequest,dependencies
   const existingResearch=existsSync(researchFile)?JSON.parse(readFileSync(researchFile,'utf8')):undefined;
   // Groq's constrained decoder repeatedly rejected these multi-concept plans.
   // Start in JSON mode, then enforce the complete generation contract locally.
-  const ideas=await structuredStage({stage:'motion',artifact:'comparison-ideas',model:config.scriptModel,client,maxCompletionTokens:4800,constrained:false,compactSchema:true,nullableOptionals:true,schema:comparisonIdeasGenerationSchema,system:comparisonIdeasPrompt,input:JSON.stringify({topic:options.topic,existingResearch}),directory:options.directory,log:options.log,repairInstruction:'Keep the requested scope and propose three distinct feasible concepts. Every concept must include background: {environment: a supported setting, reason: why it relates to the overall video}. Correct the concept IDs, exact candidate names, dimension or visual approach identified below.',validate:raw=>{
+  const ideas=await structuredStage({stage:'motion',artifact:'comparison-ideas',model:config.scriptModel,client,maxCompletionTokens:4800,constrained:false,compactSchema:true,nullableOptionals:true,schema:comparisonIdeasGenerationSchema,system:comparisonIdeasPrompt,input:JSON.stringify({topic:options.topic,topicBrief:options.topicBrief,existingResearch}),directory:options.directory,log:options.log,repairInstruction:'Keep the requested scope and propose three distinct feasible concepts. Every concept must include background: {environment: a supported setting, reason: why it relates to the overall video}. Correct the concept IDs, exact candidate names, dimension or visual approach identified below.',validate:raw=>{
     // JSON-mode fallback can echo the schema's annotation alongside valid data.
     // Ignore only this metadata key; retain strict validation of all content.
     const normalized=raw&&typeof raw==='object'&&!Array.isArray(raw)?Object.fromEntries(Object.entries(raw).filter(([key])=>key!=='$schema')):raw;

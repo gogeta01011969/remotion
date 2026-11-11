@@ -83,7 +83,7 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
   try{
     const rawFile=path.join(dir,'dataset.raw.json');
     if(archiveOnly&&!existsSync(rawFile))throw new Error('Rendered job needs its checkpoint restored before archival; no new API calls were made.');
-    let data=archiveOnly?sizeDatasetSchema.parse(JSON.parse(readFileSync(rawFile,'utf8'))):await (dependencies.generateData??generateComparisonData)({topic:job.topic,id:job.id,directory:dir,root,log:options.log},{client:options.client,config:options.groqConfig});
+    let data=archiveOnly?sizeDatasetSchema.parse(JSON.parse(readFileSync(rawFile,'utf8'))):await (dependencies.generateData??generateComparisonData)({topic:job.topic,id:job.id,directory:dir,root,log:options.log,topicBrief:{family:job.family,angle:job.angle,depth:job.depth,whyInteresting:job.whyInteresting,proposedObjects:job.entityKeys}},{client:options.client,config:options.groqConfig});
     if(!config.allowedMetrics.includes(data.metric as AutomationConfig['allowedMetrics'][number]))throw new Error('This metric needs an asset provider not enabled for unattended runs.');
     if(job.metric&&job.metric!==data.metric)throw new Error('The researched metric changed from the reserved topic; review the comparison scope.');
     const duplicate=actualDuplicate(job,data,ledger);
