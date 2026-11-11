@@ -51,7 +51,9 @@ and Groq/Cloudflare usage still depend on your accounts' allowances.
    sets. Save the reservation remotely **before** paid generation work begins.
 4. Use the existing concept → research → editorial selection → data pipeline.
    Check the researched object set against history again before making images.
-5. Create per-run images with Klein 4B at four steps where required. Remove
+5. Require per-run Cloudflare imagery for every depicted real object, including
+   familiar sports balls and planets. Missing image briefs are completed before
+   rendering. Create images with Klein 4B at four steps. Remove
    backgrounds locally using the explicitly selected ISNet model, calibrate assets,
    retain the concept-linked background, and render with the shared size template.
 6. Verify the actual exported file: H.264, 1080×1920, expected FPS/frame count and
@@ -64,6 +66,19 @@ normalized, scopes are compared within the same metric, and object sets are
 rejected at ≥75% Jaccard overlap when both contain at least four items. Proposed
 and researched sets are both retained. Failed/rejected topics remain in history,
 so automatic selection does not keep choosing them under a new run ID.
+
+Cloudflare object images are mandatory in automated object comparisons. The
+planner cannot substitute a plain colored sphere, procedural sports material or
+catalog planet map. Unfinished cached plans missing image briefs are upgraded
+without changing their measured values. Generated images are reused on retry;
+Cloudflare failure defers the job instead of silently changing its visual style.
+Completed deliveries are preserved and are not automatically rerendered.
+
+Equivalent-volume cubes remain explicit mathematical measurement graphics, and
+geographic borders require real sourced outlines. Those are not generated
+real-object illustrations. Authored offline fixtures and the no-secret Linux
+smoke test keep their local visuals. No comparison measurement is inferred from
+an AI image.
 
 ## Configuration and recovery
 

@@ -9,6 +9,7 @@ import {writeJson} from './stages';
 import {actualDuplicate,saveLedger,type AutomationJob,type AutomationConfig,type TopicLedger} from './topic-automation';
 import {sizeDatasetSchema} from '../shorts/size-data';
 import {quotaDeferral,repairLegacyMillisecondBackoff} from './quota-retry';
+import {ensureComparisonImages} from './comparison-images';
 
 export const digest=(file:string)=>createHash('sha256').update(readFileSync(file)).digest('hex');
 function treeFiles(dir:string):string[]{if(!existsSync(dir))return [];const stat=lstatSync(dir);if(stat.isSymbolicLink())throw new Error('Generated archives cannot contain symlinks.');return stat.isDirectory()?readdirSync(dir).sort().flatMap(name=>treeFiles(path.join(dir,name))):[dir];}
@@ -70,7 +71,7 @@ async function build(root:string,job:AutomationJob,config:AutomationConfig){
   if(!completed)throw new Error('Comparison command stopped without a complete MP4 (assets may be missing).');
 }
 export type AutomationRunOptions={root:string;stateFile:string;ledger:TopicLedger;job:AutomationJob;config:AutomationConfig;client:Pick<GroqClient,'chat'>;groqConfig:ReturnType<typeof loadGroqConfig>;archiveTarget:'local'|'github';log:(s:string)=>void};
-export async function createAutomationVideo(options:AutomationRunOptions,dependencies:{generateData?:typeof generateComparisonData;build?:typeof build;verify?:typeof verifyVideo;fingerprint?:(root:string)=>string}={}){
+export async function createAutomationVideo(options:AutomationRunOptions,dependencies:{generateData?:typeof generateComparisonData;planImages?:typeof ensureComparisonImages;build?:typeof build;verify?:typeof verifyVideo;fingerprint?:(root:string)=>string}={}){
   const {root,job,ledger,config,stateFile}=options;
   if(job.status==='complete')return {status:'complete',id:job.id,artifactId:job.artifactId};
   if(repairLegacyMillisecondBackoff(job,config.retryAfterMinutes)){saveLedger(stateFile,ledger);options.log(`Corrected a legacy millisecond retry date for ${job.id}: ${job.retryAt}`);}
@@ -82,13 +83,14 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
   try{
     const rawFile=path.join(dir,'dataset.raw.json');
     if(archiveOnly&&!existsSync(rawFile))throw new Error('Rendered job needs its checkpoint restored before archival; no new API calls were made.');
-    const data=archiveOnly?sizeDatasetSchema.parse(JSON.parse(readFileSync(rawFile,'utf8'))):await (dependencies.generateData??generateComparisonData)({topic:job.topic,id:job.id,directory:dir,root,log:options.log},{client:options.client,config:options.groqConfig});
+    let data=archiveOnly?sizeDatasetSchema.parse(JSON.parse(readFileSync(rawFile,'utf8'))):await (dependencies.generateData??generateComparisonData)({topic:job.topic,id:job.id,directory:dir,root,log:options.log},{client:options.client,config:options.groqConfig});
     if(!config.allowedMetrics.includes(data.metric as AutomationConfig['allowedMetrics'][number]))throw new Error('This metric needs an asset provider not enabled for unattended runs.');
     if(job.metric&&job.metric!==data.metric)throw new Error('The researched metric changed from the reserved topic; review the comparison scope.');
     const duplicate=actualDuplicate(job,data,ledger);
     if(duplicate){job.status='skipped-duplicate';job.error=duplicate;saveLedger(stateFile,ledger);return {status:job.status,id:job.id,reason:duplicate};}
+    if(!archiveOnly)data=await (dependencies.planImages??ensureComparisonImages)(data,{directory:dir,client:options.client,model:options.groqConfig.motionModel,log:options.log});
     job.metric=data.metric;job.actualEntityKeys=data.items.map(i=>i.label);saveLedger(stateFile,ledger);
-    if(!existsSync(rawFile))writeJson(rawFile,data);
+    if(!archiveOnly)writeJson(rawFile,data);
     const fingerprint=(dependencies.fingerprint??sourceFingerprint)(root),receiptFile=path.join(dir,'automation-render.json');
     let cached=false;
     if(existsSync(receiptFile)){

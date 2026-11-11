@@ -203,3 +203,14 @@ quotations; unit conversion and ordering happen in local code. Existing agentic
 research checkpoints are preserved but re-researched before use. See
 [bounded source research](../automation/README.md#bounded-source-research) for
 limits, checkpoint files, secondary-source limitations and recovery behavior.
+
+## Required object images
+
+New `--topic` renders and automatic jobs require Cloudflare images for each real
+object. Diameter subjects use generated 2:1 surface maps; other supported subjects
+use generated cutouts. Image prompts must describe real colors, materials and
+distinctive markings. Missing briefs are planned before rendering, and no plain
+sphere/procedural-material fallback is used when Cloudflare fails. Prompt runs
+select the platform's Cloudflare provider by default; explicit provider/manifest
+options remain available. Existing `--data` fixtures and mathematical capacity
+graphics remain supported. Completed videos are preserved.

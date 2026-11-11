@@ -76,7 +76,7 @@ function lifecycle(root:string){
   const current=job(),ledger={...empty(),jobs:[current]};let builds=0,generations=0;
   const file=path.join(root,'out/shorts',current.id,`${current.id}.mp4`),props=path.join(root,'public/shorts',current.id,'video.json');
   const options={root,stateFile:path.join(root,'state.json'),ledger,job:current,config,archiveTarget:'github' as const,client:{chat:async()=>{throw new Error('unexpected API');}},groqConfig:{apiKey:'test',researchModel:'test',scriptModel:'test',motionModel:'test'},log:()=>{}};
-  const dependencies={generateData:async()=>{generations++;return data();},build:async()=>{builds++;mkdirSync(path.dirname(file),{recursive:true});mkdirSync(path.dirname(props),{recursive:true});writeFileSync(file,'synthetic-video');writeFileSync(props,'{}');},verify:()=>({file,props,sha256:digest(file),info:{}}),fingerprint:()=> 'source-version'};
+  const dependencies={planImages:async(input:ReturnType<typeof data>)=>input,generateData:async()=>{generations++;return data();},build:async()=>{builds++;mkdirSync(path.dirname(file),{recursive:true});mkdirSync(path.dirname(props),{recursive:true});writeFileSync(file,'synthetic-video');writeFileSync(props,'{}');},verify:()=>({file,props,sha256:digest(file),info:{}}),fingerprint:()=> 'source-version'};
   return {current,ledger,options,dependencies,counts:()=>({builds,generations})};
 }
 test('archive failure resumes a verified render without new generation; completion precedes cleanup',async()=>{
@@ -90,6 +90,17 @@ test('archive failure resumes a verified render without new generation; completi
     assert.ok(!existsSync(path.join(root,'out/shorts',run.current.id)));
     assert.ok(existsSync(path.join(root,'out/automation/delivery',run.current.id,`${run.current.id}.mp4`)));
     assert.equal(ledgerSchema.parse(JSON.parse(readFileSync(run.options.stateFile,'utf8'))).jobs[0].status,'complete');
+  }finally{rmSync(root,{recursive:true,force:true});}
+});
+test('the default automatic path upgrades missing image plans before the renderer receives a dataset',async()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'automatic-required-images-')),run=lifecycle(root);let imageCalls=0;
+  try{
+    const options={...run.options,client:{chat:async()=>{imageCalls++;return {choices:[{message:{content:JSON.stringify({images:data().items.map(i=>({id:i.id,prompt:`Accurate complete orthographic view of ${i.label}, with its actual material, typical colors, full geometry and distinctive markings, isolated without labels or ground.`}))})}}]};}}};
+    const result=await createAutomationVideo(options,{...run.dependencies,planImages:undefined});
+    assert.equal(result.status,'rendered');assert.equal(imageCalls,1);
+    const saved=JSON.parse(readFileSync(path.join(root,'out/comparisons',run.current.id,'dataset.raw.json'),'utf8'));
+    assert.ok(saved.items.every((i:{visual:{kind:string;generation?:unknown}})=>i.visual.kind==='cutout'&&i.visual.generation));
+    assert.deepEqual(saved.items.map((i:{value:number})=>i.value),data().items.map(i=>i.value));
   }finally{rmSync(root,{recursive:true,force:true});}
 });
 test('failure state is resumable and archive-only runs refuse missing or changed checkpoints',async()=>{

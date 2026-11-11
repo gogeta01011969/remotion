@@ -10,6 +10,7 @@ import {comparisonVisualSchema} from '../src/shorts/comparison-visual';
 import {generateCloudflareImage,loadCloudflareImageConfig,type CloudflareImageModel} from '../src/pipeline/cloudflare-images';
 import {inspectComparisonImage} from '../src/pipeline/comparison-assets';
 import {cutoutBackend,cutoutMethod,removalCommand} from '../src/pipeline/background-removal';
+import {cloudflareObjectPrompt} from '../src/pipeline/comparison-images';
 
 const requestSchema=z.object({outputDirectory:z.string(),objects:z.array(z.object({id:z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),label:z.string(),visual:comparisonVisualSchema}).passthrough())}).passthrough();
 function command(program:string,args:string[],timeout=180000){
@@ -34,7 +35,8 @@ async function main(){
   let newNeurons=0;
   for(const item of request.objects){
     const visual=item.visual;if(visual.kind==='box')continue;
-    const prompt=visual.generation?.prompt;if(!prompt)throw new Error(`${item.label}: asset creation requires a generation prompt.`);
+    const brief=visual.generation?.prompt;if(!brief)throw new Error(`${item.label}: asset creation requires a generation prompt.`);
+    const prompt=cloudflareObjectPrompt(item.label,visual.kind,brief);
     const width=1024,height=visual.kind==='sphere'?512:1024;
     const raw=path.join(dir,`${item.id}.jpg`),receipt=raw+'.report.json',target=path.join(dir,`${item.id}.png`);
     const previous=existsSync(raw)&&existsSync(receipt)?JSON.parse(readFileSync(receipt,'utf8')):null;

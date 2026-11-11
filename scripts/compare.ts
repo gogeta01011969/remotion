@@ -9,6 +9,8 @@ import {prepareComparisonAssets} from '../src/pipeline/comparison-assets';
 import {assetRequests,applyAssetManifest,runAssetProvider,generateComparisonData} from '../src/pipeline/comparison-run';
 import {writeJson} from '../src/pipeline/stages';
 import {planComparisonIdeas} from '../src/pipeline/comparison-ideas';
+import {ensureComparisonImages} from '../src/pipeline/comparison-images';
+import {GroqClient,loadGroqConfig} from '../src/pipeline/groq';
 
 async function main(){
   const {values}=parseArgs({options:{data:{type:'string'},topic:{type:'string'},id:{type:'string'},episode:{type:'string'},'asset-root':{type:'string'},'asset-manifest':{type:'string'},'asset-provider':{type:'string'},'ideas-only':{type:'boolean'},'plan-only':{type:'boolean'},'prepare-only':{type:'boolean'},help:{type:'boolean'}}});
@@ -36,9 +38,14 @@ async function main(){
       console.log(JSON.stringify({status:'ideas-planned',id,ideaPath:path.join(directory,'idea-plan.json'),selected:ideas.concepts.find(c=>c.id===ideas.selectedId),selectionReason:ideas.selectionReason}));return;
     }
     data??=await generateComparisonData({topic:values.topic!,id,directory,root,log:s=>process.stderr.write(s+'\n')});
+    if(values.topic){
+      const config=loadGroqConfig(path.join(root,'.env.local'));
+      data=await ensureComparisonImages(data,{directory,client:new GroqClient({apiKey:config.apiKey,onRetry:console.error}),model:config.motionModel,log:console.error});
+      writeJson(path.join(directory,'dataset.raw.json'),data);
+    }
     const requests=assetRequests(data);writeJson(path.join(directory,'asset-requests.json'),{...requests,outputDirectory:assetRoot});
     if(values['asset-manifest'])data=applyAssetManifest(data,read(values['asset-manifest']));
-    else if(values['asset-provider'])data=runAssetProvider(data,{configFile:path.resolve(values['asset-provider']),directory,assetRoot,root});
+    else if(values['asset-provider']||values.topic)data=runAssetProvider(data,{configFile:path.resolve(values['asset-provider']??(process.platform==='linux'?'comparisons/cloudflare-linux.provider.json':'comparisons/cloudflare-klein.provider.json')),directory,assetRoot,root});
     const missing=data.items.filter(item=>{
       const visual=item.visual;if(!visual||visual.kind==='box')return false;
       const src=visual.kind==='cutout'?visual.src:visual.texture;

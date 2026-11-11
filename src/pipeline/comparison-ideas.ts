@@ -19,9 +19,9 @@ export type ComparisonDependencies={client?:Pick<GroqClient,'chat'>;config?:Retu
 // contracts; sizeDatasetSchema still validates the COMPLETE returned object.
 export function comparisonGenerationSchema(metric:SizeDataset['metric'],sources:{id:string;url:string}[]=[]){
   const [cutout,sphere,box]=comparisonVisualSchema.options;
-  const visual=metric==='diameter'?sphere.omit({calibration:true}):metric==='volume'?box:cutout.omit({calibration:true});
+  const visual=metric==='diameter'?sphere.omit({calibration:true}).extend({generation:sphere.shape.generation.unwrap()}):metric==='volume'?box:cutout.omit({calibration:true}).extend({generation:cutout.shape.generation.unwrap()});
   const {appearance,material,...base}=sizeItemSchema.shape;
-  const item=z.object({...base,visual:visual.optional(),...(metric==='diameter'?{appearance,material}:{}),...(sources.length?{sourceIds:z.array(z.enum(sources.map(s=>s.id) as [string,...string[]])).min(1)}:{})});
+  const item=z.object({...base,visual,...(sources.length?{sourceIds:z.array(z.enum(sources.map(s=>s.id) as [string,...string[]])).min(1)}:{})});
   const editorial=comparisonEditorialSchema.omit({items:true}).extend({objectRoles:comparisonEditorialSchema.shape.items});
   return z.object({...sizeDatasetSchema.shape,editorial,items:z.array(item).min(4).max(8)});
 }
