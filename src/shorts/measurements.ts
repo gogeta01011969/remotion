@@ -20,6 +20,12 @@ export function convertMeasurement(value:number,from:string,to:string){
   return value*factors[from]/factors[to];
 }
 export const quantityTemplate=(metric:string)=>metric==='speed'?'race':metric==='duration'?'timeline':metric==='temperature'?'temperature-axis':metric==='count'?'count-grid':'quantity-bars';
+// One composition-wide clock: scene boundaries must never restart a comparison.
+export function quantityAnimation(frame:number,fps:number,durationInFrames:number){
+  const clamp=(value:number)=>Math.max(0,Math.min(1,value));
+  const entry=clamp(frame/Math.max(1,fps*.6));
+  return {entrance:entry*entry*(3-2*entry),progress:clamp((frame/Math.max(1,durationInFrames)-.1)/.75)};
+}
 export function sampleRace(values:number[],unit:string,distance:number,progress:number){
   const speeds=values.map(v=>convertMeasurement(v,unit,'m/s')),fastest=Math.max(...speeds);
   const elapsedSeconds=fastest>0?distance/fastest*Math.max(0,Math.min(1,progress)):0;

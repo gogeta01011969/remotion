@@ -229,6 +229,11 @@ The same research → editorial → Cloudflare assets → render workflow now su
 | Power | Linear quantity bars | W |
 | Temperature | Signed axis and differences, without ratios | C |
 
+All non-size templates show every subject together from the opening. A single
+composition-wide clock animates every value and graphic simultaneously, followed
+by a hold on the complete comparison. Scene boundaries do not restart counters
+or reveal individual rows.
+
 Object images identify subjects and retain a consistent presentation size; they
 are not scaled to imply physical dimensions represent these quantities. Real
 objects still require Cloudflare images in topic-driven runs. Unit conversion is

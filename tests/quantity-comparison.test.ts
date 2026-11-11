@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
 import {sizeDatasetSchema} from '../src/shorts/size-data';
-import {convertMeasurement,quantityDomain,quantityTemplate,quantityMetrics,sampleRace,countDots} from '../src/shorts/measurements';
+import {convertMeasurement,quantityDomain,quantityTemplate,quantityMetrics,sampleRace,countDots,quantityAnimation} from '../src/shorts/measurements';
 import {compileSizeComparison,defaultSizeEpisode} from '../src/pipeline/size-comparison';
 import {planComparisonStory} from '../src/pipeline/comparison-story';
 import {previewInput} from '../src/shorts/defaults';
@@ -20,9 +20,22 @@ test('all new measurements compile through the existing silent 30-second pipelin
     const plan=planComparisonStory(data),input=previewInput(compileSizeComparison(data,defaultSizeEpisode(data)));
     assert.equal(plan.template,quantityTemplate(metric));assert.equal(plan.scaling.dimension,0);
     assert.ok(plan.scaling.objects.every(o=>o.width===1&&o.height===1));
+    assert.ok(plan.shots.every(shot=>shot.visible.length===data.items.length));
     assert.equal(input.presentation,'silent');assert.equal(shortDuration(input),900);
     assert.ok(automationConfigSchema.parse({niche:'Comparison test fixture',allowedMetrics:[metric],assetProvider:'unused'}));
   }
+});
+test('all quantities use one continuous clock with a shared entrance and a final reading hold',()=>{
+  const sample=(seconds:number)=>quantityAnimation(seconds*30,30,900);
+  assert.equal(sample(0).progress,0);
+  assert.equal(sample(.6).entrance,1);
+  assert.equal(sample(3).progress,0);
+  // Old per-object scene boundaries must not restart the values.
+  const samples=[5,7,10,14,20,22,25.5,29].map(sample);
+  assert.ok(samples.every((s,i)=>i===0||s.progress>=samples[i-1].progress));
+  assert.equal(sample(25.5).progress,1);assert.equal(sample(29).progress,1);
+  assert.equal(quantityAnimation(18,60,1800).entrance,sample(.3).entrance);
+  assert.equal(quantityAnimation(900,60,1800).progress,sample(15).progress);
 });
 test('units distinguish mass, count, speed, duration, energy, power and affine temperature conversions',()=>{
   assert.equal(convertMeasurement(1,'t','kg'),1000);assert.equal(convertMeasurement(1,'kWh','J'),3600000);
