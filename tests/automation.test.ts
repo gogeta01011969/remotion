@@ -135,9 +135,20 @@ test('CLI resume during backoff exits successfully, reports deferral and omits s
     assert.equal(selection.status,0,selection.stderr);assert.equal(existsSync(summary),false);
     const run=spawnSync(process.execPath,args,options);assert.equal(run.status,0,run.stderr);
     const text=readFileSync(summary,'utf8');assert.match(text,/Generation deferred/);assert.equal(text.match(/### Comparison job/g)?.length,1);
+    assert.match(text,/Previous error \(historical, not received in this run\)/);assert.match(text,/No new provider request was made/);
     assert.equal(JSON.parse(readFileSync(path.join(root,'out/automation/result.json'),'utf8')).status,'retry-later');
     assert.equal(JSON.parse(readFileSync(path.join(root,'out/comparisons',current.id,'automation-usage.json'),'utf8')).stageRequests,0);
     assert.equal(JSON.parse(readFileSync(path.join(root,'.automation/state.json'),'utf8')).jobs[0].attempts,2);
+  }finally{rmSync(root,{recursive:true,force:true});}
+});
+test('resuming a job with the legacy millisecond backoff reaches generation instead of replaying the old error',async()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'legacy-backoff-resume-')),run=lifecycle(root),anchor=Date.now()-3600000;
+  try{
+    run.current.status='retry-later';run.current.error='HTTP 429. Please try again in 525ms.';
+    run.current.updatedAt=new Date(anchor).toISOString();run.current.retryAt=new Date(anchor+525*60000+15000).toISOString();
+    const result=await createAutomationVideo(run.options,run.dependencies);
+    assert.equal(result.status,'rendered');assert.deepEqual(run.counts(),{builds:1,generations:1});
+    assert.equal(run.current.retryAt,undefined);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
 test('checkpoints restore only their own generated paths and cleanup rejects symlink ancestors',()=>{

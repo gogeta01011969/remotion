@@ -5,7 +5,7 @@ import {automationConfigSchema,loadLedger,saveLedger,lockAutomation,reserveTopic
 import {createAutomationVideo,stageCheckpoint,restoreCheckpoint,cleanupJob,confirmArchive} from '../src/pipeline/automation-run';
 import {GroqClient,loadGroqConfig} from '../src/pipeline/groq';
 import {writeJson} from '../src/pipeline/stages';
-import {quotaDeferral} from '../src/pipeline/quota-retry';
+import {quotaDeferral,repairLegacyMillisecondBackoff} from '../src/pipeline/quota-retry';
 
 async function main(){
   const {values}=parseArgs({options:{config:{type:'string',default:'automation/config.json'},topic:{type:'string'},resume:{type:'string'},'select-only':{type:'boolean'},'archive-confirmed':{type:'string'},package:{type:'boolean'},cleanup:{type:'boolean'},restore:{type:'string'},help:{type:'boolean'}}});
@@ -14,6 +14,8 @@ async function main(){
   const resultFile=path.join(root,'out/automation/result.json');mkdirSync(path.dirname(resultFile),{recursive:true});
   try{
     const config=automationConfigSchema.parse(JSON.parse(readFileSync(path.resolve(values.config!),'utf8'))),stateFile=path.join(dir,'state.json'),ledger=loadLedger(stateFile,config,root);
+    let migrated=false;for(const saved of ledger.jobs)if(repairLegacyMillisecondBackoff(saved,config.retryAfterMinutes)){migrated=true;console.error(`Corrected legacy millisecond retry date for ${saved.id}: ${saved.retryAt}`);}
+    if(migrated)saveLedger(stateFile,ledger);
     const output=(value:Record<string,unknown>)=>{writeJson(values.package||values.restore||values.cleanup?path.join(path.dirname(resultFile),'operation-result.json'):resultFile,value);console.log(JSON.stringify(value));if(process.env.GITHUB_OUTPUT){if(typeof value.id==='string')appendFileSync(process.env.GITHUB_OUTPUT,`job_id=${value.id}\n`);if(typeof value.status==='string')appendFileSync(process.env.GITHUB_OUTPUT,`status=${value.status}\n`);}};
     if([values.package,values.cleanup,values.restore,values['archive-confirmed']].filter(Boolean).length>1)throw new Error('Choose one checkpoint/archive/cleanup operation.');
     if(values.package||values.cleanup||values.restore||values['archive-confirmed']){
@@ -30,11 +32,13 @@ async function main(){
     const groqConfig=loadGroqConfig(),client=budgetClient(new GroqClient({apiKey:groqConfig.apiKey,onRetry:line=>console.error(line)}),config);
     job??=await reserveTopic({ledger,config,root,directory:path.dirname(resultFile),client,model:groqConfig.scriptModel,log:line=>console.error(line),topic:values.topic});
     saveLedger(stateFile,ledger);output({status:job.status,id:job.id,topic:job.topic});
-    const summary=()=>{if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### Comparison job ${job!.id}\n\nTopic: ${job!.topic.replace(/[\r\n]/g,' ')}\n\nStatus: ${job!.status}\n${job!.retryAt?`\nGeneration deferred. No finished video was produced by this attempt. Retry after: ${job!.retryAt}\n`:''}${job!.error?`\n${job!.status==='retry-later'?'Deferral reason':'Error'}: ${job!.error.replace(/[\r\n]/g,' ')}\n`:''}`);};
+    let savedBackoff=false;
+    const summary=()=>{if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### Comparison job ${job!.id}\n\nTopic: ${job!.topic.replace(/[\r\n]/g,' ')}\n\nStatus: ${job!.status}\n${job!.retryAt?`\nGeneration deferred. No finished video was produced by this attempt. Retry after: ${job!.retryAt}\n`:''}${savedBackoff?'\nCurrent outcome: waiting for a saved retry time. No new provider request was made.\n':''}${job!.error?`\n${savedBackoff?'Previous error (historical, not received in this run)':job!.status==='retry-later'?'Deferral reason':'Error'}: ${job!.error.replace(/[\r\n]/g,' ')}\n`:''}`);};
     if(!values['select-only']){
       const archiveTarget=process.env.AUTOMATION_ARCHIVE_TARGET==='github'?'github':'local';
       try{
         const result=await createAutomationVideo({root,stateFile,ledger,job,config,client,groqConfig,archiveTarget,log:line=>console.error(line)});
+        savedBackoff='deferredBy' in result&&result.deferredBy==='saved-backoff';
         output(result);
         if(result.status==='retry-later')console.log('::notice title=Generation deferred::A usage limit or saved backoff paused generation. The checkpoint is preserved; no video was delivered. See the job summary for details.');
       }catch(error){

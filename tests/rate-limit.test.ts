@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
 import {durationMs,messageRetryMs,retryAfterMs} from '../src/pipeline/rate-limit';
-import {quotaDeferral} from '../src/pipeline/quota-retry';
+import {quotaDeferral,repairLegacyMillisecondBackoff} from '../src/pipeline/quota-retry';
 import {GroqClient} from '../src/pipeline/groq';
 const request={model:'test',messages:[],max_completion_tokens:100,temperature:0};
 const success=()=>Response.json({choices:[{message:{content:'{}'}}]});
@@ -17,6 +17,16 @@ test('milliseconds never match minutes, including decimals and compound reset du
   assert.equal(retryAfterMs('Thu, 01 Jan 2026 00:00:01 GMT',Date.parse('2026-01-01T00:00:00Z')),1000);
   const now=Date.parse('2026-01-01T00:00:00Z');
   assert.equal(quotaDeferral('HTTP 429 tokens per minute. Please try again in 525ms.',now),new Date(now+60000).toISOString());
+});
+test('the exact persisted 525ms incident is migrated once; genuine and manually extended backoffs are preserved',()=>{
+  const job={status:'retry-later',updatedAt:'2026-11-11T05:55:18.980Z',retryAt:'2026-11-11T14:40:33.980Z',error:'GroqCloud HTTP 429 tokens per minute. Please try again in 525ms.'};
+  assert.equal(repairLegacyMillisecondBackoff(job),true);
+  assert.equal(job.retryAt,'2026-11-11T05:56:18.980Z');
+  assert.equal(repairLegacyMillisecondBackoff(job),false);
+  const manual={...job,retryAt:'2026-11-11T14:50:33.980Z'};
+  assert.equal(repairLegacyMillisecondBackoff(manual),false);
+  const long={...job,error:'HTTP 429 quota. Please try again in 525m.',retryAt:'2026-11-11T14:40:33.980Z'};
+  assert.equal(repairLegacyMillisecondBackoff(long),false);
 });
 test('the reported 525ms TPM error is retried in the same invocation without a job deferral',async()=>{
   const delays:number[]=[];let calls=0;

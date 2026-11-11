@@ -169,6 +169,14 @@ the saved job. Network/server failures retain their three-failure bound.
 Successful token-limit/remaining/reset headers also pace later requests for the
 same model. This reduces self-throttling; other account usage can still cause 429s.
 
+Ledger loading also repairs dates produced by the old milliseconds-as-minutes
+parser. Migration only applies when the stored date matches that exact erroneous
+calculation from the saved error and its timestamp; genuine long waits and
+operator-modified dates are preserved. The next new run persists the correction
+before selection/resume. When a saved backoff still applies, the summary labels
+the previous provider error as historical and explicitly states that no new
+provider request was made.
+
 After code changes are committed and pushed, start a **new** workflow dispatch on
 `main` to test them. Re-running an old Actions run uses its original code revision;
 uncommitted local changes are never visible to GitHub Actions.

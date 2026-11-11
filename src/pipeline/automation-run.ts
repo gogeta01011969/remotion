@@ -8,7 +8,7 @@ import {redact,type GroqClient,loadGroqConfig} from './groq';
 import {writeJson} from './stages';
 import {actualDuplicate,saveLedger,type AutomationJob,type AutomationConfig,type TopicLedger} from './topic-automation';
 import {sizeDatasetSchema} from '../shorts/size-data';
-import {quotaDeferral} from './quota-retry';
+import {quotaDeferral,repairLegacyMillisecondBackoff} from './quota-retry';
 
 export const digest=(file:string)=>createHash('sha256').update(readFileSync(file)).digest('hex');
 function treeFiles(dir:string):string[]{if(!existsSync(dir))return [];const stat=lstatSync(dir);if(stat.isSymbolicLink())throw new Error('Generated archives cannot contain symlinks.');return stat.isDirectory()?readdirSync(dir).sort().flatMap(name=>treeFiles(path.join(dir,name))):[dir];}
@@ -73,7 +73,8 @@ export type AutomationRunOptions={root:string;stateFile:string;ledger:TopicLedge
 export async function createAutomationVideo(options:AutomationRunOptions,dependencies:{generateData?:typeof generateComparisonData;build?:typeof build;verify?:typeof verifyVideo;fingerprint?:(root:string)=>string}={}){
   const {root,job,ledger,config,stateFile}=options;
   if(job.status==='complete')return {status:'complete',id:job.id,artifactId:job.artifactId};
-  if(job.status==='retry-later'&&job.retryAt&&Date.parse(job.retryAt)>Date.now())return {status:'retry-later',id:job.id,retryAt:job.retryAt,reason:'Saved backoff is still active; no generation or API calls were made.'};
+  if(repairLegacyMillisecondBackoff(job,config.retryAfterMinutes)){saveLedger(stateFile,ledger);options.log(`Corrected a legacy millisecond retry date for ${job.id}: ${job.retryAt}`);}
+  if(job.status==='retry-later'&&job.retryAt&&Date.parse(job.retryAt)>Date.now())return {status:'retry-later',id:job.id,retryAt:job.retryAt,deferredBy:'saved-backoff',reason:'Saved backoff is still active; no generation or API calls were made.'};
   if(job.attempts>=config.maxAttemptsPerJob&&job.status!=='rendered')throw new Error('Job attempt limit reached; review the saved failure instead of spending more API quota.');
   const archiveOnly=job.status==='rendered';
   const dir=path.join(root,'out/comparisons',job.id);mkdirSync(dir,{recursive:true});
