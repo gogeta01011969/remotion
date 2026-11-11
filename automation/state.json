@@ -174,14 +174,20 @@
         "Volleyball",
         "Soccer ball"
       ],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Table‑Tennis",
+        "Baseball",
+        "Soccer",
+        "Basketball"
+      ],
       "whyInteresting": "Viewers instantly recognize each ball, and the dramatic jump from a few centimeters to a foot‑plus sphere creates a visual wow factor that fits perfectly into a 30‑second silent comparison.",
-      "status": "retry-later",
-      "attempts": 2,
+      "status": "complete",
+      "attempts": 3,
       "createdAt": "2026-11-10T19:26:56.802Z",
-      "updatedAt": "2026-11-11T05:55:18.980Z",
-      "retryAt": "2026-11-11T05:56:18.980Z",
-      "error": "GroqCloud HTTP 429: Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m706w2zce8zag40bs25d85cf` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 2620, Requested 5450. Please try again in 525ms. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing"
+      "updatedAt": "2026-11-11T07:18:48.081Z",
+      "videoSha256": "95bba6de8bdf548cb8218d8401d737c5af3886dd3375bc7310f48d8291212206",
+      "artifactName": "short-short-2026-11-10-13aa5c76fe1b",
+      "artifactId": "13835679813"
     }
   ],
   "queue": [
