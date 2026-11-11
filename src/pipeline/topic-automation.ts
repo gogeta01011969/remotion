@@ -93,10 +93,20 @@ export function actualDuplicate(job:AutomationJob,data:SizeDataset,ledger:TopicL
   return duplicateReason({topic:data.title,metric:data.metric,scopeKey:job.scopeKey,entityKeys:data.items.map(i=>i.label)},ledger,job.id);
 }
 export function budgetClient(client:Pick<GroqClient,'chat'>,config:AutomationConfig){
-  let requests=0,tokens=0;
-  return {usage:()=>({stageRequests:requests,reportedTokens:tokens}),chat:async(request:ChatRequest):Promise<Completion>=>{
-    if(requests>=config.maxStageRequests||tokens>=config.maxReportedTokens)throw new Error('Automation usage budget reached; retry later from the saved checkpoint.');
-    requests++;const result=await client.chat(request);const used=Number(result.usage?.total_tokens??0);if(Number.isFinite(used)&&used>0)tokens+=used;return result;
+  let requests=0,tokens=0,accountedTokens=0;
+  const calls:{kind:string;model:string;status:'pending'|'complete'|'failed';reportedTokens:number;toolExecutions:number}[]=[];
+  return {usage:()=>({stageRequests:requests,reportedTokens:tokens,accountedTokens,limits:{stageRequests:config.maxStageRequests,reportedTokens:config.maxReportedTokens},calls}),chat:async(request:ChatRequest):Promise<Completion>=>{
+    if(request.tools?.length)throw new Error('Server-managed tools are disabled in comparison automation. Use bounded local research.');
+    const reservation=Buffer.byteLength(JSON.stringify({messages:request.messages,response_format:request.response_format}),'utf8')+request.max_completion_tokens+512;
+    if(requests>=config.maxStageRequests||tokens>=config.maxReportedTokens)throw new Error(`Automation usage budget reached: ${requests}/${config.maxStageRequests} stage requests, ${tokens}/${config.maxReportedTokens} reported tokens. Resume from the saved checkpoint; this is an application budget, not a provider quota.`);
+    if(accountedTokens+reservation>config.maxReportedTokens)throw new Error(`Automation usage budget reached: the next request reserves up to ${reservation} tokens against ${config.maxReportedTokens-accountedTokens} remaining. Resume from the saved checkpoint.`);
+    requests++;
+    const call={kind:request.stageLabel??'structured-output',model:request.model,status:'pending' as 'pending'|'complete'|'failed',reportedTokens:0,toolExecutions:0};calls.push(call);
+    try{
+      const result=await client.chat(request);const used=Number(result.usage?.total_tokens??0);
+      if(Number.isFinite(used)&&used>0){tokens+=used;accountedTokens+=used;call.reportedTokens=used;}else accountedTokens+=reservation;
+      call.toolExecutions=result.choices?.[0]?.message?.executed_tools?.length??0;call.status='complete';return result;
+    }catch(error){accountedTokens+=reservation;call.status='failed';throw error;}
   }};
 }
 export const saveLedger=(file:string,ledger:TopicLedger)=>{mkdirSync(path.dirname(file),{recursive:true});writeJson(file,ledgerSchema.parse(ledger));};

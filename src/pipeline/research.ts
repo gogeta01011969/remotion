@@ -1,5 +1,6 @@
 import {researchSchema, type Research} from './contracts';
 import type {Completion} from './groq';
+import {blockedPage} from './research-web';
 
 export function researchFromCompletion(topic: string, model: string, completion: Completion): Research {
   const message = completion.choices?.[0]?.message;
@@ -15,6 +16,7 @@ export function researchFromCompletion(topic: string, model: string, completion:
       try {url = new URL(result.url);} catch {continue;}
       if (!['https:', 'http:'].includes(url.protocol)) continue;
       if (!result.content?.trim() && !tool.output?.trim()) continue;
+      if(blockedPage(`${result.title??''}\n${result.content??tool.output??''}`))continue;
       url.hash = '';
       const lines = (result.content || tool.output || '').split('\n').map(line => line.replace(/^L\d+:\s*/, '').trim());
       const title = lines.find(line => line && !line.startsWith('URL:') && !/^https?:/.test(line)) || result.title || url.hostname;

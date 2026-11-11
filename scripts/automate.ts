@@ -36,7 +36,7 @@ async function main(){
       try{
         const result=await createAutomationVideo({root,stateFile,ledger,job,config,client,groqConfig,archiveTarget,log:line=>console.error(line)});
         output(result);
-        if(result.status==='retry-later')console.log('::notice title=Generation deferred::Quota/backoff is active. The checkpoint and topic are preserved; no video was delivered. See the job summary for the retry time.');
+        if(result.status==='retry-later')console.log('::notice title=Generation deferred::A usage limit or saved backoff paused generation. The checkpoint is preserved; no video was delivered. See the job summary for details.');
       }catch(error){
         output({status:job.status,id:job.id,topic:job.topic,error:job.error});
         throw error;
@@ -44,6 +44,10 @@ async function main(){
         mkdirSync(path.join(root,'out/comparisons',job.id),{recursive:true});
         writeJson(path.join(root,'out/comparisons',job.id,'automation-usage.json'),client.usage());
         summary();
+        if(process.env.GITHUB_STEP_SUMMARY){
+          const usage=client.usage();
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\nApplication usage: ${usage.stageRequests}/${usage.limits.stageRequests} logical requests; ${usage.reportedTokens}/${usage.limits.reportedTokens} reported tokens.\n\n| Request | Kind | Outcome | Reported tokens | Tool executions |\n| --- | --- | --- | --- | --- |\n${usage.calls.map((call,i)=>`| ${i+1} | ${call.kind} | ${call.status} | ${call.reportedTokens} | ${call.toolExecutions} |`).join('\n')}\n`);
+        }
       }
     }
     // Selection is not the final job outcome. Do not repeat stale failure details

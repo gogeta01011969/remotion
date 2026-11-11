@@ -1,3 +1,4 @@
+import {mockResearch} from './helpers/mock-research';
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
 import {mkdtempSync,rmSync,writeFileSync,readFileSync} from 'node:fs';
@@ -167,11 +168,12 @@ test('missing evidence resumes an interrupted research checkpoint before selecti
       if(!input.selectedConcept){order.push('ideas');return {choices:[{message:{content:JSON.stringify(ideaFixture())}}]};}
       order.push('selection');return {choices:[{message:{content:JSON.stringify(data)}}]};
     }}};
+  const adapted={...dependencies,research:mockResearch(dependencies.client)};
   try{
-    await assert.rejects(()=>generateComparisonData(options,dependencies),/quota interruption/);
+    await assert.rejects(()=>generateComparisonData(options,adapted),/quota interruption/);
     assert.equal(JSON.parse(readFileSync(path.join(root,'research-gap.json'),'utf8')).status,'pending');
-    const generated=await generateComparisonData(options,dependencies);
-    assert.deepEqual(order,['ideas','research','selection','research','research','selection']);
+    const generated=await generateComparisonData(options,adapted);
+    assert.deepEqual(order,['ideas','research','selection','research','research']);
     assert.equal(generated.sources.find(s=>s.id==='s3')!.url,'https://example.com/payoff');
     const saved=JSON.parse(readFileSync(path.join(root,'research.json'),'utf8'));assert.equal(saved.sources.find((s:{id:string})=>s.id==='s1').url,'https://example.com/source');
   }finally{rmSync(root,{recursive:true,force:true});}

@@ -1,3 +1,4 @@
+import {mockResearch} from './helpers/mock-research';
 import {strict as assert} from 'node:assert';
 import {test} from 'node:test';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,rmSync,existsSync} from 'node:fs';
@@ -110,7 +111,7 @@ test('prompt research produces per-run asset requests and resumes without repeat
     return {choices:[{message:{content:JSON.stringify(input.selectedConcept?{...raw,environment:'studio',editorial:editorialFixture(raw)}:ideaFixture())}}]};
   }};
   const options={topic:'Compare arbitrary new objects',id:'prompt-run',root,directory:root,log:()=>{}};
-  const dependencies={client,config:{apiKey:'test-key',researchModel:'test-research',motionModel:'test-motion',scriptModel:'test-script'}};
+  const dependencies={client,research:mockResearch(client),config:{apiKey:'test-key',researchModel:'test-research',motionModel:'test-motion',scriptModel:'test-script'}};
   try{
     const data=await generateComparisonData(options,dependencies);assert.equal(calls.length,3);assert.equal(assetRequests(data).objects.length,4);
     assert.equal(data.environment,'architecture');assert.equal(data.backgroundReason,ideaFixture().concepts[0].background!.reason);

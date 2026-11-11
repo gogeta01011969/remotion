@@ -26,6 +26,7 @@
     "@remotion/cli": "4.0.542",
     "@remotion/renderer": "4.0.542",
     "@remotion/transitions": "4.0.542",
+    "htmlparser2": "10.0.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "remotion": "4.0.542",

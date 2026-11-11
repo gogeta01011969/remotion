@@ -1,4 +1,4 @@
-import {writeFileSync, renameSync} from 'node:fs';
+import {writeFileSync, renameSync,existsSync,readFileSync} from 'node:fs';
 import path from 'node:path';
 import {z} from 'zod';
 import type {GroqClient, Completion} from './groq';
@@ -13,10 +13,12 @@ export function parseJsonContent(text: string) {
 export function completionRecord(completion: Completion) {
   return {id: completion.id, model: completion.model, usage: completion.usage, finishReason: completion.choices?.[0]?.finish_reason, content: completion.choices?.[0]?.message?.content};
 }
+const omitNulls=(value:unknown):unknown=>Array.isArray(value)?value.map(omitNulls):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([,item])=>item!==null).map(([key,item])=>[key,omitNulls(item)])):value;
 export async function structuredStage<T>(options: {
   stage: 'script' | 'motion'; maxCompletionTokens?:number; artifact?: string; repairInstruction?:string; constrained?:boolean; compactSchema?:boolean; nullableOptionals?:boolean; model: string; reasoningEffort?: 'low' | 'medium'; client: Pick<GroqClient, 'chat'>; schema: z.ZodType; system: string; input: string;
   validate: (raw: unknown) => T; directory: string; log: (line: string) => void;
   retryValidation?:(error:unknown)=>boolean;
+  repairFromDraft?:boolean;
 }): Promise<T> {
   let previous = '';
   let error = '';
@@ -57,6 +59,18 @@ export async function structuredStage<T>(options: {
     return result;
   };
   const label = options.artifact ?? options.stage;
+  if(options.repairFromDraft){
+    for(let attempt=3;attempt>=1;attempt--){
+      const saved=path.join(options.directory,`${label}-attempt-${attempt}.json`);
+      if(!existsSync(saved))continue;
+      const record=JSON.parse(readFileSync(saved,'utf8'));
+      if(typeof record.content!=='string')continue;
+      previous=record.content;
+      try{const parsed=parseJsonContent(previous);return options.validate(options.nullableOptionals?omitNulls(parsed):parsed);}
+      catch(failure){error=failure instanceof Error?failure.message:'Invalid saved draft';repairError=error;}
+      break;
+    }
+  }
   // Timed structures use title-specific unions; prefer JSON mode and local validation
   // after repeated constrained-decoder failures across hosted models.
   let strictOutput = options.constrained ?? (options.stage === 'script' && !timedStructure && !silent);
@@ -71,15 +85,17 @@ export async function structuredStage<T>(options: {
       } catch { /* Standard validation feedback below covers malformed drafts. */ }
     }
     let completion: Completion;
+    const repairDraft=Boolean(previous&&options.repairFromDraft&&previous.length<12000);
     try { completion = await options.client.chat({
+      stageLabel:label,
       model: options.model, reasoning_effort: options.model.startsWith('qwen/') ? 'none' : options.reasoningEffort ?? (options.stage === 'script' && !options.model.endsWith('-20b') ? 'medium' : 'low'), temperature: 0.25, max_completion_tokens: options.maxCompletionTokens ?? (options.stage === 'script' ? 2800 : 3500),
       // Prefer constrained output for narration; local validation is authoritative.
       response_format: strictOutput
         ? {type: 'json_schema', json_schema: {name: 'short_script', strict: true, schema: strictSchema(jsonSchema)}}
         : {type: 'json_object'},
       messages: [
-        {role: 'system', content: `${options.system}\n\nReturn a JSON DATA INSTANCE, not a schema.${strictOutput?' Match the supplied response-format schema.':` Match this schema; do not repeat schema keywords in the output:\n${JSON.stringify(promptSchema)}`}`}, {role: 'user', content: options.input},
-        ...(previous && options.stage === 'script' && previous.length < 9000 ? [{role: 'assistant' as const, content: previous}] : []),
+        {role: 'system', content: `${options.system}\n\nReturn a JSON DATA INSTANCE, not a schema.${strictOutput?' Match the supplied response-format schema.':repairDraft?' Repair the supplied draft in place, preserving valid fields and the same data contract.':` Match this schema; do not repeat schema keywords in the output:\n${JSON.stringify(promptSchema)}`}`}, {role: 'user', content: options.input},
+        ...(repairDraft||previous && options.stage === 'script' && previous.length < 9000 ? [{role: 'assistant' as const, content: previous}] : []),
         ...(previous ? [{role: 'user' as const, content: `Your previous JSON failed local validation. Return the COMPLETE corrected DATA OBJECT. ${options.repairInstruction ?? (options.stage === 'motion' ? 'Use only the supplied actors/properties; preserve the approved script.' : 'Preserve research scope and edit the draft rather than starting a new story.')} ${draftFeedback} Errors:\n${repairError.slice(0, 2400)}`}] : []),
         ...(editorialFeedback ? [{role: 'user' as const, content: `EDITORIAL REVISION — apply this brief to EVERY scene and to the throughline/description, overriding the old draft's wording and claims. Keep the topic and valid facts, not the old errors. Return the full revised script.\n${editorialFeedback}`}]: []),
       ],
@@ -97,7 +113,6 @@ export async function structuredStage<T>(options: {
     previous = completion.choices![0].message!.content!;
     writeJson(path.join(options.directory, `${label}-attempt-${attempt}.json`), completionRecord(completion));
     try {
-      const omitNulls=(value:unknown):unknown=>Array.isArray(value)?value.map(omitNulls):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([,item])=>item!==null).map(([key,item])=>[key,omitNulls(item)])):value;
       const parsed=parseJsonContent(previous);
       return options.validate(options.nullableOptionals?omitNulls(parsed):parsed);
     } catch (failure) {

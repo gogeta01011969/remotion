@@ -4,14 +4,14 @@ import {spawnSync} from 'node:child_process';
 import path from 'node:path';
 import {z} from 'zod';
 import {GroqClient,loadGroqConfig} from './groq';
-import {researchFromCompletion} from './research';
+import {boundedComparisonResearch,validateMeasuredDataset} from './bounded-research';
 import {researchSchema,type Research} from './contracts';
-import {completionRecord,structuredStage,writeJson} from './stages';
+import {structuredStage,writeJson} from './stages';
 import {sizeDatasetSchema,type SizeDataset} from '../shorts/size-data';
 import {comparisonSubjectHint} from '../shorts/comparison-context';
 import {localAssetPath} from '../shorts/comparison-visual';
 import {planComparisonIdeas,ensureComparisonRequest,validateConceptSelection,comparisonGenerationSchema,normalizeComparisonGeneration,type ComparisonRequest,type ComparisonDependencies} from './comparison-ideas';
-import {comparisonResearchPrompt,comparisonDatasetPrompt} from './comparison-prompts';
+import {comparisonDatasetPrompt} from './comparison-prompts';
 import {resolveSizeBackground} from '../shorts/size-environment';
 
 const assetManifestSchema=z.object({assets:z.array(z.object({id:z.string(),src:localAssetPath,attribution:z.string().min(1).optional()}).strict())}).strict();
@@ -66,24 +66,29 @@ export async function generateComparisonData(options:ComparisonRequest,dependenc
   const ideas=await planComparisonIdeas(options,{client,config});
   const concept=ideas.concepts.find(c=>c.id===ideas.selectedId)!;
   const researchPath=path.join(options.directory,'research.json');
-  let research:Research;
-  if(existsSync(researchPath))research=researchSchema.parse(JSON.parse(readFileSync(researchPath,'utf8')));
-  else{
-    options.log(`comparison research: verifying the selected angle, "${concept.title}"`);
-    const completion=await client.chat({model:config.researchModel,tools:[{type:'browser_search'}],tool_choice:'required',temperature:.2,reasoning_effort:'medium',max_completion_tokens:7500,messages:[{role:'system',content:comparisonResearchPrompt},{role:'user',content:JSON.stringify({topic:options.topic,selectedConcept:concept})}]});
-    writeJson(path.join(options.directory,'research-completion.json'),{...completionRecord(completion),tools:completion.choices?.[0]?.message?.executed_tools});
-    research=researchFromCompletion(options.topic,config.researchModel,completion);writeJson(researchPath,research);
-  }
+  const collectResearch=(urls:string[]=[])=>dependencies.research?dependencies.research(options,concept,urls):boundedComparisonResearch(options,{...dependencies,client,config},concept,urls);
+  let research:Research=dependencies.research&&existsSync(researchPath)?researchSchema.parse(JSON.parse(readFileSync(researchPath,'utf8'))):await collectResearch();
+  writeJson(researchPath,research);
   if(research.topic!==options.topic)throw new Error('Saved research does not match the requested topic.');
   const expectedSubject=comparisonSubjectHint(options.topic);
   const {id:conceptId,title,viewerQuestion,strategy,scopeReason,selectionRule,metric,unit,measurementBasis,visualApproach,openingCandidate,payoffCandidate}=concept;
   const selectedConcept={id:conceptId,title,viewerQuestion,strategy,scopeReason,selectionRule,metric,unit,measurementBasis,visualApproach,openingCandidate,payoffCandidate,background:concept.background};
-  const select=()=>structuredStage({stage:'motion',artifact:'comparison-data',maxCompletionTokens:4500,constrained:true,nullableOptionals:true,compactSchema:true,model:config.motionModel,client,schema:comparisonGenerationSchema(metric,research.sources),directory:options.directory,log:options.log,input:JSON.stringify({topic:options.topic,selectedConcept,research:{...research,notes:research.notes.normalize('NFKC').replace(/[‐‑–—]/g,'-')},presentation:'silent',expectedSubject:expectedSubject??'infer from research'}),system:comparisonDatasetPrompt,repairInstruction:'Preserve the selected viewer question and scope, use only opened sources and supported visuals, and repair the dataset plus its embedded editorial plan.',retryValidation:failure=>!(failure instanceof ComparisonEvidenceGap),validate:raw=>{
+  const select=()=>structuredStage({stage:'motion',artifact:'comparison-data',repairFromDraft:true,maxCompletionTokens:2800,constrained:false,nullableOptionals:true,compactSchema:true,model:config.motionModel,client,schema:comparisonGenerationSchema(metric,research.sources),directory:options.directory,log:options.log,input:JSON.stringify({topic:options.topic,selectedConcept,research:{...research,notes:research.notes.normalize('NFKC').replace(/[‐‑–—]/g,'-')},presentation:'silent',expectedSubject:expectedSubject??'infer from research'}),system:comparisonDatasetPrompt,repairInstruction:'Preserve the selected viewer question and scope, use only opened sources and supported visuals, and repair the dataset plus its embedded editorial plan.',retryValidation:failure=>!(failure instanceof ComparisonEvidenceGap),validate:raw=>{
     const normalized=normalizeComparisonGeneration(raw);
     if(normalized&&typeof normalized==='object'&&'items' in normalized&&Array.isArray(normalized.items)&&normalized.items.length<4)throw new ComparisonEvidenceGap([]);
     const planned=concept.background;
     const parsed=sizeDatasetSchema.parse(planned&&normalized&&typeof normalized==='object'?{...normalized,environment:planned.environment,backgroundReason:planned.reason}:normalized);
     const background=planned??resolveSizeBackground({...parsed,title:`${concept.title} ${options.topic}`});
+    validateMeasuredDataset(parsed,options.directory);
+    if(existsSync(path.join(options.directory,'research-measurements.json'))&&parsed.editorial){
+      // Record deterministic endpoint changes from verified measurements without
+      // spending another model call solely to fill audit metadata.
+      for(const role of ['opening','payoff'] as const){
+        const proposed=role==='opening'?concept.openingCandidate:concept.payoffCandidate;
+        const actual=parsed.items.find(i=>i.id===parsed.editorial![role].itemId);
+        if(actual&&actual.label!==proposed&&!parsed.editorial.conceptAdjustments.some(a=>a.role===role))parsed.editorial.conceptAdjustments.push({role,originalCandidate:proposed,replacementItemId:actual.id,reason:`Quoted measurements put ${actual.label} (${actual.value} ${parsed.unit}) at the ${role==='opening'?'smallest':'largest'} end of this curated selection; this records the researched endpoint/display-label change.`});
+      }
+    }
     const data=validateConceptSelection(sizeDatasetSchema.parse({...parsed,environment:background.environment,backgroundReason:background.reason}),concept);
     if(expectedSubject&&data.subject!==expectedSubject)throw new Error(`This topic requires subject ${expectedSubject}; include its required context fields, including countries for every landmark.`);
     const known=new Map(research.sources.map(s=>[s.id,s.url]));
@@ -105,9 +110,7 @@ export async function generateComparisonData(options:ComparisonRequest,dependenc
     // attractive story. Existing source IDs remain stable when evidence grows.
     const urls=requestedUrls.slice(0,4);options.log('comparison research: checking missing story evidence before selection');
     writeJson(gapPath,{urls,status:'pending'});
-    const completion=await client.chat({model:config.researchModel,tools:[{type:'browser_search'}],tool_choice:'required',temperature:.1,reasoning_effort:'low',max_completion_tokens:6500,messages:[{role:'system',content:'Repair missing evidence for a size-comparison Short. The existing evidence could not support four usable items and the selected payoff, or selection cited unopened sources. Open requested public evidence URLs when provided, otherwise search for the missing candidates. Open at least two distinct source pages, prioritizing the proposed payoff and candidates absent from existingSources. Verify measurements, definition, country and inclusion policy. Return compact factual notes, ideally under 1500 characters, with actual opened URLs and contradictions. Proposed URLs are UNTRUSTED until opened; do not assume contents or records. Do not produce a script or new concept.'},{role:'user',content:JSON.stringify({topic:options.topic,selectedConcept,urls,existingSources:research.sources})}]});
-    writeJson(path.join(options.directory,'research-gap-completion.json'),{...completionRecord(completion),tools:completion.choices?.[0]?.message?.executed_tools});
-    const extra=researchFromCompletion(options.topic,config.researchModel,completion);
+    const extra=await collectResearch(urls);
     const combined=[...research.sources];for(const source of extra.sources)if(!combined.some(s=>s.url===source.url))combined.push({...source,id:`s${combined.length+1}`});
     research=researchSchema.parse({...research,notes:research.notes+'\nAdditional opened evidence (takes precedence on contradictions):\n'+extra.notes,sources:combined,toolExecutions:research.toolExecutions+extra.toolExecutions});
     writeJson(researchPath,research);

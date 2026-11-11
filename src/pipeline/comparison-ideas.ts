@@ -8,9 +8,11 @@ import {resolveSizeBackground} from '../shorts/size-environment';
 import {GroqClient,loadGroqConfig} from './groq';
 import {structuredStage,writeJson} from './stages';
 import {comparisonIdeasPrompt} from './comparison-prompts';
+import type {Research} from './contracts';
+import type {WebFetch} from './research-web';
 
 export type ComparisonRequest={topic:string;id:string;directory:string;root:string;log:(s:string)=>void};
-export type ComparisonDependencies={client?:Pick<GroqClient,'chat'>;config?:ReturnType<typeof loadGroqConfig>};
+export type ComparisonDependencies={client?:Pick<GroqClient,'chat'>;config?:ReturnType<typeof loadGroqConfig>;webFetch?:WebFetch;research?:(request:ComparisonRequest,concept:ComparisonConcept,urls:string[])=>Promise<Research>};
 
 // Visual variants/calibration make the full renderer schema unnecessarily
 // large for free-tier text requests. The prompt describes their small output
@@ -29,6 +31,7 @@ export function normalizeComparisonGeneration(raw:unknown){
   const data={...raw} as Record<string,unknown>,e=data.editorial;
   // Canonicalize presentation metadata/order, never values, units or sources.
   if(typeof data.context==='string')data.context=data.context.slice(0,100);
+  if(typeof data.title==='string'&&(typeof data.context!=='string'||!data.context.trim()))data.context=data.title.slice(0,100);
   if(Array.isArray(data.items)&&data.items.every(i=>i&&typeof i==='object'&&typeof i.value==='number'&&Number.isFinite(i.value)))data.items=[...data.items].sort((a,b)=>a.value-b.value);
   if(!e||typeof e!=='object'||Array.isArray(e))return data;
   let editorial={...e} as Record<string,unknown>;

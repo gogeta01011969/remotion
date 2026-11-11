@@ -193,3 +193,13 @@ top of the existing comparison command. See [Linux automation](../automation/REA
 for workflows, secrets, retention and recovery. Geographic area comparisons still
 require supplied real outlines; automatic selection excludes area until suitable
 source acquisition is connected.
+
+## Bounded research and recovery
+
+Comparison research now retrieves sources locally with enforced search, page,
+HTTP, response-size and evidence-text limits. Groq receives compact excerpts
+and cannot start a hidden browsing loop. Measurements require exact source
+quotations; unit conversion and ordering happen in local code. Existing agentic
+research checkpoints are preserved but re-researched before use. See
+[bounded source research](../automation/README.md#bounded-source-research) for
+limits, checkpoint files, secondary-source limitations and recovery behavior.
