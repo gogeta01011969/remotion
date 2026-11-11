@@ -179,9 +179,9 @@
       "status": "retry-later",
       "attempts": 2,
       "createdAt": "2026-11-10T19:26:56.802Z",
-      "updatedAt": "2026-11-10T23:06:50.708Z",
-      "retryAt": "2026-11-11T00:06:50.707Z",
-      "error": "Automation usage budget reached; retry later from the saved checkpoint."
+      "updatedAt": "2026-11-11T05:55:18.980Z",
+      "retryAt": "2026-11-11T14:40:33.980Z",
+      "error": "GroqCloud HTTP 429: Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m706w2zce8zag40bs25d85cf` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 2620, Requested 5450. Please try again in 525ms. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing"
     }
   ],
   "queue": [
