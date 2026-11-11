@@ -1,0 +1,75 @@
+{
+  "template": "size-comparison",
+  "id": "fixture-power",
+  "title": "Power comparison \u2014 synthetic sample",
+  "metric": "power",
+  "unit": "W",
+  "basis": "Synthetic values for template verification only; all subjects share one definition and conditions.",
+  "context": "Synthetic fixture, not claims about real objects",
+  "environment": "laboratory",
+  "items": [
+    {
+      "id": "reference-0",
+      "label": "Reference A",
+      "value": 10,
+      "color": "#73DDD1",
+      "sourceIds": [
+        "fixture"
+      ],
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      }
+    },
+    {
+      "id": "reference-1",
+      "label": "Reference B",
+      "value": 100,
+      "color": "#78AEFC",
+      "sourceIds": [
+        "fixture"
+      ],
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      }
+    },
+    {
+      "id": "reference-2",
+      "label": "Reference C",
+      "value": 500,
+      "color": "#C5A4FB",
+      "sourceIds": [
+        "fixture"
+      ],
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      }
+    },
+    {
+      "id": "reference-3",
+      "label": "Reference D",
+      "value": 2000,
+      "color": "#FFBD77",
+      "sourceIds": [
+        "fixture"
+      ],
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "fixture",
+      "title": "Synthetic template test values, not real-world research",
+      "url": "https://example.com/template-fixtures/power"
+    }
+  ]
+}

@@ -85,10 +85,11 @@ an AI image.
 
 ### Topic horizon
 
-The topic engine now explores 17 subject families: worlds, stars, sports equipment,
+The topic engine now explores 25 subject families: worlds, stars, sports equipment,
 landmarks, infrastructure, aircraft, land vehicles, watercraft, land animals,
 marine life, winged life, trees/plants, everyday objects, machines, microscopic
-subjects, storage capacity and compatible cross-category comparisons. These are
+subjects, storage capacity, compatible cross-category comparisons, mass, population,
+fixed counts, speed, durations, energy, power and temperature. These are
 subject/measurement policies, not fixed catalogs of objects or images.
 
 Eight angles provide depth within those families: familiar-to-extreme,
@@ -119,9 +120,11 @@ catalog. Both default to all supported entries. Families are filtered by allowed
 metrics; invalid combinations are rejected before research. See
 `src/pipeline/comparison-horizon.ts` for stable IDs and capability policies.
 
-Mass, speed, population/counts, timelines and energy/power are listed as future
-dimensions, not enabled size topics. They need quantity/race/timeline templates
-that represent those dimensions honestly. Geographic area still needs reliable
+Mass, counts, speed, duration, energy, power and temperature are enabled.
+Quantity bars, grouped-count grids, constant-speed races, elapsed timelines and
+signed temperature axes encode values separately from fixed-presentation object
+images. Counts declare fixed/inventory/population scope; changing counts require
+a date. Units are dimension-checked; temperature uses differences, never ratios. Geographic area still needs reliable
 outline acquisition before automatic selection is enabled. Broadening topics
 does not change measured size into a stand-in for another quantity.
 
@@ -172,7 +175,7 @@ Per job/checkpoint, local code enforces:
 | Source page attempts (including failures) | 8 |
 | Total HTTP requests, including redirects | 20 |
 | Redirects per resource | 2 |
-| Response size / request deadline | 1 MiB / 12 seconds |
+| Response size / request deadline | 4 MiB / 12 seconds |
 | Evidence per page / all excerpts | 1,800 / 10,800 characters |
 
 The limits live in `src/pipeline/bounded-research.ts`. Wikimedia discovery uses

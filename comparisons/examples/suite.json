@@ -35,5 +35,47 @@
     "data": "comparisons/examples/zoom.json",
     "assetRoot": "comparisons/examples/assets",
     "episode": "comparisons/examples/zoom.en.json"
+  },
+  {
+    "key": "mass",
+    "id": "suite-mass-comparison",
+    "data": "comparisons/examples/mass.json",
+    "assetRoot": "comparisons/examples/assets"
+  },
+  {
+    "key": "count",
+    "id": "suite-count-comparison",
+    "data": "comparisons/examples/count.json",
+    "assetRoot": "comparisons/examples/assets"
+  },
+  {
+    "key": "speed",
+    "id": "suite-speed-comparison",
+    "data": "comparisons/examples/speed.json",
+    "assetRoot": "comparisons/examples/assets"
+  },
+  {
+    "key": "duration",
+    "id": "suite-duration-comparison",
+    "data": "comparisons/examples/duration.json",
+    "assetRoot": "comparisons/examples/assets"
+  },
+  {
+    "key": "energy",
+    "id": "suite-energy-comparison",
+    "data": "comparisons/examples/energy.json",
+    "assetRoot": "comparisons/examples/assets"
+  },
+  {
+    "key": "power",
+    "id": "suite-power-comparison",
+    "data": "comparisons/examples/power.json",
+    "assetRoot": "comparisons/examples/assets"
+  },
+  {
+    "key": "temperature",
+    "id": "suite-temperature-comparison",
+    "data": "comparisons/examples/temperature.json",
+    "assetRoot": "comparisons/examples/assets"
   }
 ]

@@ -1,3 +1,4 @@
+import {comparisonMetrics,comparisonUnits,isQuantityMetric,metricUnitCompatible,quantityTemplate} from './measurements';
 import {z} from 'zod';
 import {sizeEnvironments} from './size-environment';
 
@@ -12,10 +13,10 @@ const concept=z.object({
   strategy:comparisonStrategy,
   scope:z.enum(['within-request','interpret-broad-request']),scopeReason:reason,
   selectionRule:reason,
-  metric:z.enum(['diameter','height','length','width','wingspan','area','volume']),
-  unit:z.enum(['nm','um','mm','cm','m','km','AU','ly','mm2','cm2','m2','km2','mm3','cm3','m3','km3','mL','L']),
+  metric:z.enum(comparisonMetrics),
+  unit:z.enum(comparisonUnits),
   measurementBasis:reason,
-  visualApproach:z.enum(['textured-spheres','grounded-cutouts','side-cutouts','top-cutouts','equal-area-outlines','equivalent-volume-models']),
+  visualApproach:z.enum(['textured-spheres','grounded-cutouts','side-cutouts','top-cutouts','equal-area-outlines','equivalent-volume-models','quantity-bars','count-grid','race','timeline','temperature-axis']),
   background:z.object({environment:z.enum(sizeEnvironments),reason}).strict().optional(),
   candidates:z.array(z.string().trim().min(2).max(80)).min(4).max(10),
   openingCandidate:z.string().min(2).max(80),payoffCandidate:z.string().min(2).max(80),
@@ -24,7 +25,9 @@ const concept=z.object({
 }).strict().superRefine((value,ctx)=>{
   const issue=(message:string)=>ctx.addIssue({code:'custom',message});
   const linear=['nm','um','mm','cm','m','km','AU','ly'];
-  if(value.metric==='area'?!value.unit.endsWith('2'):value.metric==='volume'?!['mm3','cm3','m3','km3','mL','L'].includes(value.unit):!linear.includes(value.unit))issue('Concept metric and unit must describe one dimension.');
+  if(!metricUnitCompatible(value.metric,value.unit))issue('Concept metric and unit must describe one dimension.');
+  if(value.metric==='temperature'&&value.strategy==='orders-of-magnitude')issue('Temperature requires an axis, not multiplicative orders of magnitude.');
+  if(isQuantityMetric(value.metric)&&value.visualApproach!==quantityTemplate(value.metric))issue('This quantity requires its quantity/race/timeline/axis template.');
   if(value.metric==='diameter'&&value.visualApproach!=='textured-spheres')issue('Diameter needs sphere-compatible objects.');
   if(value.metric==='area'&&value.visualApproach!=='equal-area-outlines')issue('Area needs sourced equal-area outlines.');
   if(value.metric==='volume'&&value.visualApproach!=='equivalent-volume-models')issue('Plan equivalent-volume models for capacity rather than guessing volume from a silhouette.');

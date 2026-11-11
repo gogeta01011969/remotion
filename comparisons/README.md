@@ -214,3 +214,37 @@ sphere/procedural-material fallback is used when Cloudflare fails. Prompt runs
 select the platform's Cloudflare provider by default; explicit provider/manifest
 options remain available. Existing `--data` fixtures and mathematical capacity
 graphics remain supported. Completed videos are preserved.
+
+## Comparisons beyond physical size
+
+The same research → editorial → Cloudflare assets → render workflow now supports:
+
+| Metric | Visual encoding | Example unit |
+| --- | --- | --- |
+| Mass | Linear quantity bars | kg |
+| Count/population | Grouped dots with an explicit per-dot legend | count |
+| Speed | Shared-clock, constant-speed race | km/h |
+| Duration | Common elapsed-time axis | year |
+| Energy | Linear quantity bars | kWh |
+| Power | Linear quantity bars | W |
+| Temperature | Signed axis and differences, without ratios | C |
+
+Object images identify subjects and retain a consistent presentation size; they
+are not scaled to imply physical dimensions represent these quantities. Real
+objects still require Cloudflare images in topic-driven runs. Unit conversion is
+local and dimension-checked, including affine Celsius/Fahrenheit conversion.
+
+Count datasets require `countBasis` (`fixed`, `inventory`, or `population`).
+Inventory and population counts also require `asOf`. Document scope, estimates
+and comparable conditions in `basis` and item qualifiers. Speed datasets can set
+`raceDistanceM` (default 100); the race illustrates constant speed, not acceleration.
+Duration means elapsed duration, not calendar dates. Distinguish total energy
+from power and specific energy; quantities with incompatible definitions must
+not be ranked together.
+
+Run a local fixture with `npm run compare:examples -- --only mass` (also `count`,
+`speed`, `duration`, `energy`, `power`, `temperature`). These seven new fixtures
+use explicitly synthetic data and simple local shapes to verify the renderer
+without API credentials; they are not researched publication-ready videos.
+Topic-based runs use the existing `npm run compare -- --topic "..." --id ...`
+command and the configured Cloudflare provider.

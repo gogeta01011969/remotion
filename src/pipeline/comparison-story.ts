@@ -1,3 +1,5 @@
+import {isQuantityMetric} from '../shorts/measurements';
+import {planQuantityStory} from './quantity-story';
 import {sizeDatasetSchema,objectExtent} from '../shorts/size-data';
 import type {SizeShot} from '../shorts/size-shots';
 import {needsCountry} from '../shorts/comparison-context';
@@ -7,6 +9,7 @@ import {resolveSizeBackground} from '../shorts/size-environment';
 // while every subject follows the same smallest-to-largest camera progression.
 export function planComparisonStory(raw: unknown) {
   const data = sizeDatasetSchema.parse(raw);
+  if(isQuantityMetric(data.metric))return planQuantityStory(data);
   const pairs = data.items.slice(1).map((item, i) => ({small: i, large: i + 1, ratio: item.value / data.items[i].value, difference: item.value - data.items[i].value}));
   const closest = pairs.reduce((a, b) => a.ratio <= b.ratio ? a : b);
   const small = data.items[closest.small], large = data.items[closest.large];

@@ -1,3 +1,5 @@
+import {isQuantityMetric} from './measurements';
+import {QuantityComparison} from './QuantityComparison';
 import {useCurrentFrame,useVideoConfig} from 'remotion';
 import type {Actor,ActorState} from './schema';
 import {formatRatio,formatSize,formatUnit,formatMeasurement,comparisonRuler,sizeSample} from './size-data';
@@ -10,7 +12,7 @@ import {ComparisonObject} from './ComparisonObject';
 import {textEntrance,type SizeTextTiming} from './size-text-motion';
 import {fitText,useTextMetrics} from './text-metrics';
 
-export const SizeComparison=({actor,state,language='en',textTiming}:{actor:Extract<Actor,{kind:'size-comparison'}>;state:ActorState;language?:Language;textTiming?:SizeTextTiming})=>{
+const SizeGeometryComparison=({actor,state,language='en',textTiming}:{actor:Extract<Actor,{kind:'size-comparison'}>;state:ActorState;language?:Language;textTiming?:SizeTextTiming})=>{
   const frame=useCurrentFrame(),{fps}=useVideoConfig(),{data}=actor;
   const measure=useTextMetrics(language==='hi'?'SacredDevanagari, Arial, sans-serif':'Arial, Helvetica, sans-serif');
   const active=Math.max(0,Math.min(data.items.length-1,Math.round(state.value)));
@@ -86,3 +88,5 @@ export const SizeComparison=({actor,state,language='en',textTiming}:{actor:Extra
     </div>:null}
   </div></div>;
 };
+
+export const SizeComparison=(props:Parameters<typeof SizeGeometryComparison>[0])=>isQuantityMetric(props.actor.data.metric)?<QuantityComparison {...props}/>:<SizeGeometryComparison {...props}/>;

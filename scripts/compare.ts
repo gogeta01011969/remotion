@@ -62,7 +62,7 @@ async function main(){
     writeJson(path.join(directory,'background-plan.json'),story.background);
     writeJson(path.join(directory,'brief.json'),brief);
     writeJson(path.join(directory,'visual-manifest.json'),{presentation:brief.presentation,environment:story.environment,background:story.background,metric:data.metric,basis:data.basis,objects:data.items.map(item=>({id:item.id,renderer:item.visual?.kind??(item.appearance?'mapped-sphere':'procedural-sphere'),visual:item.visual??null,appearance:item.appearance??null,material:item.material,deterministic:true}))});
-    writeJson(path.join(directory,'measurements.json'),{metric:data.metric,unit:data.unit,basis:data.basis,asOf:data.asOf,items:data.items.map((item,i)=>({...item,ratioToFirst:item.value/data!.items[0].value,ratioToPrevious:i?formatRatio(item.value/data!.items[i-1].value):'1x'}))});
+    writeJson(path.join(directory,'measurements.json'),{metric:data.metric,unit:data.unit,basis:data.basis,asOf:data.asOf,items:data.items.map((item,i)=>({...item,ratioToFirst:data!.metric==='temperature'||data!.items[0].value===0?null:item.value/data!.items[0].value,ratioToPrevious:data!.metric==='temperature'||i&&data!.items[i-1].value===0?null:i?formatRatio(item.value/data!.items[i-1].value):'1x'}))});
     console.log(`Compiled ${id}: ${path.join(directory,'brief.json')}`);
     if(values['plan-only']){status('planned');console.log(JSON.stringify({status:'planned',id,briefPath:path.join(directory,'brief.json')}));return;}
     status(values['prepare-only']?'preparing':'rendering');

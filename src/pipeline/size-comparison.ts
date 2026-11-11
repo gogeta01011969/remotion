@@ -1,3 +1,4 @@
+import {isQuantityMetric} from '../shorts/measurements';
 import {z} from 'zod';
 import {briefSchema} from '../shorts/schema';
 import {sizeDatasetSchema} from '../shorts/size-data';
@@ -31,7 +32,7 @@ export const comparisonEpisodeSchema = z.object({
 // Optional authored episodes only tune reading time, timing and reference choices.
 export function defaultSizeEpisode(rawData:unknown) {
   const data=sizeDatasetSchema.parse(rawData), seconds=30;
-  return comparisonEpisodeSchema.parse({id:`${data.id.slice(0,48).replace(/-$/,'')}-comparison`,language:'en',presentation:'silent',description:`${data.title}. A silent smallest-to-largest ${data.metric} comparison. Object dimensions use the correct dimensional scale; display spacing is illustrative. Measurements and applicable visual credits are included below.`,scenes:data.items.map((item,i)=>({itemId:item.id,heading:item.label,durationSeconds:i===data.items.length-1?8:Math.floor((seconds-8)/(data.items.length-1))+(i<(seconds-8)%(data.items.length-1)?1:0),cues:[]}))});
+  return comparisonEpisodeSchema.parse({id:`${data.id.slice(0,48).replace(/-$/,'')}-comparison`,language:'en',presentation:'silent',description:`${data.title}. A silent smallest-to-largest ${data.metric} comparison. ${isQuantityMetric(data.metric)?'Object images have illustrative presentation sizes; the quantity display encodes the measured values.':'Object dimensions use the correct dimensional scale; display spacing is illustrative.'} Measurements and applicable visual credits are included below.`,scenes:data.items.map((item,i)=>({itemId:item.id,heading:item.label,durationSeconds:i===data.items.length-1?8:Math.floor((seconds-8)/(data.items.length-1))+(i<(seconds-8)%(data.items.length-1)?1:0),cues:[]}))});
 }
 
 export function compileSizeComparison(rawData: unknown, rawEpisode: unknown) {

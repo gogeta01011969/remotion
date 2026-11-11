@@ -38,6 +38,11 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_*.py'
       - name: Render an offline comparison (no API credentials)
         run: npm run compare:examples -- --only wingspan
+      - name: Render quantity, race and signed-axis templates (no API credentials)
+        run: |
+          for metric in mass speed temperature; do
+            npm run compare:examples -- --only "$metric"
+          done
       - uses: actions/upload-artifact@v7.0.2
         if: always()
         with:
@@ -45,5 +50,8 @@ jobs:
           path: |
             out/shorts/suite-wingspan-comparison/
             out/comparisons/suite-wingspan-comparison/
+            out/shorts/suite-mass-comparison/
+            out/shorts/suite-speed-comparison/
+            out/shorts/suite-temperature-comparison/
           retention-days: 7
           if-no-files-found: warn

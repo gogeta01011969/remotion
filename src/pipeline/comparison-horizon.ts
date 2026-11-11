@@ -1,5 +1,7 @@
-export type PhysicalMetric='diameter'|'height'|'length'|'width'|'wingspan'|'volume';
-type Family={id:string;subjects:string;metrics:PhysicalMetric[];policy:string;match:RegExp};
+import {quantityMetrics} from '../shorts/measurements';
+export const automatedMetricNames=['diameter','height','length','width','wingspan','volume',...quantityMetrics] as const;
+export type SupportedMetric=typeof automatedMetricNames[number];
+type Family={id:string;subjects:string;metrics:SupportedMetric[];policy:string;match:RegExp};
 // Subject/angle catalogs describe capabilities, not a fixed list of objects.
 // Research still chooses and verifies the actual objects on each run.
 export const comparisonFamilies:Family[]=[
@@ -20,6 +22,14 @@ export const comparisonFamilies:Family[]=[
   {id:'microscopic',subjects:'Cells, particles and microscopic objects',metrics:['diameter','length'],policy:'Define the dimension, use supported static views and readable scale references.',match:/microscop|cell|particle|microbe|bacter/},
   {id:'storage-capacity',subjects:'Containers and storage capacities',metrics:['volume'],policy:'Show equivalent-volume measurement models, not exterior-size claims.',match:/capacity|container|storage|reservoir/},
   {id:'cross-category',subjects:'Recognizable objects across compatible categories',metrics:['height','length','width','wingspan'],policy:'One honest dimension, compatible views and a genuinely useful familiar anchor.',match:/cross.category|natural.*human|flying objects/},
+  {id:'mass-comparisons',subjects:'Body mass of animals, vehicles and familiar objects',metrics:['mass'],policy:'Compare mass in common units, with adult/configuration and representative-versus-maximum policy; image size is illustrative.',match:/mass|weight|heavy|heaviest/},
+  {id:'population-counts',subjects:'Dated population estimates with a shared geographical scope',metrics:['count'],policy:'Require dated estimates and scope; distinguish wild, captive and domestic populations; no unsupported exact counts.',match:/population|abundance/},
+  {id:'fixed-counts',subjects:'Documented counts in familiar objects or inventories',metrics:['count'],policy:'Specify what counts as one item; inventories require dates; fixed manufactured counts need exact model/version.',match:/count|number of|keys|seats/},
+  {id:'speed-comparisons',subjects:'Comparable documented speeds of animals and machines',metrics:['speed'],policy:'Use a shared peak/cruise/sustained policy and conditions; race is constant-speed illustration with simulated clock.',match:/speed|fastest|fast /},
+  {id:'lifespans-durations',subjects:'Lifespans and elapsed durations',metrics:['duration'],policy:'Distinguish typical lifespan from verified maximum; use elapsed time, not absolute calendar dates.',match:/lifespan|duration|longevity|long.lived/},
+  {id:'energy-stores',subjects:'Stored energy in batteries and comparable systems',metrics:['energy'],policy:'Use a consistent rated/usable policy; energy is not power.',match:/energy|batter|kilowatt.hour/},
+  {id:'power-comparisons',subjects:'Rated power of comparable devices',metrics:['power'],policy:'Distinguish electrical input, mechanical output, rated power and operating draw.',match:/power|watt|consumption/},
+  {id:'temperatures',subjects:'Physical temperatures under defined conditions',metrics:['temperature'],policy:'Use a common temperature axis, allow negative Celsius/Fahrenheit values, forbid temperature ratios and values below absolute zero.',match:/temperature|hotter|colder|freezing|boiling/},
 ];
 export const familyIds=comparisonFamilies.map(f=>f.id) as [string,...string[]];
 export const comparisonAngles=[
@@ -35,17 +45,13 @@ export const comparisonAngles=[
 export const angleIds=comparisonAngles.map(a=>a.id) as [typeof comparisonAngles[number]['id'],...typeof comparisonAngles[number]['id'][]];
 export const depthIds=['accessible','specialist','extreme-scale'] as const;
 export const futureComparisonDimensions=[
-  {dimension:'mass',needs:'Mass-specific proportional quantities and reference weights'},
-  {dimension:'speed',needs:'Time/distance race animation with consistent conditions'},
-  {dimension:'population',needs:'Count-based symbols or bars and dated comparable estimates'},
-  {dimension:'age-duration',needs:'Timeline renderer with explicit start/end definitions'},
-  {dimension:'energy-power',needs:'Quantity renderer distinguishing energy from power'},
   {dimension:'geographic-area',needs:'Reliable real-outline acquisition; authored outlines already render'},
+  {dimension:'calendar-history',needs:'Absolute dated-event timelines distinct from elapsed durations'},
 ] as const;
 type EditorialItem={topic:string;metric:string|null;family?:string;angle?:string;depth?:string};
 export function topicFamily(item:EditorialItem){
   if(item.family&&familyIds.includes(item.family))return item.family;
-  const family=comparisonFamilies.find(f=>(!item.metric||f.metrics.includes(item.metric as PhysicalMetric))&&f.match.test(item.topic.toLowerCase()));
+  const family=comparisonFamilies.find(f=>(!item.metric||f.metrics.includes(item.metric as SupportedMetric))&&f.match.test(item.topic.toLowerCase()));
   return family?.id??'cross-category';
 }
 export function horizonPriority(candidate:EditorialItem,completed:EditorialItem[]){

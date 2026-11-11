@@ -1,3 +1,4 @@
+import {comparisonMetrics,comparisonUnits,isQuantityMetric,metricUnitCompatible,convertMeasurement} from './measurements';
 import {z} from 'zod';
 import {comparisonSubjects,needsCountry} from './comparison-context';
 import {comparisonVisualSchema} from './comparison-visual';
@@ -5,9 +6,8 @@ import {comparisonEditorialSchema,editorialSelectionIssues} from './comparison-e
 import {sizeEnvironments} from './size-environment';
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(60);
-const positive = z.number().finite().min(1e-30).max(1e30);
 export const sizeItemSchema = z.object({
-  id: slug, label: z.string().min(1).max(24), value: positive,
+  id: slug, label: z.string().min(1).max(24), value: z.number().finite().min(-1e30).max(1e30),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   material: z.enum(['plain', 'craters', 'ocean', 'bands', 'glow', 'felt', 'seam', 'panels', 'golf', 'baseball', 'basketball']).default('plain'),
   appearance: z.enum(['earth', 'moon', 'jupiter', 'neptune', 'sun', 'mercury', 'mars', 'venus']).optional(),
@@ -15,7 +15,7 @@ export const sizeItemSchema = z.object({
   country: z.string().trim().min(1).max(56).optional(),
   sourceIds: z.array(slug).min(1),
   approximate: z.boolean().default(false),
-  range: z.object({min: positive, max: positive}).strict().optional(),
+  range: z.object({min: z.number().finite(), max: z.number().finite()}).strict().optional(),
   note: z.string().max(160).default(''),
 }).strict().superRefine((item, ctx) => {
   if (item.range && !(item.range.min <= item.value && item.value <= item.range.max)) ctx.addIssue({code: 'custom', message: 'Representative measurement must lie inside its range.'});
@@ -23,8 +23,10 @@ export const sizeItemSchema = z.object({
 export const sizeDatasetSchema = z.object({
   template: z.literal('size-comparison'), id: slug, title: z.string().min(5).max(100),
   subject: z.enum(comparisonSubjects).default('generic'),
-  metric: z.enum(['diameter','height','length','width','wingspan','area','volume']),
-  unit: z.enum(['nm','um','mm','cm','m','km','AU','ly','mm2','cm2','m2','km2','mm3','cm3','m3','km3','mL','L']),
+  metric: z.enum(comparisonMetrics),
+  unit: z.enum(comparisonUnits),
+  countBasis:z.enum(['fixed','inventory','population']).optional(),
+  raceDistanceM:z.number().positive().max(1000000).default(100),
   basis: z.string().min(5).max(500).optional(),
   asOf: z.iso.date().optional(),
   environment: z.enum(['auto',...sizeEnvironments]).default('auto'),
@@ -38,9 +40,16 @@ export const sizeDatasetSchema = z.object({
 }).strict().superRefine((data, ctx) => {
   const issue=(message:string)=>ctx.addIssue({code:'custom',message});
   const linear=['nm','um','mm','cm','m','km','AU','ly'];
-  if(data.metric==='area'?!data.unit.endsWith('2'):data.metric==='volume'?!['mm3','cm3','m3','km3','mL','L'].includes(data.unit):!linear.includes(data.unit))issue('Metric and unit must describe the same dimension.');
+  if(!metricUnitCompatible(data.metric,data.unit))issue('Metric and unit must describe the same dimension.');
+  if(data.metric==='count'&&(!data.countBasis||data.countBasis!=='fixed'&&!data.asOf))issue('Counts need countBasis; populations and inventories also need an asOf date.');
+  for(const item of data.items){
+    if(data.metric==='temperature'){try{convertMeasurement(item.value,data.unit,'K');if(item.range){convertMeasurement(item.range.min,data.unit,'K');convertMeasurement(item.range.max,data.unit,'K');}}catch{issue('Temperature cannot be below absolute zero.');}}
+    else if(item.value<0||!['count','speed','duration','energy','power'].includes(data.metric)&&item.value===0)issue('This measurement requires nonnegative or positive values.');
+    if(data.metric==='count'&&data.unit==='count'&&(!Number.isInteger(item.value)||!Number.isSafeInteger(item.value)&&!item.approximate))issue('Individual counts must be safe integers.');
+    if(item.range&&data.metric!=='temperature'&&item.range.min<0)issue('Physical ranges cannot be negative.');
+  }
   if(data.metric!=='diameter'&&!data.basis)issue('Define a common measurement basis (including endpoints, pedestal policy, animal age or capacity definition).');
-  if(data.scaleReference&&!linear.includes(data.unit))issue('A linear camera ruler requires a linear unit.');
+  if(data.scaleReference&&!isQuantityMetric(data.metric)&&!linear.includes(data.unit))issue('A linear camera ruler requires a linear unit.');
   for(const item of data.items){
     if(needsCountry(data.subject)&&!item.country)issue(`${item.label}: ${data.subject} comparisons require a sourced country name.`);
     if(data.metric==='area'&&item.visual?.kind!=='cutout'&&item.visual?.kind!=='box')issue(`${item.label}: area requires an equal-area cutout or rectangular area model.`);
@@ -66,7 +75,7 @@ export type SizeItem = z.infer<typeof sizeItemSchema>;
 export const formatSize = (value: number) => value!==0&&Math.abs(value)<.1 ? value.toLocaleString('en-US',{maximumSignificantDigits:3}) : Math.abs(value)>=1e12 ? value.toExponential(2) : value.toLocaleString('en-US', {maximumFractionDigits: Math.abs(value) < 1000 ? 1 : 0});
 export const formatRatio = (value: number) => `${value>=1e9?value.toExponential(2):value.toLocaleString('en-US', {maximumFractionDigits: value < 10 ? 2 : 1})}x`;
 
-export const formatUnit=(unit:SizeDataset['unit'])=>unit==='um'?'µm':unit.replace('2','²').replace('3','³');
+export const formatUnit=(unit:SizeDataset['unit'])=>unit==='um'?'µm':unit==='C'?'°C':unit==='F'?'°F':unit==='count'?'count':unit.replace('2','²').replace('3','³');
 const meters:Partial<Record<SizeDataset['unit'],number>>={nm:1e-9,um:1e-6,mm:1e-3,cm:1e-2,m:1,km:1000,AU:149597870700,ly:9460730472580800};
 export function formatMeasurement(value:number,unit:SizeDataset['unit'],adaptive=false){
   if(adaptive&&meters[unit]){

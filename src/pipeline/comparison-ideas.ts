@@ -10,6 +10,7 @@ import {structuredStage,writeJson} from './stages';
 import {comparisonIdeasPrompt} from './comparison-prompts';
 import type {Research} from './contracts';
 import type {WebFetch} from './research-web';
+import {isQuantityMetric} from '../shorts/measurements';
 
 export type ComparisonRequest={topic:string;id:string;directory:string;root:string;log:(s:string)=>void;topicBrief?:{family?:string;angle?:string;depth?:string;whyInteresting?:string;proposedObjects?:string[]}};
 export type ComparisonDependencies={client?:Pick<GroqClient,'chat'>;config?:ReturnType<typeof loadGroqConfig>;webFetch?:WebFetch;research?:(request:ComparisonRequest,concept:ComparisonConcept,urls:string[])=>Promise<Research>};
@@ -92,7 +93,7 @@ export function validateConceptSelection(data:SizeDataset,concept:ComparisonConc
     const actual=data.items.find(item=>item.id===data.editorial![role].itemId)!;
     if(actual.label!==proposed&&!data.editorial.conceptAdjustments.some(a=>a.role===role&&a.originalCandidate===proposed&&a.replacementItemId===actual.id))throw new Error(`Document the research-backed ${role} adjustment from ${proposed} to ${actual.label}.`);
   }
-  if(concept.strategy==='orders-of-magnitude'&&data.items.at(-1)!.value/data.items[0].value>=1e6&&(!data.scaleReference||data.displayUnits!=='adaptive'))throw new Error('An extreme scale journey requires the supported live ruler and adaptive units.');
+  if(!isQuantityMetric(data.metric)&&concept.strategy==='orders-of-magnitude'&&data.items.at(-1)!.value/data.items[0].value>=1e6&&(!data.scaleReference||data.displayUnits!=='adaptive'))throw new Error('An extreme scale journey requires the supported live ruler and adaptive units.');
   const included=new Set(data.items.map(i=>i.label.toLowerCase()));
   if(data.editorial.omittedCandidates.some(i=>included.has(i.label.toLowerCase())))throw new Error('An omitted candidate cannot also be a selected object.');
   return data;

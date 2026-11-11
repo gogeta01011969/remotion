@@ -19,8 +19,9 @@ test('the horizon exposes only compatible measurements and leaves future quantit
   assert.ok(horizon.families.some(f=>f.id==='winged-life'));
   assert.equal(horizon.families.some(f=>f.id==='land-vehicles'),false);
   assert.ok(horizon.families.every(f=>f.metrics.every(m=>m==='wingspan')));
-  assert.ok(futureComparisonDimensions.some(d=>d.dimension==='mass'));
-  assert.equal(automationConfigSchema.safeParse({...config,allowedMetrics:['mass']}).success,false);
+  assert.equal(futureComparisonDimensions.some(d=>String(d.dimension)==='mass'),false);
+  assert.equal(automationConfigSchema.safeParse({...config,allowedMetrics:['mass']}).success,true);
+  assert.equal(automationConfigSchema.safeParse({...config,allowedMetrics:['density']}).success,false);
 });
 test('coverage ranking encourages new families, angles and depth while retaining familiar subjects',()=>{
   const history=[{topic:'Tallest landmarks',metric:'height',family:'landmarks',angle:'record-ladder',depth:'accessible'}];

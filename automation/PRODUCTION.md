@@ -1,17 +1,16 @@
-# Production readiness and deferred expansion
+# Production readiness
 
-Audit: November 11, 2026 (Asia/Kolkata), application revision `3ccc6ab`.
+Audit: November 11, 2026 (Asia/Kolkata), expanded measurement implementation.
 
-Current scope: automatically create silent physical-comparison Shorts on Linux,
-ending in a verified MP4 delivery. YouTube upload and new measurement templates
-remain deferred. The current system is a working beta; unattended production
+Current scope: automatically create silent measurement-comparison Shorts on Linux,
+ending in a verified MP4 delivery. YouTube upload remains deferred. The current system is a working beta; unattended production
 reliability has not yet been established across subjects.
 
 ## Implemented
 
 | Piece | Responsibility | Evidence / limit |
 | --- | --- | --- |
-| Topic engine | Choose topics across 17 families, eight angles and three depths | Live planning preview passed; editorial appeal remains model judgment |
+| Topic engine | Choose topics across 25 families, eight angles and three depths | Live planning preview passed; editorial appeal remains model judgment |
 | Deduplication | Compare titles, scopes and object sets against durable history | Tested; aliases and shortened labels can still escape matching |
 | Bounded research | Discover/open sources locally, extract exact quotations, convert units | Live tested; source availability and semantic interpretation remain variable |
 | Editorial and visual planning | Select objects, order, background and per-object image briefs | Schema/evidence checks and resumable drafts implemented |
@@ -27,6 +26,11 @@ Evidence:
 - [Latest Linux verification](https://github.com/gogeta01011969/remotion/actions/runs/43012875918): revision `3ccc6ab`, successful.
 - [Completed hosted video](https://github.com/gogeta01011969/remotion/actions/runs/42977953181): revision `3690890`, rendered, archived and marked complete. Its objects used local plain materials; this does not validate the later mandatory Cloudflare policy.
 - 139 TypeScript tests passed locally for `3ccc6ab`; Linux CI also runs the real CPU extraction test and a fixed offline render.
+
+New measurement support: mass/energy/power bars, grouped counts, constant-speed
+races, duration timelines and signed temperature axes. Object imagery retains a
+consistent presentation size. Automated selection now supports 13 measurements;
+manual geographic area inputs remain available.
 
 ## Work before unattended production
 
@@ -75,13 +79,13 @@ Evidence:
 
 - YouTube OAuth, idempotent uploads, processing checks and publication scheduling.
 - Narration, music and audio finishing; current target remains silent video.
-- Additional measurement families: mass, population/counts, speed, age/duration,
-  energy/power and temperature. Add quantity bars, grouped-count, race, timeline
-  and suitable axis templates before enabling those topics. Preserve object
-  imagery as identity while encoding the measured quantity separately.
 - Automatic geographic area acquisition: the renderer already supports supplied
   real outlines, but automatic source acquisition remains unfinished.
 
 Suggested next milestone: reliable delivery on the current Cloudflare-required
 pipeline across its supported visual modes, plus hosted recovery/archival checks.
-Complete that milestone before expanding the measurement/template catalog.
+The seven new measurement modes are implemented and locally rendered with synthetic
+fixtures. Their live source-to-video reliability still needs broader verification;
+a live animal-mass trial exposed incomplete and age-incompatible evidence. The new
+adult/juvenile contradiction guard rejects that case; a complete live quantity
+video has not yet been verified.

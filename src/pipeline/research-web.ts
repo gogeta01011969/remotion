@@ -20,7 +20,9 @@ export type WebFetch=(url:string)=>Promise<WebResponse>;
 // does not prevent a model-supplied domain resolving to localhost or metadata.
 export const fetchResearchPage:WebFetch=url=>new Promise((resolve,reject)=>{
   publicUrl(url);
-  const req=https.get(url,{headers:{'User-Agent':'MotionLabResearch/1.0 (+https://github.com/gogeta01011969/remotion)','Accept':'text/html,application/json,text/plain;q=0.9','Accept-Encoding':'identity'},lookup:(host,_options,callback)=>{
+  const resource=new URL(url);
+  if(resource.hostname==='en.wikipedia.org'&&resource.pathname.startsWith('/wiki/'))resource.searchParams.set('action','render');
+  const req=https.get(resource,{headers:{'User-Agent':'MotionLabResearch/1.0 (+https://github.com/gogeta01011969/remotion)','Accept':'text/html,application/json,text/plain;q=0.9','Accept-Encoding':'identity'},lookup:(host,_options,callback)=>{
     lookup(host,{all:true},(error,addresses)=>{
       if(error)return callback(error,'',4);
       if(!addresses.length||addresses.some(a=>!publicAddress(a.address)))return callback(new Error('Research DNS resolved to a non-public address.'),'',4);
@@ -30,7 +32,7 @@ export const fetchResearchPage:WebFetch=url=>new Promise((resolve,reject)=>{
     });
   }},response=>{
     const chunks:Buffer[]=[];let bytes=0;
-    response.on('data',(chunk:Buffer)=>{bytes+=chunk.length;if(bytes>1024*1024){response.destroy(new Error('Research response exceeds 1 MiB.'));return;}chunks.push(chunk);});
+    response.on('data',(chunk:Buffer)=>{bytes+=chunk.length;if(bytes>4*1024*1024){response.destroy(new Error('Research response exceeds 4 MiB.'));return;}chunks.push(chunk);});
     response.on('error',reject);
     response.on('end',()=>resolve({status:response.statusCode??0,headers:{'content-type':String(response.headers['content-type']??''),location:response.headers.location},body:Buffer.concat(chunks).toString('utf8')}));
   });
@@ -48,8 +50,12 @@ export function pageText(html:string){
 export function blockedPage(text:string){return /you do not have access to this site|access denied|verify (?:that )?you are human|just a moment\.\.\.|enable javascript and cookies to continue|captcha|this page does not exist|page not found|robot challenge/i.test(text.slice(0,2500));}
 export function evidenceExcerpt(text:string,query:string,max=1800){
   const words=query.toLowerCase().match(/[a-z]{4,}/g)??[];
-  const lines=text.split('\n').filter(s=>s.length>20&&s.length<2500);
-  const ranked=lines.map((line,index)=>({line,index,score:(/\d/.test(line)?3:0)+(/diameter|circumference|wingspan|height|length|capacity|metres?|meters?|centimet|millimet|\b(?:mm|cm|km|litres?|liters?|feet|ft|inches)\b/i.test(line)?6:0)+words.filter(w=>line.toLowerCase().includes(w)).length})).sort((a,b)=>b.score-a.score||a.index-b.index);
+  // Rank sentences rather than dropping long descriptive paragraphs, which often
+  // contain the actual body mass or specification among unrelated details.
+  const lines=text.split(/\n|(?<=[.!?])\s+(?=[A-Z])/).filter(s=>s.length>3&&s.length<2500);
+  const metric=query.trim().split(/\s+/).at(-1)??'';
+  const metricTerms:Record<string,RegExp>={mass:/\d.*(?:kg|grams?|tonnes?|kilograms?|\blb\b)/i,count:/population|\d.*(?:individuals|million|billion|people|keys|cards|faces)/i,speed:/\d.*(?:km\/h|m\/s|mph|per hour|per second)/i,duration:/lifespan|longevity|\d.*(?:years?|hours?|days?)/i,energy:/\d.*(?:joules?|kWh|\bWh\b|\bMJ\b)/i,power:/\d.*(?:watts?|\bkW\b|\bMW\b)/i,temperature:/\d.*(?:Celsius|Fahrenheit|kelvin|°[CF])/i};
+  const ranked=lines.map((line,index)=>({line,index,score:(metricTerms[metric]?.test(line)?30:0)+(/\d/.test(line)?3:0)+(/diameter|circumference|wingspan|height|length|capacity|population|count|mass|weight|weigh|speed|lifespan|duration|energy|power|temperature|watt|joule|million|billion|years|metres?|meters?|centimet|millimet|\b(?:mm|cm|km|litres?|liters?|feet|ft|inches)\b/i.test(line)?6:0)+words.filter(w=>line.toLowerCase().includes(w)).length})).sort((a,b)=>b.score-a.score||a.index-b.index);
   let selected='';
   for(const entry of ranked){if(selected.length+entry.line.length+1<=max)selected+=entry.line+'\n';}
   return selected.trim()||text.slice(0,max);

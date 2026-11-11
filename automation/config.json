@@ -1,12 +1,19 @@
 {
-  "niche": "Silent, visually engaging physical-size comparison YouTube Shorts",
+  "niche": "Silent, visually engaging comparison YouTube Shorts with honest measurement-specific visualizations",
   "allowedMetrics": [
     "diameter",
     "height",
     "length",
     "width",
     "wingspan",
-    "volume"
+    "volume",
+    "mass",
+    "count",
+    "speed",
+    "duration",
+    "energy",
+    "power",
+    "temperature"
   ],
   "candidatesPerBatch": 3,
   "maxAttemptsPerJob": 3,
