@@ -1,6 +1,6 @@
 # Production readiness
 
-Audit: November 11, 2026 (Asia/Kolkata), expanded measurement implementation.
+Updated: November 17, 2026 (Asia/Kolkata), bounded best-effort recovery policy.
 
 Current scope: automatically create silent measurement-comparison Shorts on Linux,
 ending in a verified MP4 delivery. YouTube upload remains deferred. The current system is a working beta; unattended production
@@ -44,16 +44,17 @@ manual geographic area inputs remain available.
    review image likeness, markings, orientation, crop, texture seams and readability.
    Existing checks establish file/geometry validity, not semantic correctness or
    audience appeal. Keep initial production outputs reviewable before publishing.
-3. **Finish retry orchestration.** Resume due jobs automatically while respecting
-   a configured output cadence. A daily trigger alone does not resume a one-minute
-   deferral promptly. Handle workflow cancellation, expired checkpoints and code
-   changes between render and archive; confirm attempt counts survive interruption.
-   Avoid repeatedly failing an entire subject because of stale state.
-4. **Make delivery durable and reproducible.** Final Actions artifacts retain
-   30 days; checkpoints retain seven. The final delivery currently does not
-   include all frozen image assets needed to rerender after checkpoint expiry.
-   Choose permanent storage and archive the complete inputs/assets/provenance
-   before cleanup. Retain a recoverable backup of the topic ledger.
+3. **Verify simple recovery on hosted runners.** Started attempts, including
+   quota deferrals and archive retries, are bounded at three. Active backoff pauses
+   only that job; new topics can proceed. Missing or unusable checkpoints abandon
+   the job as `needs-review`. Cancellation recovery remains best-effort. No retry
+   worker, prompt rescheduling or complex reconstruction is required. Exercise
+   cancellation, expired checkpoints and failed archival in Actions.
+4. **Keep storage temporary.** Permanent video/asset archival is not required.
+   Actions currently holds final artifacts for 30 days and checkpoints for seven.
+   When YouTube is connected, delete videos/assets after confirmed upload while
+   retaining lightweight de-duplication/status/upload-ID history. Preserve the
+   ledger; do not let cleanup discard delivery that has not been confirmed.
 5. **Set the intended usage policy.** The proposed warning/optional-ceiling
    approach has not been implemented: config still enforces 12 logical calls and
    65,000 reported tokens per invocation, with conservative reservations. Separate

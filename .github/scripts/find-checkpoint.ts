@@ -3,6 +3,7 @@ import {jobSchema} from '../../src/pipeline/topic-automation';
 async function main(){
   const id=process.env.CURRENT_JOB_ID!;
   const job=JSON.parse(readFileSync('.automation/state.json','utf8')).jobs.find((j:{id:string})=>j.id===id);jobSchema.parse(job);
+  if(job.status==='reserved'&&job.attempts===0){appendFileSync(process.env.GITHUB_OUTPUT!,'run_id=\n');return;}
   const name=`checkpoint-${id}`,repo=process.env.GITHUB_REPOSITORY!,token=process.env.GITHUB_TOKEN!;
   if(!/^[\w.-]+\/[\w.-]+$/.test(repo)||!token)throw new Error('Missing repository/token.');
   const get=async(route:string)=>{const r=await fetch(`https://api.github.com/repos/${repo}${route}`,{headers:{Authorization:`Bearer ${token}`,Accept:'application/vnd.github+json'},signal:AbortSignal.timeout(30000)});if(!r.ok)throw new Error(`Checkpoint lookup HTTP ${r.status}`);return r.json();};

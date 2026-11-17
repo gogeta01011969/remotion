@@ -2,7 +2,7 @@ import {readFileSync,mkdirSync,appendFileSync} from 'node:fs';
 import path from 'node:path';
 import {parseArgs} from 'node:util';
 import {automationConfigSchema,loadLedger,saveLedger,lockAutomation,reserveTopic,budgetClient,AutomationDeferredError} from '../src/pipeline/topic-automation';
-import {createAutomationVideo,stageCheckpoint,restoreCheckpoint,cleanupJob,confirmArchive} from '../src/pipeline/automation-run';
+import {createAutomationVideo,stageCheckpoint,restoreJobCheckpoint,cleanupJob,confirmArchive} from '../src/pipeline/automation-run';
 import {GroqClient,loadGroqConfig} from '../src/pipeline/groq';
 import {writeJson} from '../src/pipeline/stages';
 import {quotaDeferral,repairLegacyMillisecondBackoff} from '../src/pipeline/quota-retry';
@@ -21,7 +21,14 @@ async function main(){
     if(values.package||values.cleanup||values.restore||values['archive-confirmed']){
       const job=ledger.jobs.find(j=>j.id===values.resume);if(!job)throw new Error('Provide --resume with an existing job ID.');
       if(values.package)output({status:'packaged',id:job.id,checkpointPath:stageCheckpoint(root,job.id)});
-      if(values.restore){restoreCheckpoint(root,job.id,path.resolve(values.restore));output({status:'restored',id:job.id});}
+      if(values.restore){
+        const result=restoreJobCheckpoint(root,job,path.resolve(values.restore));saveLedger(stateFile,ledger);output(result);
+        if(result.status==='needs-review'){
+          writeJson(resultFile,result);
+          console.log('::warning title=Recovery stopped::Checkpoint missing or unusable. No generation attempted; the next trigger can select another topic.');
+          if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### Comparison job ${job.id}\n\nStatus: needs-review\n\n${job.error}\n`);
+        }
+      }
       if(values.cleanup){cleanupJob(root,job.id,ledger);output({status:'cleaned',id:job.id});}
       if(values['archive-confirmed']){confirmArchive(job,values['archive-confirmed']);saveLedger(stateFile,ledger);output({status:'complete',id:job.id,artifactId:job.artifactId});}
       return;
@@ -43,7 +50,9 @@ async function main(){
         if(result.status==='retry-later')console.log('::notice title=Generation deferred::A usage limit or saved backoff paused generation. The checkpoint is preserved; no video was delivered. See the job summary for details.');
       }catch(error){
         output({status:job.status,id:job.id,topic:job.topic,error:job.error});
-        throw error;
+        // This job already has a final recorded outcome. Do not let the global
+        // selection-error handler relabel an exhausted quota job as deferred.
+        console.error(error instanceof Error?error.message:error);process.exitCode=1;return;
       }finally{
         mkdirSync(path.join(root,'out/comparisons',job.id),{recursive:true});
         writeJson(path.join(root,'out/comparisons',job.id,'automation-usage.json'),client.usage());

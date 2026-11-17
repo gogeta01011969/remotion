@@ -56,15 +56,14 @@ export function lockAutomation(directory:string){
   return ()=>{closeSync(fd);unlinkSync(file);};
 }
 export function pendingJob(ledger:TopicLedger,config:AutomationConfig,now=Date.now()){
-  return ledger.jobs.find(j=>['reserved','rendering','rendered','retry-later'].includes(j.status)&&(j.status==='rendered'||j.attempts<config.maxAttemptsPerJob)&&(!j.retryAt||Date.parse(j.retryAt)<=now));
+  return ledger.jobs.find(j=>['reserved','rendering','rendered','retry-later'].includes(j.status)&&j.attempts<config.maxAttemptsPerJob&&(!j.retryAt||Date.parse(j.retryAt)<=now));
 }
 export async function reserveTopic(options:{ledger:TopicLedger;config:AutomationConfig;root:string;directory:string;client:Pick<GroqClient,'chat'>;model:string;log:(s:string)=>void;topic?:string;now?:string}){
   const {ledger,config}=options,now=options.now??new Date().toISOString();
-  for(const j of ledger.jobs)if(['reserved','rendering','retry-later'].includes(j.status)&&j.attempts>=config.maxAttemptsPerJob){j.status='needs-review';j.error='Automatic attempt limit reached.';j.updatedAt=now;}
-  if(!options.topic){const pending=pendingJob(ledger,config,Date.parse(now));if(pending)return pending;
-    const deferred=ledger.jobs.find(j=>j.status==='retry-later'&&j.attempts<config.maxAttemptsPerJob&&j.retryAt&&Date.parse(j.retryAt)>Date.parse(now));
-    if(deferred)throw new AutomationDeferredError(deferred.retryAt!);
-  }
+  for(const j of ledger.jobs)if(['reserved','rendering','rendered','retry-later'].includes(j.status)&&j.attempts>=config.maxAttemptsPerJob){j.status='needs-review';j.error=`Automatic attempt limit reached. Previous error: ${j.error??'Run interrupted or delivery not confirmed.'}`.slice(0,1500);delete j.retryAt;j.updatedAt=now;}
+  // A deferred job pauses only itself. Due jobs get bounded retries; otherwise
+  // choose a fresh topic rather than replaying another job's saved backoff.
+  if(!options.topic){const pending=pendingJob(ledger,config,Date.parse(now));if(pending)return pending;}
   let candidate:TopicCandidate|undefined;
   if(options.topic){
     const proposal={topic:options.topic,metric:null,scopeKey:'',entityKeys:[]};

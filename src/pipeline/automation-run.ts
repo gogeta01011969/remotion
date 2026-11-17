@@ -49,6 +49,19 @@ export function restoreCheckpoint(root:string,id:string,from:string){
   // Ignore all archive paths except the four generated directories for this ID.
   for(const target of runPaths(root,id))copySafe(path.join(from,path.relative(root,target)),target);
 }
+export function restoreJobCheckpoint(root:string,job:AutomationJob,from:string){
+  if(job.status==='complete')return {status:'complete',id:job.id};
+  if(!existsSync(from)&&job.status==='reserved'&&job.attempts===0)return {status:'fresh',id:job.id};
+  try{
+    const files=runPaths(root,job.id).flatMap(target=>treeFiles(path.join(from,path.relative(root,target))));
+    if(!files.length)throw new Error('Checkpoint is missing or contains no saved job files.');
+    restoreCheckpoint(root,job.id,from);
+    return {status:'restored',id:job.id};
+  }catch{
+    job.status='needs-review';job.error='Saved checkpoint is missing or unusable. Automatic recovery stopped; the next trigger can select another topic.';delete job.retryAt;job.updatedAt=new Date().toISOString();
+    return {status:'needs-review',id:job.id,reason:job.error};
+  }
+}
 export function cleanupJob(root:string,id:string,ledger:TopicLedger){
   if(ledger.jobs.find(j=>j.id===id)?.status!=='complete')throw new Error('Archive confirmation is required before cleanup.');
   for(const folder of runPaths(root,id))rmSync(folder,{recursive:true,force:true});
@@ -75,11 +88,11 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
   const {root,job,ledger,config,stateFile}=options;
   if(job.status==='complete')return {status:'complete',id:job.id,artifactId:job.artifactId};
   if(repairLegacyMillisecondBackoff(job,config.retryAfterMinutes)){saveLedger(stateFile,ledger);options.log(`Corrected a legacy millisecond retry date for ${job.id}: ${job.retryAt}`);}
+  if(job.attempts>=config.maxAttemptsPerJob){job.status='needs-review';job.error='Job attempt limit reached; automatic recovery stopped.';delete job.retryAt;job.updatedAt=new Date().toISOString();saveLedger(stateFile,ledger);throw new Error(job.error);}
   if(job.status==='retry-later'&&job.retryAt&&Date.parse(job.retryAt)>Date.now())return {status:'retry-later',id:job.id,retryAt:job.retryAt,deferredBy:'saved-backoff',reason:'Saved backoff is still active; no generation or API calls were made.'};
-  if(job.attempts>=config.maxAttemptsPerJob&&job.status!=='rendered')throw new Error('Job attempt limit reached; review the saved failure instead of spending more API quota.');
   const archiveOnly=job.status==='rendered';
   const dir=path.join(root,'out/comparisons',job.id);mkdirSync(dir,{recursive:true});
-  job.status='rendering';if(!archiveOnly)job.attempts++;job.updatedAt=new Date().toISOString();delete job.error;delete job.retryAt;saveLedger(stateFile,ledger);
+  job.status='rendering';job.attempts++;job.updatedAt=new Date().toISOString();delete job.error;delete job.retryAt;saveLedger(stateFile,ledger);
   try{
     const rawFile=path.join(dir,'dataset.raw.json');
     if(archiveOnly&&!existsSync(rawFile))throw new Error('Rendered job needs its checkpoint restored before archival; no new API calls were made.');
@@ -113,8 +126,7 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
     const secrets=[process.env.GROQCLOUD_API_KEY,process.env.CLOUDFLARE_API_TOKEN,process.env.CLOUDFARE_API_TOKEN,process.env.GITHUB_TOKEN].filter(Boolean) as string[];
     const message=redact(error instanceof Error?error.message:String(error),secrets).slice(-1500);
     const quotaRetryAt=quotaDeferral(message,Date.now(),config.retryAfterMinutes);
-    if(quotaRetryAt){
-      if(!archiveOnly)job.attempts--;
+    if(quotaRetryAt&&job.attempts<config.maxAttemptsPerJob){
       job.status='retry-later';job.error=message;job.updatedAt=new Date().toISOString();job.retryAt=quotaRetryAt;saveLedger(stateFile,ledger);
       return {status:'retry-later',id:job.id,retryAt:job.retryAt,reason:message};
     }

@@ -1,5 +1,5 @@
 import {messageRetryMs} from './rate-limit';
-// Quota exhaustion is a scheduling condition, not a failed content attempt.
+// Calculate provider backoff; the controller still counts this run toward its attempt limit.
 export function quotaDeferral(message:string,now=Date.now(),fallbackMinutes=60){
   if(!/429|rate.limit|quota|usage budget reached/i.test(message))return null;
   // Waiting cannot make an individually oversized request fit the provider limit.

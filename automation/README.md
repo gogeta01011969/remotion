@@ -132,21 +132,26 @@ does not change measured size into a stand-in for another quantity.
 
 Edit [`config.json`](config.json) to change the niche, eligible measurements,
 idea-batch size, retry policy, request budget and asset provider. Default unattended
-metrics are diameter, height, length, width, wingspan and volume. **Area is excluded**
+metrics include physical dimensions plus mass, count, speed, duration, energy,
+power and temperature. **Area is excluded**
 until a reliable real-outline acquisition provider is connected. Existing authored
 area comparisons still work. Generated cutouts approximate real objects and still
 need visual review; they are not verified scans.
 
-Quota exhaustion is a deferred outcome, with a notice rather than a failed
-workflow. No finished video is claimed, and it does not consume a content attempt.
-The retry time uses the provider's reported interval plus a small buffer, or a
-60-minute fallback. Explicit resumes during backoff make no API calls. Quota
-deferral also applies when topic selection has not yet reserved a job.
-Network failures retain a 60-minute delay and count toward the three automatic
-content attempts per job. A future run resumes a due job before choosing another topic.
-Validation failures move to `needs-review`; an actual duplicate is skipped before
-asset creation. The schedule is daily, so a retry delay does not itself trigger
-another run. Trigger one manually to retry sooner once due.
+Recovery is deliberately best-effort. A job gets at most three started attempts
+(`maxAttemptsPerJob`), including quota deferrals and archive-only retries. Provider
+clients still handle short transient errors within a call. Long quota waits save
+progress and return `retry-later`; provider retry times (plus a small buffer) are
+honoured, with a 60-minute fallback. Explicit resumes during active backoff make
+no API calls and do not consume another attempt. Topic-selection quota failures
+before reservation defer only that workflow invocation.
+
+At the next trigger, a due job can resume within its attempt limit. A job whose
+retry time is still in the future does not block selecting a fresh topic. Repeated
+failures eventually become `needs-review`, and selection moves on. Research or
+validation failures stop immediately; duplicates stop before asset creation.
+Failed jobs remain failed, never `complete`. No retry worker or extra schedule is
+introduced: retries wait for a normal scheduled or manual trigger.
 
 The default budget retains 12 logical Groq requests and 65,000 reported tokens
 per invocation. Before a call, the controller reserves a conservative input-byte
@@ -215,13 +220,19 @@ assets, receipts, logs and intermediate render files for seven days. Model weigh
 use an optional Actions cache; a cache miss downloads them again.
 
 An interrupted job can restore only its own generated directories from a checkpoint
-created by the trusted workflow on the default branch. Missing/expired checkpoints
-may require regeneration for unfinished jobs. A job already marked `rendered`
-must restore a matching checkpoint to retry archival; it will not silently pay to
-regenerate. Changes to code/assets invalidate render receipts. Review a
-`needs-review` job's saved error and checkpoint before retrying it explicitly with
-`resume_job` (or local `--resume`). Jobs that exhausted the attempt limit still
-require manual review of the ledger; no automatic attempt-reset command is provided.
+created by the trusted workflow on the default branch. New, unstarted jobs need
+no checkpoint. For attempted jobs, missing/expired/unusable checkpoints stop
+recovery and mark `needs-review`, without rebuilding the missing state or spending
+new API quota. Checkpoint lookup/download failures take the same path. The next
+trigger can select another topic. Incomplete or corrupt stage data discovered
+later also fails through normal validation rather than being reconstructed.
+
+A `rendered` job reuses a matching verified render to retry archival, within the
+same attempt limit. Changed code/assets invalidate receipts; a mismatched rendered
+checkpoint stops for review. Explicit `resume_job` (or local `--resume`) can retry
+a reviewed job with remaining attempts; it does not reset exhausted limits.
+Cancellation state/checkpoint persistence is best-effort; missing progress is
+abandoned. Durable ledger writes still fail closed to preserve topic history.
 
 Short provider throttles are handled inside the running job. Retry durations
 recognize milliseconds, seconds and compound minute/hour durations; `525ms`
@@ -244,8 +255,11 @@ After code changes are committed and pushed, start a **new** workflow dispatch o
 `main` to test them. Re-running an old Actions run uses its original code revision;
 uncommitted local changes are never visible to GitHub Actions.
 
-Final video artifacts last 30 days. Download them or add permanent storage later;
-the ledger retains their artifact IDs but cannot extend artifact retention. A
+Final video artifacts last 30 days; the ledger retains their artifact IDs but
+cannot extend artifact retention. Permanent video storage is not a requirement.
+When YouTube upload is added, its confirmed success will become the delivery gate
+before deleting videos and intermediate assets. Keep only lightweight topic,
+status and upload-ID history after cleanup. A
 successful local run instead archives to `out/automation/delivery/<job-id>`.
 Cleanup never removes the ledger or final delivery and is refused before completion.
 YouTube publication is a separate future stage.
