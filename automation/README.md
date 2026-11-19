@@ -247,6 +247,13 @@ means 0.525 seconds, never 525 minutes. The Groq client retries transient rate
 limits up to six HTTP responses with increasing waits, at most 60 seconds per
 wait and 120 seconds total retry waiting per logical call. Longer waits defer
 the saved job. Network/server failures retain their three-failure bound.
+Cloudflare image generation retries explicit HTTP 429/500/502/503/504 failures
+up to three requests per image, normally after 2 and 4 seconds. Retry-After is
+honoured, with at most 30 seconds per wait and 45 seconds total waiting. Long
+throttles defer to normal job recovery. Permanent errors and uncertain network
+POST outcomes do not trigger immediate duplicate requests. Completed images and
+their prompt/model receipts remain cached; successful receipts record attempts.
+
 Successful token-limit/remaining/reset headers also pace later requests for the
 same model. This reduces self-throttling; other account usage can still cause 429s.
 

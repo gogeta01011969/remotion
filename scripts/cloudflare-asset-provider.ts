@@ -43,8 +43,8 @@ async function main(){
     const cached=previous&&previous.model===model&&previous.steps===steps&&previous.prompt===prompt&&previous.width===width&&previous.height===height;
     if(!cached){
       console.log(`Generating ${item.label} with ${model}`);
-      const result=await generateCloudflareImage({model,prompt,steps,width,height},config);
-      writeFileSync(raw,result.bytes);writeFileSync(receipt,JSON.stringify({id:item.id,model,steps,prompt,width,height,actualNeurons:result.neurons,elapsedSeconds:result.elapsedSeconds,referenceImages:0},null,2)+'\n');
+      const result=await generateCloudflareImage({model,prompt,steps,width,height},config,fetch,{onRetry:console.log});
+      writeFileSync(raw,result.bytes);writeFileSync(receipt,JSON.stringify({id:item.id,model,steps,prompt,width,height,actualNeurons:result.neurons,attempts:result.attempts,elapsedSeconds:result.elapsedSeconds,referenceImages:0},null,2)+'\n');
       newNeurons+=result.neurons??0;
     }else console.log(`Reusing ${item.label} generation`);
     const rawHash=createHash('sha256').update(readFileSync(raw)).digest('hex'),cutoutReceipt=target+'.receipt.json';
