@@ -231,10 +231,11 @@
       "family": "aircraft",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "needs-review",
+      "attempts": 1,
       "createdAt": "2026-11-19T14:02:07.420Z",
-      "updatedAt": "2026-11-19T14:02:07.420Z"
+      "updatedAt": "2026-11-19T14:05:04.069Z",
+      "error": "motion failed validation after three attempts: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"measurementBasis\"\n    ],\n    \"path\": [\n      \"editorial\"\n    ],\n    \"message\": \"Unrecognized key: \\\"measurementBasis\\\"\"\n  },\n  {\n    \"code\": \"custom\",\n    \"message\": \"Define a common measurement basis (including endpoints, pedestal policy, animal age or capacity definition).\",\n    \"path\": []\n  }\n]"
     }
   ],
   "queue": []
