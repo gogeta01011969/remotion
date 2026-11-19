@@ -139,3 +139,35 @@ test('dataset repairs receive the prior draft and valid nullable drafts resume w
     assert.equal((await structuredStage(options)).value,2);assert.equal(calls.length,2);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
+
+test('ambiguous early subjects cannot exhaust the page budget before later subjects are tried',async()=>{
+  const run=setup(),opened:string[]=[];
+  try{
+    const names=Array.from({length:6},(_,i)=>`Reference ${i}`);
+    run.concept.candidates=names;
+    const plan={targets:names.map((candidate,i)=>({candidate,query:candidate,urls:[`https://example.com/${i}`]})),excluded:[]};
+    run.deps.client.chat=async request=>({usage:{total_tokens:1000},choices:[{message:{content:JSON.stringify(JSON.parse(request.messages[1].content).concept?plan:{measurements:values.map((value,i)=>({candidate:names[i+2],sourceId:`s${i+1}`,quote:quote(i),sourceValue:value,sourceUnit:'m',conversion:'direct',qualifier:'Full height'})),gaps:[]})}}]});
+    run.deps.webFetch=async url=>{
+      if(url.includes('/search/page?')){
+        const index=new URL(url).searchParams.get('q')!.split(' ').at(-1);
+        return {status:200,headers:{'content-type':'application/json'},body:JSON.stringify({pages:[0,1,2].map(n=>({key:`Reference_${index}_alternative_${n}`}))})};
+      }
+      opened.push(url);const index=Number(new URL(url).pathname.slice(1));
+      const body=index>=2&&index<=5?`<p>${quote(index-2)}</p><p>${'Detailed measurement context. '.repeat(12)}</p>`:'<title>Access denied</title>';
+      return {status:200,headers:{'content-type':'text/html'},body};
+    };
+    const result=await boundedComparisonResearch(run.options,run.deps,run.concept);
+    assert.equal(result.sources.length,4);
+    assert.deepEqual(opened.slice(0,6),names.map((_,i)=>`https://example.com/${i}`));
+    const state=JSON.parse(readFileSync(path.join(run.root,'research-web.json'),'utf8'));
+    assert.ok(state.attemptedPages.length<=researchLimits.pages);assert.ok(state.httpRequests<=researchLimits.httpRequests);
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+test('discovery rejects unrelated media/list hits before page fetching',async()=>{
+  const {relevantSearchPage}=await import('../src/pipeline/research-web');
+  assert.equal(relevantSearchPage('Refrigerated truck',{key:'Brian_Moser_(Dexter)',description:'fictional character'}),false);
+  assert.equal(relevantSearchPage('Two-story house',{key:'Two_Story_House',description:'1980 country song'}),false);
+  assert.equal(relevantSearchPage('Two-story house',{key:'List_of_House_episodes'}),false);
+  assert.equal(relevantSearchPage('Shipping container',{key:'Intermodal_container'}),true);
+  assert.equal(relevantSearchPage('Eiffel Tower',{key:'Eiffel_Tower'}),true);
+});

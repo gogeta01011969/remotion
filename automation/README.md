@@ -203,6 +203,11 @@ call purely for audit metadata. These checks do not prove every semantic claim
 or establish a world ranking; ambiguous or missing evidence still needs review.
 
 `research-web.json` persists discovery, attempted pages, excerpts and failures.
+Discovery filters unrelated media/list results. Page retrieval gives every subject
+a first attempt before spending remaining slots on fallback pages, so an ambiguous
+early query cannot consume the entire page budget before later subjects are tried.
+The source gate reports usable-page and attempted-page counts plus rejection
+reasons; it never treats snippets or blocked pages as evidence.
 Counts survive runner restarts; budget deferral does not reset browsing limits.
 `research-plan.json`, `research-measurements.json` and `research-receipt.json`
 preserve the source plan, quotations and completed evidence. Failed dataset drafts

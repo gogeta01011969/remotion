@@ -60,3 +60,15 @@ export function evidenceExcerpt(text:string,query:string,max=1800){
   for(const entry of ranked){if(selected.length+entry.line.length+1<=max)selected+=entry.line+'\n';}
   return selected.trim()||text.slice(0,max);
 }
+
+// Search hits are discovery hints, not evidence. Drop obvious off-topic media
+// and list pages before spending the scarce page-fetch budget on them.
+export function relevantSearchPage(query:string,page:{key:string;title?:string;description?:string}){
+  const normalize=(s:string)=>s.normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  const title=normalize(page.title??page.key),q=normalize(query);
+  if(/^(list of|category |template )/.test(title)&&!q.startsWith('list of'))return false;
+  const media=/\b(song|album|film|television|episode|fictional|character|novel|band)\b/;
+  if(media.test(normalize(page.description??''))&&!media.test(q))return false;
+  const words=q.split(' ').filter(w=>w.length>2&&!['the','and','for','with'].includes(w));
+  return words.length===0||words.some(w=>title.split(' ').includes(w));
+}
