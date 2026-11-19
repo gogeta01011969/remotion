@@ -188,10 +188,9 @@
       "videoSha256": "95bba6de8bdf548cb8218d8401d737c5af3886dd3375bc7310f48d8291212206",
       "artifactName": "short-short-2026-11-10-13aa5c76fe1b",
       "artifactId": "13835679813"
-    }
-  ],
-  "queue": [
+    },
     {
+      "id": "short-2026-11-19-12b9276ec8ba",
       "topic": "Giant everyday objects vs. a standard shipping container",
       "metric": "height",
       "scopeKey": "suite-objects-height",
@@ -203,8 +202,18 @@
         "Statue of Liberty (torch height only)",
         "Eiffel Tower (first level)"
       ],
-      "whyInteresting": "Stacking familiar, human‑scale items against a common industrial benchmark lets the audience instantly gauge scale, while the vertical progression builds tension toward the towering Eiffel Tower segment."
-    },
+      "actualEntityKeys": [],
+      "whyInteresting": "Stacking familiar, human‑scale items against a common industrial benchmark lets the audience instantly gauge scale, while the vertical progression builds tension toward the towering Eiffel Tower segment.",
+      "family": "everyday-objects",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-19T13:44:10.140Z",
+      "updatedAt": "2026-11-19T13:44:10.140Z"
+    }
+  ],
+  "queue": [
     {
       "topic": "Wingspan showdown: birds, bats, and aircraft",
       "metric": "wingspan",
