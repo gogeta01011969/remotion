@@ -178,3 +178,39 @@ test('missing evidence resumes an interrupted research checkpoint before selecti
     const saved=JSON.parse(readFileSync(path.join(root,'research.json'),'utf8'));assert.equal(saved.sources.find((s:{id:string})=>s.id==='s1').url,'https://example.com/source');
   }finally{rmSync(root,{recursive:true,force:true});}
 });
+
+test('dataset measurement-basis aliases normalize without changing facts or relaxing strict validation',()=>{
+  const data=fixture(),basis=data.basis!;
+  for(const raw of [
+    {...data,basis:undefined,editorial:{...data.editorial,measurementBasis:basis}},
+    {...data,basis:undefined,measurementBasis:basis},
+    {...data,editorial:{...data.editorial,measurementBasis:basis}},
+  ]){
+    const normalized=sizeDatasetSchema.parse(normalizeComparisonGeneration(raw));
+    assert.deepEqual(normalized,data);assert.deepEqual(normalized.items,data.items);assert.deepEqual(normalized.sources,data.sources);
+  }
+  assert.throws(()=>normalizeComparisonGeneration({...data,editorial:{...data.editorial,measurementBasis:'A contradictory measurement policy'}}),/Conflicting measurement basis/);
+  assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...data,basis:undefined})).success,false);
+  assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...data,editorial:{...data.editorial,unknownField:'Do not discard'}})).success,false);
+  const schema=z.toJSONSchema(comparisonGenerationSchema('wingspan'));
+  assert.ok(schema.required?.includes('basis'));
+});
+test('a saved dataset with misplaced basis can pass local revalidation without another model call',async()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'basis-draft-recovery-')),data=fixture();
+  try{
+    const raw={...data,basis:undefined,editorial:{...data.editorial,measurementBasis:data.basis}};
+    writeFileSync(path.join(root,'comparison-data-attempt-3.json'),JSON.stringify({content:JSON.stringify(raw)}));
+    const result=await structuredStage({stage:'motion',artifact:'comparison-data',repairFromDraft:true,model:'unused',schema:comparisonGenerationSchema(data.metric),system:'Unused offline test',input:'{}',directory:root,log:()=>{},validate:raw=>sizeDatasetSchema.parse(normalizeComparisonGeneration(raw)),client:{chat:async()=>{throw new Error('Do not spend quota on a canonicalizable cached draft');}}});
+    assert.deepEqual(result,data);
+  }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+test('endpoint audit records accept the same candidate spelled as a slug but reject a different candidate',()=>{
+  const data=fixture(),concept=ideaFixture().concepts[0];
+  data.items.at(-1)!.label='Verified final reference';
+  data.editorial!.conceptAdjustments=[{role:'payoff',originalCandidate:'reference-3',replacementItemId:data.items.at(-1)!.id,reason:'A researched display-label change for the same endpoint candidate.'}];
+  assert.equal(validateConceptSelection(data,concept),data);
+  assert.equal(data.editorial!.conceptAdjustments[0].originalCandidate,concept.payoffCandidate);
+  data.editorial!.conceptAdjustments[0].originalCandidate='Reference 30';
+  assert.throws(()=>validateConceptSelection(data,concept),/payoff adjustment/);
+});

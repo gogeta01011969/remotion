@@ -24,12 +24,25 @@ export function comparisonGenerationSchema(metric:SizeDataset['metric'],sources:
   const {appearance,material,...base}=sizeItemSchema.shape;
   const item=z.object({...base,visual,...(sources.length?{sourceIds:z.array(z.enum(sources.map(s=>s.id) as [string,...string[]])).min(1)}:{})});
   const editorial=comparisonEditorialSchema.omit({items:true}).extend({objectRoles:comparisonEditorialSchema.shape.items});
-  return z.object({...sizeDatasetSchema.shape,editorial,items:z.array(item).min(4).max(8)});
+  return z.object({...sizeDatasetSchema.shape,basis:sizeDatasetSchema.shape.basis.unwrap(),editorial,items:z.array(item).min(4).max(8)});
 }
 
 export function normalizeComparisonGeneration(raw:unknown){
   if(!raw||typeof raw!=='object'||Array.isArray(raw))return raw;
-  const data={...raw} as Record<string,unknown>,e=data.editorial;
+  const data={...raw} as Record<string,unknown>;
+  let e=data.editorial;
+  // The concept contract calls this measurementBasis; the dataset calls it
+  // top-level basis. Move only this known alias, without inventing its text.
+  const aliases=[data.measurementBasis,e&&typeof e==='object'&&!Array.isArray(e)?(e as Record<string,unknown>).measurementBasis:undefined].filter(v=>v!==undefined);
+  for(const alias of aliases){
+    if(typeof alias!=='string'||!alias.trim())throw new Error('measurementBasis must contain a nonempty measurement definition.');
+    if(data.basis!==undefined&&data.basis!==alias)throw new Error('Conflicting measurement basis fields; use one consistent top-level basis.');
+    data.basis=alias;
+  }
+  delete data.measurementBasis;
+  if(e&&typeof e==='object'&&!Array.isArray(e)){
+    e={...e};delete (e as Record<string,unknown>).measurementBasis;data.editorial=e;
+  }
   // Canonicalize presentation metadata/order, never values, units or sources.
   if(typeof data.context==='string')data.context=data.context.slice(0,100);
   if(typeof data.title==='string'&&(typeof data.context!=='string'||!data.context.trim()))data.context=data.title.slice(0,100);
@@ -90,6 +103,10 @@ export function validateConceptSelection(data:SizeDataset,concept:ComparisonConc
   if(data.editorial.viewerQuestion!==concept.viewerQuestion&&data.editorial.questionRevision?.originalQuestion!==concept.viewerQuestion)throw new Error('Preserve the selected viewer question or document a research-backed correction in questionRevision.');
   for(const role of ['opening','payoff'] as const){
     const proposed=role==='opening'?concept.openingCandidate:concept.payoffCandidate;
+    const key=(label:string)=>label.normalize('NFKC').toLowerCase().replace(/[^a-z0-9]/g,'');
+    for(const adjustment of data.editorial.conceptAdjustments){
+      if(adjustment.role===role&&key(proposed)&&key(adjustment.originalCandidate)===key(proposed))adjustment.originalCandidate=proposed;
+    }
     const actual=data.items.find(item=>item.id===data.editorial![role].itemId)!;
     if(actual.label!==proposed&&!data.editorial.conceptAdjustments.some(a=>a.role===role&&a.originalCandidate===proposed&&a.replacementItemId===actual.id))throw new Error(`Document the research-backed ${role} adjustment from ${proposed} to ${actual.label}.`);
   }
