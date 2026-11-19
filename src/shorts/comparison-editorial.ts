@@ -16,7 +16,7 @@ const concept=z.object({
   metric:z.enum(comparisonMetrics),
   unit:z.enum(comparisonUnits),
   measurementBasis:reason,
-  visualApproach:z.enum(['textured-spheres','grounded-cutouts','side-cutouts','top-cutouts','equal-area-outlines','equivalent-volume-models','quantity-bars','count-grid','race','timeline','temperature-axis']),
+  visualApproach:z.enum(['textured-spheres','grounded-cutouts','side-cutouts','top-cutouts','equal-area-outlines','equivalent-volume-models','quantity-bars','temperature-axis']),
   background:z.object({environment:z.enum(sizeEnvironments),reason}).strict().optional(),
   candidates:z.array(z.string().trim().min(2).max(80)).min(4).max(10),
   openingCandidate:z.string().min(2).max(80),payoffCandidate:z.string().min(2).max(80),
@@ -27,7 +27,7 @@ const concept=z.object({
   const linear=['nm','um','mm','cm','m','km','AU','ly'];
   if(!metricUnitCompatible(value.metric,value.unit))issue('Concept metric and unit must describe one dimension.');
   if(value.metric==='temperature'&&value.strategy==='orders-of-magnitude')issue('Temperature requires an axis, not multiplicative orders of magnitude.');
-  if(isQuantityMetric(value.metric)&&value.visualApproach!==quantityTemplate(value.metric))issue('This quantity requires its quantity/race/timeline/axis template.');
+  if(isQuantityMetric(value.metric)&&value.visualApproach!==quantityTemplate(value.metric))issue('This quantity requires sequential vertical bars; temperature uses signed bars.');
   if(value.metric==='diameter'&&value.visualApproach!=='textured-spheres')issue('Diameter needs sphere-compatible objects.');
   if(value.metric==='area'&&value.visualApproach!=='equal-area-outlines')issue('Area needs sourced equal-area outlines.');
   if(value.metric==='volume'&&value.visualApproach!=='equivalent-volume-models')issue('Plan equivalent-volume models for capacity rather than guessing volume from a silhouette.');

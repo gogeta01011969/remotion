@@ -2,47 +2,39 @@ import {useCurrentFrame,useVideoConfig} from 'remotion';
 import type {Actor,ActorState} from './schema';
 import {ComparisonObject} from './ComparisonObject';
 import {formatSize,formatRatio,formatUnit} from './size-data';
-import {sampleRace,countDots,quantityDomain,quantityTemplate,quantityAnimation} from './measurements';
+import {quantityTemplate} from './measurements';
+import {sampleQuantityBars} from './quantity-bars';
 import type {SizeTextTiming} from './size-text-motion';
 const compact=(n:number)=>Math.abs(n)>=1e15?`${formatSize(n/1e15)}Q`:Math.abs(n)>=1e12?`${formatSize(n/1e12)}T`:Math.abs(n)>=1e9?`${formatSize(n/1e9)}B`:Math.abs(n)>=1e6?`${formatSize(n/1e6)}M`:Math.abs(n)>=1e3?`${formatSize(n/1e3)}K`:formatSize(n);
 
-export const QuantityComparison=({actor}:{actor:Extract<Actor,{kind:'size-comparison'}>;state:ActorState;textTiming?:SizeTextTiming})=>{
-  const frame=useCurrentFrame(),{fps,durationInFrames}=useVideoConfig(),{data}=actor;
-  const template=quantityTemplate(data.metric),race=template==='race',temperature=template==='temperature-axis',count=template==='count-grid';
-  const {entrance:enter,progress}=quantityAnimation(frame,fps,durationInFrames);
-  const smallest=data.items[0],largest=data.items.at(-1)!;
-  const domain=quantityDomain(data.items.map(i=>i.value),data.metric),span=domain.max-domain.min;
-  const rowHeight=Math.min(176,780/data.items.length),left=166,width=670,start=210;
-  const raceSample=race?sampleRace(data.items.map(i=>i.value),data.unit,data.raceDistanceM,progress):null;
-  const simulatedSeconds=raceSample?.elapsedSeconds??0;
-  const dotValue=countDots(domain.max,domain.max).perDot;
-  const footer=race?`Constant-speed illustration · ${data.raceDistanceM} m track · simulation ${formatSize(simulatedSeconds)} s`:count?`1 full dot = ${compact(dotValue)} ${data.countBasis==='population'?'individuals':'items'}${data.asOf?` · ${data.asOf}`:''}`:temperature?'Temperature on a shared scale':`${data.metric==='duration'?'Elapsed duration':'Shared scale'} · ${formatUnit(data.unit)}`;
-  return <div data-quantity-template={template} style={{width:900,height:1150,position:'relative',color:'#F3F7FA'}}>
-    <div style={{fontSize:Math.min(44,Math.max(30,1500/data.title.length)),fontWeight:750,lineHeight:1.12,maxWidth:850,letterSpacing:-1.5}}>{data.title}</div>
-    <div style={{position:'absolute',top:110,color:'#A9C1CF',fontSize:24,textTransform:'uppercase',letterSpacing:3}}>{data.metric} · {formatUnit(data.unit)}{data.asOf&&!count?` · ${data.asOf}`:''}</div>
-    {!count&&[0,.25,.5,.75,1].map(t=><div key={t} style={{position:'absolute',left:left+t*width,top:175,width:1,height:rowHeight*data.items.length+30,background:'#BFD5E318'}}><span style={{position:'absolute',top:-25,transform:'translateX(-50%)',fontSize:18,color:'#8EA8B8',fontVariantNumeric:'tabular-nums'}}>{compact(race?data.raceDistanceM*t:domain.min+t*span)}</span></div>)}
+export const QuantityComparison=({actor,state,textTiming}:{actor:Extract<Actor,{kind:'size-comparison'}>;state:ActorState;textTiming?:SizeTextTiming})=>{
+  const frame=useCurrentFrame(),{fps}=useVideoConfig(),{data}=actor;
+  const active=Math.max(0,Math.min(data.items.length-1,Math.round(state.value))),overview=state.shot>=data.items.length;
+  const sample=sampleQuantityBars(data.items.map(i=>i.value),data.metric,active,textTiming?.localFrame??frame,fps,overview);
+  const focus=data.items[active],reference=data.items[Math.max(0,active-1)],unit=formatUnit(data.unit);
+  const valueText=(value:number)=>compact(data.metric==='count'?Math.round(value):value);
+  return <div data-quantity-template={quantityTemplate(data.metric)} style={{width:900,height:1150,position:'relative',color:'#F3F7FA'}}>
+    <div style={{fontSize:Math.min(40,Math.max(28,1400/data.title.length)),fontWeight:750,lineHeight:1.14,maxWidth:860}}>{data.title}</div>
+    <div style={{position:'absolute',top:90,left:30,width:840,height:80,display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center',lineHeight:1.12,fontSize:overview?34:Math.min(42,Math.max(24,1300/focus.label.length)),fontWeight:700,color:overview?'#F3F7FA':focus.color}}>{overview?'The full comparison':focus.label}</div>
+    <div style={{position:'absolute',top:175,left:0,width:900,textAlign:'center',lineHeight:1,fontSize:60,fontWeight:750,fontVariantNumeric:'tabular-nums'}}>{overview?null:<>{focus.approximate?'≈ ':''}{valueText(focus.value)} <span style={{fontSize:28,color:'#B4C6D1'}}>{unit}</span></>}</div>
+    <div style={{position:'absolute',top:280,left:sample.chart.left,fontSize:20,color:'#A9C1CF'}}>{data.metric} · {unit}{data.asOf?` · ${data.asOf}`:''}</div>
+    {[0,.25,.5,.75,1].map(t=>{
+      const y=sample.chart.top+sample.chart.height*(1-t),value=sample.domain.min+(sample.domain.max-sample.domain.min)*t;
+      return <div key={t} style={{position:'absolute',left:sample.chart.left,top:y,width:sample.chart.width,height:1,background:'#BFD5E322'}}><span style={{position:'absolute',right:'100%',paddingRight:18,top:-10,fontSize:18,color:'#A4BCCB',fontVariantNumeric:'tabular-nums'}}>{compact(value)}</span></div>;
+    })}
+    <div style={{position:'absolute',left:sample.chart.left,top:sample.zeroY,width:sample.chart.width,height:2,background:'#C7DBE788'}}/>
     {data.items.map((item,i)=>{
-      const p=progress;
+      const bar=sample.bars[i];if(!bar.visible)return null;
       const visual=item.visual,aspect=visual?.kind==='cutout'&&visual.calibration?visual.calibration.bounds.width/visual.calibration.bounds.height:1;
-      const imageSize=Math.min(110,rowHeight-18),imageWidth=aspect>=1?imageSize:imageSize*aspect,imageHeight=aspect>=1?imageSize/aspect:imageSize;
-      const position=(item.value-domain.min)/span,zero=-domain.min/span;
-      const imageX=race?left+raceSample!.fractions[i]*width:62;
-      const value=item.value*p;
-      return <div key={item.id} data-quantity-row={item.id} style={{position:'absolute',left:0,top:start+i*rowHeight,width:880,height:rowHeight-10,opacity:enter,transform:`translateX(${(1-enter)*35}px)`}}>
-        <svg style={{position:'absolute',left:imageX-imageSize/2,top:race?rowHeight-imageSize-4:rowHeight/2-imageSize/2,overflow:'visible'}} width={imageSize} height={imageSize} viewBox={`${-imageSize/2} ${-imageSize/2} ${imageSize} ${imageSize}`}><ComparisonObject item={item} width={imageWidth} height={imageHeight} turn={frame/fps*.045}/></svg>
-        <div style={{position:'absolute',left,top:7,width:390,fontSize:Math.min(30,650/Math.max(1,item.label.length)),fontWeight:650,whiteSpace:'nowrap',color:item.color}}>{item.label}</div>
-        <div style={{position:'absolute',right:38,top:7,fontSize:30,fontWeight:700,fontVariantNumeric:'tabular-nums'}}>{item.approximate?'≈ ':''}{compact(race?item.value:value)} <span style={{fontSize:20,color:'#9BB4C3'}}>{formatUnit(data.unit)}</span></div>
-        {!race&&<>
-          {!count&&<div style={{position:'absolute',left,top:65,width,height:14,borderRadius:7,background:'#FFFFFF0C'}}/>}
-          {count?<div style={{position:'absolute',left,top:60,display:'grid',gridTemplateColumns:'repeat(40, 12px)',gap:4}}>{countDots(item.value,domain.max,p).fills.map((filled,n)=><span key={n} style={{width:10,height:10,borderRadius:3,transform:`scale(${.75+.25*filled})`,position:'relative',overflow:'hidden',background:'#FFFFFF12',opacity:1}}><span style={{position:'absolute',inset:0,width:`${filled*100}%`,background:item.color}}/></span>)}</div>:
-          template==='timeline'||temperature?<>
-            <div style={{position:'absolute',left:left+Math.min(zero,zero+(position-zero)*p)*width,top:68,width:Math.abs(position-zero)*width*p,height:6,background:item.color,opacity:.6}}/>
-            <div style={{position:'absolute',left:left+(zero+(position-zero)*p)*width-8,top:63,width:16,height:16,borderRadius:8,background:item.color,boxShadow:`0 0 18px ${item.color}`}}/>
-          </>:<div style={{position:'absolute',left,top:65,width:width*position*p,height:14,borderRadius:7,background:`linear-gradient(90deg, ${item.color}80, ${item.color})`,boxShadow:`0 0 22px ${item.color}30`}}/>}
-        </>}
+      const size=bar.imageSize,imageWidth=aspect>=1?size:size*aspect,imageHeight=aspect>=1?size/aspect:size;
+      const slot=sample.chart.width/(overview?data.items.length:active+1);
+      return <div key={item.id} data-quantity-column={item.id} style={{opacity:bar.opacity}}>
+        <div style={{position:'absolute',left:bar.x-bar.width/2,top:bar.top,width:bar.width,height:bar.height,borderRadius:'8px 8px 3px 3px',background:`linear-gradient(90deg, ${item.color}80, ${item.color})`,boxShadow:`0 0 24px ${item.color}20`,borderTop:`2px solid ${item.color}`,boxSizing:'border-box'}}/>
+        <div style={{position:'absolute',left:bar.x-slot/2,top:item.value<0?bar.endY+12:bar.endY-32,width:slot,textAlign:'center',fontSize:Math.min(25,slot*.23),fontWeight:700,fontVariantNumeric:'tabular-nums'}}>{item.approximate?'≈ ':''}{valueText(bar.value)}</div>
+        <svg style={{position:'absolute',left:bar.x-size/2,top:850+(135-size)/2,overflow:'visible'}} width={size} height={size} viewBox={`${-size/2} ${-size/2} ${size} ${size}`}><ComparisonObject item={item} width={imageWidth} height={imageHeight} turn={frame/fps*.045}/></svg>
+        <div style={{position:'absolute',left:bar.x-slot*.46,top:1000,width:slot*.92,textAlign:'center',fontSize:Math.min(25,Math.max(17,slot*.21)),lineHeight:1.18,fontWeight:650,color:item.color,overflowWrap:'anywhere'}}>{item.label}</div>
       </div>;
     })}
-    <div style={{position:'absolute',left:0,top:1080,width:870,textAlign:'center',fontSize:20,color:'#A0B9C8'}}>{footer}</div>
-    {!race&&!temperature&&smallest.value>0&&progress===1&&<div style={{position:'absolute',left:0,width:870,textAlign:'center',top:1020,fontSize:24,fontWeight:700,color:largest.color}}>{formatRatio(largest.value/smallest.value)} <span style={{fontSize:19,color:'#9BB4C3'}}>{largest.label} vs {smallest.label}</span></div>}
+    {!overview&&active>0&&sample.progress===1&&<div style={{position:'absolute',top:245,width:900,textAlign:'center',fontSize:22,color:'#AEC3D1'}}>{data.metric==='temperature'?`${compact(focus.value-reference.value)} ${unit} warmer than ${reference.label}`:reference.value>0?`${formatRatio(focus.value/reference.value)} vs ${reference.label}`:null}</div>}
   </div>;
 };

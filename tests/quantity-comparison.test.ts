@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
 import {sizeDatasetSchema} from '../src/shorts/size-data';
-import {convertMeasurement,quantityDomain,quantityTemplate,quantityMetrics,sampleRace,countDots,quantityAnimation} from '../src/shorts/measurements';
+import {convertMeasurement,quantityDomain,quantityTemplate,quantityMetrics} from '../src/shorts/measurements';
 import {compileSizeComparison,defaultSizeEpisode} from '../src/pipeline/size-comparison';
 import {planComparisonStory} from '../src/pipeline/comparison-story';
 import {previewInput} from '../src/shorts/defaults';
@@ -9,6 +9,7 @@ import {shortDuration} from '../src/shorts/schema';
 import {validateResearchFacts} from '../src/pipeline/bounded-research';
 import {ideaFixture} from './helpers/comparison-editorial';
 import {automationConfigSchema} from '../src/pipeline/topic-automation';
+import {sampleQuantityBars} from '../src/shorts/quantity-bars';
 import {evidenceExcerpt} from '../src/pipeline/research-web';
 export function quantityFixture(metric='mass',unit='kg',values=[1,2,4,8]){
   return sizeDatasetSchema.parse({template:'size-comparison',id:`test-${metric}`,title:`Synthetic ${metric} comparison`,metric,unit,basis:'Synthetic fixture values only, one common measurement definition and shared conditions.',context:'Synthetic fixture, not researched real-world claims',countBasis:metric==='count'?'fixed':undefined,environment:'laboratory',items:values.map((value,i)=>({id:`reference-${i}`,label:`Reference ${String.fromCharCode(65+i)}`,value,color:['#73DDD1','#78AEFC','#C5A4FB','#FFBD77'][i],sourceIds:['s1'],visual:{kind:'box',widthToHeight:1,depthToHeight:1}})),sources:[{id:'s1',title:'Synthetic values for renderer tests only',url:'https://example.com/synthetic-fixture'}]});
@@ -20,22 +21,32 @@ test('all new measurements compile through the existing silent 30-second pipelin
     const plan=planComparisonStory(data),input=previewInput(compileSizeComparison(data,defaultSizeEpisode(data)));
     assert.equal(plan.template,quantityTemplate(metric));assert.equal(plan.scaling.dimension,0);
     assert.ok(plan.scaling.objects.every(o=>o.width===1&&o.height===1));
-    assert.ok(plan.shots.every(shot=>shot.visible.length===data.items.length));
+    assert.deepEqual(plan.shots.slice(0,-1).map(s=>s.visible),data.items.map((_,i)=>data.items.slice(0,i+1).map((_,j)=>j)));
+    assert.equal(plan.shots.at(-1)!.visible.length,data.items.length);
     assert.equal(input.presentation,'silent');assert.equal(shortDuration(input),900);
     assert.ok(automationConfigSchema.parse({niche:'Comparison test fixture',allowedMetrics:[metric],assetProvider:'unused'}));
   }
 });
-test('all quantities use one continuous clock with a shared entrance and a final reading hold',()=>{
-  const sample=(seconds:number)=>quantityAnimation(seconds*30,30,900);
-  assert.equal(sample(0).progress,0);
-  assert.equal(sample(.6).entrance,1);
-  assert.equal(sample(3).progress,0);
-  // Old per-object scene boundaries must not restart the values.
-  const samples=[5,7,10,14,20,22,25.5,29].map(sample);
-  assert.ok(samples.every((s,i)=>i===0||s.progress>=samples[i-1].progress));
-  assert.equal(sample(25.5).progress,1);assert.equal(sample(29).progress,1);
-  assert.equal(quantityAnimation(18,60,1800).entrance,sample(.3).entrance);
-  assert.equal(quantityAnimation(900,60,1800).progress,sample(15).progress);
+test('vertical bars reveal one subject at a time and keep previous values while reframing',()=>{
+  const values=[1,2,4,8];
+  const first=sampleQuantityBars(values,'mass',0,60,30);
+  assert.deepEqual(first.bars.map(b=>b.visible),[true,false,false,false]);
+  const arriving=sampleQuantityBars(values,'mass',1,0,30);
+  assert.equal(arriving.bars[0].value,1);assert.equal(arriving.bars[1].opacity,0);
+  const second=sampleQuantityBars(values,'mass',1,60,30);
+  assert.equal(second.bars[0].value,1);assert.equal(second.bars[1].value,2);
+  assert.equal(second.bars[1].height/second.bars[0].height,2);
+  assert.equal(second.domain.max,2);assert.equal(second.zeroY,second.chart.top+second.chart.height);
+  const final=sampleQuantityBars(values,'mass',3,60,30,true);
+  assert.ok(final.bars.every(b=>b.visible&&b.opacity===1));assert.deepEqual(final.bars.map(b=>b.value),values);
+  assert.equal(final.bars[3].height/final.bars[0].height,8);
+});
+test('signed temperature bars share zero, include negative values and handle all-zero quantities',()=>{
+  const signed=sampleQuantityBars([-40,0,20,100],'temperature',3,90,30,true);
+  assert.ok(signed.bars[0].endY>signed.zeroY);assert.ok(signed.bars[3].endY<signed.zeroY);
+  assert.equal(signed.bars[1].height,0);assert.ok(Math.abs(signed.bars[3].height/signed.bars[0].height-2.5)<1e-10);
+  const zero=sampleQuantityBars([0,0,0,0],'count',3,90,30,true);
+  assert.ok(zero.bars.every(b=>b.height===0&&Number.isFinite(b.top)));
 });
 test('units distinguish mass, count, speed, duration, energy, power and affine temperature conversions',()=>{
   assert.equal(convertMeasurement(1,'t','kg'),1000);assert.equal(convertMeasurement(1,'kWh','J'),3600000);
@@ -59,15 +70,6 @@ test('population counts require dated scope while fixed counts may be undated; f
   assert.throws(()=>quantityFixture('count','count',[1,2,3.5,8]),/integers/);
   assert.equal(quantityDomain([0,0,0,0],'count').max,1);
 });
-test('a race uses one clock and correct constant-speed distances independent of video timing',()=>{
-  const sample=sampleRace([36,72],'km/h',100,.5);
-  assert.equal(sample.elapsedSeconds,2.5);assert.deepEqual(sample.distances,[25,50]);assert.deepEqual(sample.fractions,[.25,.5]);
-  assert.deepEqual(sampleRace([0,0],'m/s',100,1).distances,[0,0]);
-});
-test('count grids represent huge populations with bounded groups and honest partial dots',()=>{
-  const plan=countDots(6,88);assert.equal(plan.perDot,10);assert.deepEqual(plan.fills,[.6]);
-  const huge=countDots(8000000000,8000000000);assert.ok(huge.fills.length<=80);assert.equal(huge.fills.reduce((n,v)=>n+v,0)*huge.perDot,8000000000);
-});
 test('quoted research converts signed temperatures and population multipliers; derived units are not misread',()=>{
   const concept={...ideaFixture().concepts[0],metric:'temperature' as const,unit:'C' as const,visualApproach:'temperature-axis' as const};
   const values=[-40,0,20,100],targets=values.map((_,i)=>`Reference ${i}`);
@@ -85,7 +87,7 @@ test('source excerpts retain short infobox masses and measurements inside long p
 });
 
 test('a population date cannot be mistaken for the population value',()=>{
-  const concept={...ideaFixture().concepts[0],metric:'count' as const,unit:'count' as const,visualApproach:'count-grid' as const};
+  const concept={...ideaFixture().concepts[0],metric:'count' as const,unit:'count' as const,visualApproach:'quantity-bars' as const};
   const targets=['A','B','C','D'];
   const pages=targets.map((name,i)=>({id:`s${i}`,url:`https://example.com/${i}`,title:'Synthetic population',text:`${name} population in 2024 was estimated at 3 million individuals.`}));
   const facts={measurements:targets.map((candidate,i)=>({candidate,sourceId:`s${i}`,quote:pages[i].text,sourceValue:2024,sourceUnit:'count',conversion:'direct',qualifier:'Synthetic year misread'})),gaps:[]};
@@ -100,4 +102,13 @@ test('an adult comparison rejects a sourced newborn mass',()=>{
   const pages=targets.map((name,i)=>({id:`s${i}`,url:`https://example.com/${i}`,title:'Synthetic evidence',text:`At birth, the calf weighs about 100 kg.`}));
   const facts={measurements:targets.map((candidate,i)=>({candidate,sourceId:`s${i}`,quote:pages[i].text,sourceValue:100,sourceUnit:'kg',conversion:'direct',qualifier:'Birth weight'})),gaps:[]};
   assert.throws(()=>validateResearchFacts(facts,pages,concept,targets),/juvenile/);
+});
+
+test('eight-column overviews keep bar and image bounds inside the chart',()=>{
+  const sample=sampleQuantityBars([1,2,3,4,5,6,7,8],'mass',7,90,30,true);
+  for(const bar of sample.bars){
+    assert.ok(bar.x-bar.width/2>=sample.chart.left);
+    assert.ok(bar.x+bar.width/2<=sample.chart.left+sample.chart.width);
+    assert.ok(bar.top>=sample.chart.top&&bar.top+bar.height<=sample.chart.top+sample.chart.height);
+  }
 });

@@ -27,8 +27,8 @@ Evidence:
 - [Completed hosted video](https://github.com/gogeta01011969/remotion/actions/runs/42977953181): revision `3690890`, rendered, archived and marked complete. Its objects used local plain materials; this does not validate the later mandatory Cloudflare policy.
 - 139 TypeScript tests passed locally for `3ccc6ab`; Linux CI also runs the real CPU extraction test and a fixed offline render.
 
-New measurement support: mass/energy/power bars, grouped counts, constant-speed
-races, duration timelines and signed temperature axes. Object imagery retains a
+New measurement support: sequential vertical bars for mass, count, speed,
+duration, energy and power, plus signed temperature bars. Object imagery retains a
 consistent presentation size. Automated selection now supports 13 measurements;
 manual geographic area inputs remain available.
 

@@ -121,9 +121,10 @@ metrics; invalid combinations are rejected before research. See
 `src/pipeline/comparison-horizon.ts` for stable IDs and capability policies.
 
 Mass, counts, speed, duration, energy, power and temperature are enabled.
-Quantity bars, grouped-count grids, constant-speed races, elapsed timelines and
-signed temperature axes encode values separately from fixed-presentation object
-images. Counts declare fixed/inventory/population scope; changing counts require
+Sequential vertical bars encode values separately from fixed-presentation object
+images. Each subject enters individually, earlier bars remain, and the final
+labelled overview includes all subjects. Shared linear axes reframe consistently;
+temperature bars can extend below zero. Counts declare fixed/inventory/population scope; changing counts require
 a date. Units are dimension-checked; temperature uses differences, never ratios. Geographic area still needs reliable
 outline acquisition before automatic selection is enabled. Broadening topics
 does not change measured size into a stand-in for another quantity.

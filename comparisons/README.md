@@ -221,18 +221,20 @@ The same research → editorial → Cloudflare assets → render workflow now su
 
 | Metric | Visual encoding | Example unit |
 | --- | --- | --- |
-| Mass | Linear quantity bars | kg |
-| Count/population | Grouped dots with an explicit per-dot legend | count |
-| Speed | Shared-clock, constant-speed race | km/h |
-| Duration | Common elapsed-time axis | year |
-| Energy | Linear quantity bars | kWh |
-| Power | Linear quantity bars | W |
-| Temperature | Signed axis and differences, without ratios | C |
+| Mass | Sequential vertical bars | kg |
+| Count/population | Sequential vertical bars | count |
+| Speed | Sequential vertical bars | km/h |
+| Duration | Sequential vertical bars | year |
+| Energy | Sequential vertical bars | kWh |
+| Power | Sequential vertical bars | W |
+| Temperature | Signed vertical bars and differences, without ratios | C |
 
-All non-size templates show every subject together from the opening. A single
-composition-wide clock animates every value and graphic simultaneously, followed
-by a hold on the complete comparison. Scene boundaries do not restart counters
-or reveal individual rows.
+All non-size templates reveal one subject and its vertical bar at a time. Earlier
+bars remain visible and the last subject gets its own detail beat before the full
+labelled overview. Bar height represents the measurement; object images retain
+consistent presentation sizes. A shared linear axis reframes as larger values
+arrive, applying the same scale to every visible bar. Tick labels show that scale.
+Temperature bars extend above/below zero and never use ratios.
 
 Object images identify subjects and retain a consistent presentation size; they
 are not scaled to imply physical dimensions represent these quantities. Real
@@ -241,8 +243,8 @@ local and dimension-checked, including affine Celsius/Fahrenheit conversion.
 
 Count datasets require `countBasis` (`fixed`, `inventory`, or `population`).
 Inventory and population counts also require `asOf`. Document scope, estimates
-and comparable conditions in `basis` and item qualifiers. Speed datasets can set
-`raceDistanceM` (default 100); the race illustrates constant speed, not acceleration.
+and comparable conditions in `basis` and item qualifiers. Speed uses sourced values as bar heights; the legacy `raceDistanceM` field is
+accepted for older datasets but no longer affects rendering.
 Duration means elapsed duration, not calendar dates. Distinguish total energy
 from power and specific energy; quantities with incompatible definitions must
 not be ranked together.

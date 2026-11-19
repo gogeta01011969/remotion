@@ -26,6 +26,7 @@ export const sizeDatasetSchema = z.object({
   metric: z.enum(comparisonMetrics),
   unit: z.enum(comparisonUnits),
   countBasis:z.enum(['fixed','inventory','population']).optional(),
+  // Accepted for existing datasets; speed now uses bars rather than a race.
   raceDistanceM:z.number().positive().max(1000000).default(100),
   basis: z.string().min(5).max(500).optional(),
   asOf: z.iso.date().optional(),

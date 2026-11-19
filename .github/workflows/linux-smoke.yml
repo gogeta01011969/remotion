@@ -38,7 +38,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_*.py'
       - name: Render an offline comparison (no API credentials)
         run: npm run compare:examples -- --only wingspan
-      - name: Render quantity, race and signed-axis templates (no API credentials)
+      - name: Render sequential quantity and signed-bar charts (no API credentials)
         run: |
           for metric in mass speed temperature; do
             npm run compare:examples -- --only "$metric"
