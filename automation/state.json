@@ -207,10 +207,11 @@
       "family": "everyday-objects",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "needs-review",
+      "attempts": 1,
       "createdAt": "2026-11-19T13:44:10.140Z",
-      "updatedAt": "2026-11-19T13:44:10.140Z"
+      "updatedAt": "2026-11-19T13:44:22.299Z",
+      "error": "Bounded research could not open two usable sources. Inspect research-web.json; blocked pages and snippets are not evidence."
     }
   ],
   "queue": [
