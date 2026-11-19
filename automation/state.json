@@ -226,16 +226,24 @@
         "Glider (Sailplane)",
         "Cessna 172"
       ],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Hummingbird",
+        "Peregrine Falcon",
+        "Flying Fox",
+        "Albatross",
+        "Cessna 172",
+        "Eta Glider"
+      ],
       "whyInteresting": "Mixing natural flyers with human‑made gliders highlights surprising overlaps—like a bat rivaling a small aircraft—creating curiosity and a memorable visual contrast in a silent short.",
       "family": "aircraft",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
-      "status": "needs-review",
-      "attempts": 1,
+      "status": "retry-later",
+      "attempts": 2,
       "createdAt": "2026-11-19T14:02:07.420Z",
-      "updatedAt": "2026-11-19T14:05:04.069Z",
-      "error": "motion failed validation after three attempts: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"measurementBasis\"\n    ],\n    \"path\": [\n      \"editorial\"\n    ],\n    \"message\": \"Unrecognized key: \\\"measurementBasis\\\"\"\n  },\n  {\n    \"code\": \"custom\",\n    \"message\": \"Define a common measurement basis (including endpoints, pedestal policy, animal age or capacity definition).\",\n    \"path\": []\n  }\n]"
+      "updatedAt": "2026-11-19T14:32:39.582Z",
+      "retryAt": "2026-11-19T15:32:39.582Z",
+      "error": "Generating Hummingbird with flux-2-klein-4b\nGenerating Peregrine Falcon with flux-2-klein-4b\nGenerating Flying Fox with flux-2-klein-4b\nCloudflare image request failed (HTTP 500): [{\"message\":\"AiError: AiError: Image generation failed due to a processing error. Please try again. (7378e32a-18a9-4e3c-9d44-9478ccb9c690)\",\"code\":3043}]\nAsset provider failed: exit 1\n"
     }
   ],
   "queue": []
