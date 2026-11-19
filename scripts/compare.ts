@@ -9,7 +9,7 @@ import {prepareComparisonAssets} from '../src/pipeline/comparison-assets';
 import {assetRequests,applyAssetManifest,runAssetProvider,generateComparisonData} from '../src/pipeline/comparison-run';
 import {writeJson} from '../src/pipeline/stages';
 import {planComparisonIdeas} from '../src/pipeline/comparison-ideas';
-import {ensureComparisonImages} from '../src/pipeline/comparison-images';
+import {ensureComparisonImages,chartOnlyDataset} from '../src/pipeline/comparison-images';
 import {GroqClient,loadGroqConfig} from '../src/pipeline/groq';
 
 async function main(){
@@ -38,6 +38,7 @@ async function main(){
       console.log(JSON.stringify({status:'ideas-planned',id,ideaPath:path.join(directory,'idea-plan.json'),selected:ideas.concepts.find(c=>c.id===ideas.selectedId),selectionReason:ideas.selectionReason}));return;
     }
     data??=await generateComparisonData({topic:values.topic!,id,directory,root,log:s=>process.stderr.write(s+'\n')});
+    data=chartOnlyDataset(data);
     if(values.topic){
       const config=loadGroqConfig(path.join(root,'.env.local'));
       data=await ensureComparisonImages(data,{directory,client:new GroqClient({apiKey:config.apiKey,onRetry:console.error}),model:config.motionModel,log:console.error});

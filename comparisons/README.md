@@ -231,14 +231,15 @@ The same research → editorial → Cloudflare assets → render workflow now su
 
 All non-size templates reveal one subject and its vertical bar at a time. Earlier
 bars remain visible and the last subject gets its own detail beat before the full
-labelled overview. Bar height represents the measurement; object images retain
-consistent presentation sizes. A shared linear axis reframes as larger values
+labelled overview. Bar height represents the measurement. Colored names below the bars identify
+subjects, without thumbnails, repeated focus headings or an overview heading.
+Each value appears once at its bar endpoint, and axis units appear once. A shared linear axis reframes as larger values
 arrive, applying the same scale to every visible bar. Tick labels show that scale.
 Temperature bars extend above/below zero and never use ratios.
 
-Object images identify subjects and retain a consistent presentation size; they
-are not scaled to imply physical dimensions represent these quantities. Real
-objects still require Cloudflare images in topic-driven runs. Unit conversion is
+Quantity charts do not request, prepare or render object images. Legacy image
+briefs in quantity datasets are normalized away before provisioning. Physical-size
+comparisons still require Cloudflare images in topic-driven runs. Unit conversion is
 local and dimension-checked, including affine Celsius/Fahrenheit conversion.
 
 Count datasets require `countBasis` (`fixed`, `inventory`, or `population`).

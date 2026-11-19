@@ -1,7 +1,6 @@
 import {useCurrentFrame,useVideoConfig} from 'remotion';
 import type {Actor,ActorState} from './schema';
-import {ComparisonObject} from './ComparisonObject';
-import {formatSize,formatRatio,formatUnit} from './size-data';
+import {formatSize,formatUnit} from './size-data';
 import {quantityTemplate} from './measurements';
 import {sampleQuantityBars} from './quantity-bars';
 import type {SizeTextTiming} from './size-text-motion';
@@ -11,13 +10,11 @@ export const QuantityComparison=({actor,state,textTiming}:{actor:Extract<Actor,{
   const frame=useCurrentFrame(),{fps}=useVideoConfig(),{data}=actor;
   const active=Math.max(0,Math.min(data.items.length-1,Math.round(state.value))),overview=state.shot>=data.items.length;
   const sample=sampleQuantityBars(data.items.map(i=>i.value),data.metric,active,textTiming?.localFrame??frame,fps,overview);
-  const focus=data.items[active],reference=data.items[Math.max(0,active-1)],unit=formatUnit(data.unit);
+  const unit=formatUnit(data.unit);
   const valueText=(value:number)=>compact(data.metric==='count'?Math.round(value):value);
-  return <div data-quantity-template={quantityTemplate(data.metric)} style={{width:900,height:1150,position:'relative',color:'#F3F7FA'}}>
+  return <div data-quantity-template={quantityTemplate(data.metric)} style={{width:900,height:1000,position:'relative',color:'#F3F7FA'}}>
     <div style={{fontSize:Math.min(40,Math.max(28,1400/data.title.length)),fontWeight:750,lineHeight:1.14,maxWidth:860}}>{data.title}</div>
-    <div style={{position:'absolute',top:90,left:30,width:840,height:80,display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center',lineHeight:1.12,fontSize:overview?34:Math.min(42,Math.max(24,1300/focus.label.length)),fontWeight:700,color:overview?'#F3F7FA':focus.color}}>{overview?'The full comparison':focus.label}</div>
-    <div style={{position:'absolute',top:175,left:0,width:900,textAlign:'center',lineHeight:1,fontSize:60,fontWeight:750,fontVariantNumeric:'tabular-nums'}}>{overview?null:<>{focus.approximate?'≈ ':''}{valueText(focus.value)} <span style={{fontSize:28,color:'#B4C6D1'}}>{unit}</span></>}</div>
-    <div style={{position:'absolute',top:280,left:sample.chart.left,fontSize:20,color:'#A9C1CF'}}>{data.metric} · {unit}{data.asOf?` · ${data.asOf}`:''}</div>
+    <div style={{position:'absolute',top:175,left:sample.chart.left,fontSize:20,color:'#A9C1CF'}}>{data.metric} · {unit}{data.asOf?` · ${data.asOf}`:''}</div>
     {[0,.25,.5,.75,1].map(t=>{
       const y=sample.chart.top+sample.chart.height*(1-t),value=sample.domain.min+(sample.domain.max-sample.domain.min)*t;
       return <div key={t} style={{position:'absolute',left:sample.chart.left,top:y,width:sample.chart.width,height:1,background:'#BFD5E322'}}><span style={{position:'absolute',right:'100%',paddingRight:18,top:-10,fontSize:18,color:'#A4BCCB',fontVariantNumeric:'tabular-nums'}}>{compact(value)}</span></div>;
@@ -25,16 +22,13 @@ export const QuantityComparison=({actor,state,textTiming}:{actor:Extract<Actor,{
     <div style={{position:'absolute',left:sample.chart.left,top:sample.zeroY,width:sample.chart.width,height:2,background:'#C7DBE788'}}/>
     {data.items.map((item,i)=>{
       const bar=sample.bars[i];if(!bar.visible)return null;
-      const visual=item.visual,aspect=visual?.kind==='cutout'&&visual.calibration?visual.calibration.bounds.width/visual.calibration.bounds.height:1;
-      const size=bar.imageSize,imageWidth=aspect>=1?size:size*aspect,imageHeight=aspect>=1?size/aspect:size;
       const slot=sample.chart.width/(overview?data.items.length:active+1);
       return <div key={item.id} data-quantity-column={item.id} style={{opacity:bar.opacity}}>
         <div style={{position:'absolute',left:bar.x-bar.width/2,top:bar.top,width:bar.width,height:bar.height,borderRadius:'8px 8px 3px 3px',background:`linear-gradient(90deg, ${item.color}80, ${item.color})`,boxShadow:`0 0 24px ${item.color}20`,borderTop:`2px solid ${item.color}`,boxSizing:'border-box'}}/>
         <div style={{position:'absolute',left:bar.x-slot/2,top:item.value<0?bar.endY+12:bar.endY-32,width:slot,textAlign:'center',fontSize:Math.min(25,slot*.23),fontWeight:700,fontVariantNumeric:'tabular-nums'}}>{item.approximate?'≈ ':''}{valueText(bar.value)}</div>
-        <svg style={{position:'absolute',left:bar.x-size/2,top:850+(135-size)/2,overflow:'visible'}} width={size} height={size} viewBox={`${-size/2} ${-size/2} ${size} ${size}`}><ComparisonObject item={item} width={imageWidth} height={imageHeight} turn={frame/fps*.045}/></svg>
-        <div style={{position:'absolute',left:bar.x-slot*.46,top:1000,width:slot*.92,textAlign:'center',fontSize:Math.min(25,Math.max(17,slot*.21)),lineHeight:1.18,fontWeight:650,color:item.color,overflowWrap:'anywhere'}}>{item.label}</div>
+        <div style={{position:'absolute',left:bar.x-slot*.46,top:sample.chart.top+sample.chart.height+58,width:slot*.92,textAlign:'center',fontSize:Math.min(25,Math.max(17,slot*.21)),lineHeight:1.18,fontWeight:650,color:item.color,overflowWrap:'anywhere'}}>{item.label}</div>
       </div>;
     })}
-    {!overview&&active>0&&sample.progress===1&&<div style={{position:'absolute',top:245,width:900,textAlign:'center',fontSize:22,color:'#AEC3D1'}}>{data.metric==='temperature'?`${compact(focus.value-reference.value)} ${unit} warmer than ${reference.label}`:reference.value>0?`${formatRatio(focus.value/reference.value)} vs ${reference.label}`:null}</div>}
+
   </div>;
 };

@@ -121,8 +121,9 @@ metrics; invalid combinations are rejected before research. See
 `src/pipeline/comparison-horizon.ts` for stable IDs and capability policies.
 
 Mass, counts, speed, duration, energy, power and temperature are enabled.
-Sequential vertical bars encode values separately from fixed-presentation object
-images. Each subject enters individually, earlier bars remain, and the final
+Sequential vertical bars encode values with colored names below the chart and
+no object thumbnails or duplicate focus headings. Quantity charts skip image
+planning and generation. Each subject enters individually, earlier bars remain, and the final
 labelled overview includes all subjects. Shared linear axes reframe consistently;
 temperature bars can extend below zero. Counts declare fixed/inventory/population scope; changing counts require
 a date. Units are dimension-checked; temperature uses differences, never ratios. Geographic area still needs reliable

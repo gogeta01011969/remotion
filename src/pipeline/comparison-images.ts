@@ -3,10 +3,22 @@ import type {SizeDataset} from '../shorts/size-data';
 import {sizeDatasetSchema} from '../shorts/size-data';
 import type {GroqClient} from './groq';
 import {structuredStage} from './stages';
+import {isQuantityMetric} from '../shorts/measurements';
+
+// Quantity charts identify subjects with colored names, so no raster assets are
+// needed. Normalize old image briefs too, before asset provisioning can run.
+export function chartOnlyDataset(data:SizeDataset):SizeDataset{
+  if(!isQuantityMetric(data.metric))return data;
+  return sizeDatasetSchema.parse({...data,items:data.items.map(item=>{
+    const next={...item,visual:{kind:'box' as const,widthToHeight:1,depthToHeight:1}};
+    delete next.appearance;return next;
+  })});
+}
 
 // Completed authored diagrams remain supported. Every depicted real object in
 // an automatic run requires a raster brief, including familiar sports balls.
 export async function ensureComparisonImages(data:SizeDataset,options:{directory:string;client:Pick<GroqClient,'chat'>;model:string;log:(s:string)=>void}){
+  if(isQuantityMetric(data.metric))return chartOnlyDataset(data);
   if(data.metric==='area')throw new Error('Geographic outlines need real sourced geometry; Cloudflare cannot establish accurate borders.');
   const missing=data.items.filter(item=>!(data.metric==='volume'&&item.visual?.kind==='box')&&(!item.visual||item.visual.kind==='box'||!item.visual.generation));
   if(!missing.length)return data;

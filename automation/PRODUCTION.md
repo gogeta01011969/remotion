@@ -14,7 +14,7 @@ reliability has not yet been established across subjects.
 | Deduplication | Compare titles, scopes and object sets against durable history | Tested; aliases and shortened labels can still escape matching |
 | Bounded research | Discover/open sources locally, extract exact quotations, convert units | Live tested; source availability and semantic interpretation remain variable |
 | Editorial and visual planning | Select objects, order, background and per-object image briefs | Schema/evidence checks and resumable drafts implemented |
-| Cloudflare image policy | Require raster imagery for real objects; cache successful generation | Enforced in code; no fresh complete hosted run of this policy confirmed yet |
+| Cloudflare image policy | Require raster imagery for depicted physical-size objects; quantity charts skip images | Enforced in code; no fresh complete hosted run of this policy confirmed yet |
 | Foreground preparation | Local CPU cutouts, alpha checks, calibration and frozen assets | Linux smoke test passes; image identity/likeness is not automatically verified |
 | Remotion / FFmpeg | Deterministic composition, MP4 encoding and media verification | Hosted render succeeded; latest Linux offline verification passes |
 | Workflow controller | Manual/scheduled jobs, serial execution, checkpoints, retries and ledger | Implemented/tested; due deferrals await another trigger |
@@ -28,8 +28,7 @@ Evidence:
 - 139 TypeScript tests passed locally for `3ccc6ab`; Linux CI also runs the real CPU extraction test and a fixed offline render.
 
 New measurement support: sequential vertical bars for mass, count, speed,
-duration, energy and power, plus signed temperature bars. Object imagery retains a
-consistent presentation size. Automated selection now supports 13 measurements;
+duration, energy and power, plus signed temperature bars. Quantity charts identify subjects using colored names and omit object imagery. Automated selection now supports 13 measurements;
 manual geographic area inputs remain available.
 
 ## Work before unattended production
