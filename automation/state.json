@@ -238,12 +238,13 @@
       "family": "aircraft",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
-      "status": "retry-later",
-      "attempts": 2,
+      "status": "complete",
+      "attempts": 3,
       "createdAt": "2026-11-19T14:02:07.420Z",
-      "updatedAt": "2026-11-19T14:32:39.582Z",
-      "retryAt": "2026-11-19T15:32:39.582Z",
-      "error": "Generating Hummingbird with flux-2-klein-4b\nGenerating Peregrine Falcon with flux-2-klein-4b\nGenerating Flying Fox with flux-2-klein-4b\nCloudflare image request failed (HTTP 500): [{\"message\":\"AiError: AiError: Image generation failed due to a processing error. Please try again. (7378e32a-18a9-4e3c-9d44-9478ccb9c690)\",\"code\":3043}]\nAsset provider failed: exit 1\n"
+      "updatedAt": "2026-11-19T16:12:50.189Z",
+      "videoSha256": "f85782d285ff92688ca8224a116a5c9a06f65328fdfa503adfcf55fd259ff08c",
+      "artifactName": "short-short-2026-11-19-cb280792cfcf",
+      "artifactId": "14550137954"
     }
   ],
   "queue": []
