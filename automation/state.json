@@ -212,10 +212,9 @@
       "createdAt": "2026-11-19T13:44:10.140Z",
       "updatedAt": "2026-11-19T13:44:22.299Z",
       "error": "Bounded research could not open two usable sources. Inspect research-web.json; blocked pages and snippets are not evidence."
-    }
-  ],
-  "queue": [
+    },
     {
+      "id": "short-2026-11-19-cb280792cfcf",
       "topic": "Wingspan showdown: birds, bats, and aircraft",
       "metric": "wingspan",
       "scopeKey": "suite-wingspan-animals",
@@ -227,7 +226,16 @@
         "Glider (Sailplane)",
         "Cessna 172"
       ],
-      "whyInteresting": "Mixing natural flyers with human‑made gliders highlights surprising overlaps—like a bat rivaling a small aircraft—creating curiosity and a memorable visual contrast in a silent short."
+      "actualEntityKeys": [],
+      "whyInteresting": "Mixing natural flyers with human‑made gliders highlights surprising overlaps—like a bat rivaling a small aircraft—creating curiosity and a memorable visual contrast in a silent short.",
+      "family": "aircraft",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-19T14:02:07.420Z",
+      "updatedAt": "2026-11-19T14:02:07.420Z"
     }
-  ]
+  ],
+  "queue": []
 }
