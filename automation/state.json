@@ -312,10 +312,11 @@
       "family": "mass-comparisons",
       "angle": "natural-vs-engineered",
       "depth": "extreme-scale",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "needs-review",
+      "attempts": 1,
       "createdAt": "2026-11-20T16:45:31.928Z",
-      "updatedAt": "2026-11-20T16:45:31.928Z"
+      "updatedAt": "2026-11-20T16:47:02.614Z",
+      "error": "motion failed validation after three attempts: Measurement for Blue Whale describes a juvenile, not the requested adult basis.\nMeasurement for Airbus A380 needs an exact quote from an opened source and an eligible candidate."
     }
   ],
   "queue": [
