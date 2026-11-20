@@ -5,7 +5,7 @@ import {smoothStep} from './size-text-motion';
 export const overviewTiming={detailArrival:.16,zoomStart:.5,zoomEnd:.75} as const;
 
 // Each pose is centered by its occupied presentation bounds. Detail poses
-// reserve text space; the text-free overview centers only its silhouettes.
+// reserve text space; the overview centers silhouettes above its endpoint summary.
 // Interpolating offsets by phase avoids jumps when scene/title metadata changes.
 export function sizePresentationOffset(data:SizeDataset,shots:SizeShot[],phase:number,showCountry:boolean){
   const p=Math.max(0,Math.min(shots.length-1,phase)),lo=Math.floor(p),hi=Math.min(shots.length-1,lo+1);

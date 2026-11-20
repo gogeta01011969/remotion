@@ -1,5 +1,6 @@
 import {comparisonObjectTiming,comparisonSceneTiming} from './comparison-timing';
 import {isQuantityMetric} from './measurements';
+import {SizeOverviewSummary} from './SizeOverviewSummary';
 import {QuantityComparison} from './QuantityComparison';
 import {useCurrentFrame,useVideoConfig} from 'remotion';
 import type {Actor,ActorState} from './schema';
@@ -28,8 +29,9 @@ const SizeGeometryComparison=({actor,state,language='en',textTiming}:{actor:Extr
   const labels=isOverview?[]:placeSizeLabels(data.items,settled.bodies,active,reference,measure,{showCountry});
   const timing=textTiming??{localFrame:frame,durationInFrames:fps*8,referenceChangedAt:0};
   const isLastDetail=shot?.role==='detail'&&active===data.items.length-1;
-  const beat=comparisonSceneTiming(timing.durationInFrames/fps,comparisonObjectTiming(data,active).transitionSeconds,isLastDetail);
+  const beat=comparisonSceneTiming(timing.durationInFrames/fps,comparisonObjectTiming(data,active).transitionSeconds,active===data.items.length-1);
   const textOpacity=detailTextOpacity(isLastDetail,timing.localFrame/Math.max(1,timing.durationInFrames-1),beat.zoomStart,.2/(timing.durationInFrames/fps));
+  const summaryOpacity=isOverview?smoothStep((timing.localFrame-beat.zoomEnd*(timing.durationInFrames-1))/Math.max(1,fps*.3)):0;
   const objectEntrance=shotIndex===0?smoothStep(timing.localFrame/Math.max(1,beat.arrivalSeconds*fps)):1;
   const verticalOffset=actor.shots?sizePresentationOffset(data,actor.shots,state.phase,showCountry):0;
   const entrance=(from:number,duration=fps*.3)=>{const motion=textEntrance(timing.localFrame,from,duration,timing.durationInFrames,fps);return {...motion,opacity:motion.opacity*textOpacity};};
@@ -89,7 +91,9 @@ const SizeGeometryComparison=({actor,state,language='en',textTiming}:{actor:Extr
         <span data-size-text="reference" style={{fontSize:27,lineHeight:1.2,fontWeight:500,color:'#B5C7D3',overflowWrap:'anywhere',width:stacked?836:Math.max(0,836-valueWidth-22)}}>{explanation}</span>
       </div>
     </div>:null}
-  </div></div>;
+  </div>
+    {isOverview?<SizeOverviewSummary data={data} opacity={summaryOpacity} measure={measure}/>:null}
+  </div>;
 };
 
 export const SizeComparison=(props:Parameters<typeof SizeGeometryComparison>[0])=>isQuantityMetric(props.actor.data.metric)?<QuantityComparison {...props}/>:<SizeGeometryComparison {...props}/>;

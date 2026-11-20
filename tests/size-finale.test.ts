@@ -32,7 +32,7 @@ test('the final object gets its own held detail pose before the separate overvie
   }
 });
 
-test('the ending is text-free and has a smooth pre-zoom text exit',()=>{
+test('detail text exits before the final endpoint summary',()=>{
   assert.equal(detailTextOpacity(true,.3),1);assert.equal(detailTextOpacity(true,overviewTiming.zoomStart),0);
   for(let i=0;i<=100;i++){const opacity=detailTextOpacity(true,i/100);assert.ok(opacity>=0&&opacity<=1);}
   assert.equal(detailTextOpacity(false,.8),1);
