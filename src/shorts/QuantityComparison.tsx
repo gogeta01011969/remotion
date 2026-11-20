@@ -1,8 +1,9 @@
+import {useMemo} from 'react';
 import {useCurrentFrame,useVideoConfig} from 'remotion';
 import type {Actor,ActorState} from './schema';
 import {formatSize} from './size-data';
 import {ComparisonObject} from './ComparisonObject';
-import {fitText,useTextMetrics} from './text-metrics';
+import {fitText,fitLabelText,useTextMetrics} from './text-metrics';
 import {comparisonDisplayNames,comparisonMeasurementLabel} from './comparison-copy';
 import {quantityTemplate} from './measurements';
 import {comparisonObjectTiming,comparisonSceneTiming} from './comparison-timing';
@@ -16,7 +17,9 @@ export const QuantityComparison=({actor,state,textTiming}:{actor:Extract<Actor,{
   const objectTiming=comparisonObjectTiming(data,active);
   const timing=comparisonSceneTiming((textTiming?.durationInFrames??fps*objectTiming.detailSeconds)/fps,objectTiming.transitionSeconds,active===data.items.length-1&&!overview);
   const sample=sampleQuantityBars(data.items.map(i=>i.value),data.metric,active,textTiming?.localFrame??frame,fps,overview,timing.arrivalSeconds);
-  const names=comparisonDisplayNames(data),measure=useTextMetrics('Arial, Helvetica, sans-serif');
+  const names=useMemo(()=>comparisonDisplayNames(data),[data.items,data.subject]),measure=useTextMetrics('Arial, Helvetica, sans-serif');
+  const count=overview?data.items.length:active+1;
+  const nameSizes=useMemo(()=>names.map((name,i)=>{const label=quantityLabelLayout(count,i,0);return fitLabelText(name,label.fontSize,label.width,66,650,measure);}),[names,count,measure]);
   const valueText=(value:number)=>compact(data.metric==='count'?Math.round(value):value);
   return <div data-quantity-template={quantityTemplate(data.metric)} style={{width:900,height:data.items.length>8?1190:1000,position:'relative',color:'#F3F7FA'}}>
     <div style={{fontSize:Math.min(40,Math.max(28,1400/data.title.length)),fontWeight:750,lineHeight:1.14,maxWidth:860}}>{data.title}</div>
@@ -39,7 +42,7 @@ export const QuantityComparison=({actor,state,textTiming}:{actor:Extract<Actor,{
         <div style={{position:'absolute',left:bar.x-slot/2,top:item.value<0?bar.endY+12:bar.endY-32,width:slot,textAlign:'center',fontSize:statisticSize,fontWeight:700,fontVariantNumeric:'tabular-nums'}}>{statistic}</div>
         {label.dense&&label.row===1?<div style={{position:'absolute',left:bar.x,top:sample.chart.top+sample.chart.height+10,width:1,height:label.imageTop-sample.chart.top-sample.chart.height-20,background:`${item.color}35`}}/>:null}
         {visual&&visual.kind!=='box'?<svg data-chart-subject={item.id} style={{position:'absolute',left:bar.x-size/2,top:label.imageTop,overflow:'visible'}} width={size} height={size} viewBox={`${-size/2} ${-size/2} ${size} ${size}`}><ComparisonObject item={item} width={width} height={height} turn={frame/fps*.045}/></svg>:null}
-        <div style={{position:'absolute',left:bar.x-label.width/2,top:label.nameTop,width:label.width,textAlign:'center',fontSize:label.fontSize,lineHeight:1.18,fontWeight:650,color:item.color,overflowWrap:'anywhere'}}>{names[i]}</div>
+        <div style={{position:'absolute',left:bar.x-label.width/2,top:label.nameTop,width:label.width,textAlign:'center',fontSize:nameSizes[i],height:66,fontFamily:'Arial, Helvetica, sans-serif',lineHeight:1.18,fontWeight:650,color:item.color,overflowWrap:'anywhere'}}>{names[i]}</div>
       </div>;
     })}
 

@@ -229,3 +229,21 @@ test('verified dataset contracts ask for evidence selection rather than regenera
   const item=comparisonGenerationSchema('height',[{id:'s1',url:'https://example.com'}],facts).shape.items.element;
   assert.ok('evidenceId' in item.shape);assert.ok(!('value' in item.shape));assert.ok(!('sourceIds' in item.shape));
 });
+
+test('old drafts with long canonical names and unsupported optional aliases recover without another model request',async()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'comparison-long-name-')),data=fixture(7);
+  data.items[0].label='Peregrine falcon (documented maximum hunting-dive configuration)';
+  data.items[1].label='Bugatti Chiron Super Sport 300+';
+  data.items[1].displayLabel='Bugatti Chiron 300+';
+  data.items[5].label='Shanghai Maglev high-speed train';
+  data.items[5].displayLabel='Shanghai Bullet Train';
+  const originalValues=data.items.map(i=>i.value),originalSources=data.items.map(i=>i.sourceIds);
+  try{
+    writeFileSync(path.join(root,'comparison-data-attempt-3.json'),JSON.stringify({content:JSON.stringify(data)}));
+    const result=await structuredStage({stage:'motion',artifact:'comparison-data',repairFromDraft:true,model:'unused',schema:comparisonGenerationSchema(data.metric),system:'Unused cached-draft test',input:'{}',directory:root,log:()=>{},validate:raw=>sizeDatasetSchema.parse(normalizeComparisonGeneration(raw)),client:{chat:async()=>{throw new Error('Do not spend tokens repairing optional display text');}}});
+    assert.equal(result.items[0].label,data.items[0].label);assert.equal(result.items[1].displayLabel,'Bugatti Chiron 300+');assert.equal(result.items[5].displayLabel,undefined);
+    assert.deepEqual(result.items.map(i=>i.value),originalValues);assert.deepEqual(result.items.map(i=>i.sourceIds),originalSources);
+    const episode=defaultSizeEpisode(result);assert.equal(episode.scenes[0].heading,data.items[0].label);
+    assert.equal(compileSizeComparison(result,episode).scenes.length,7);
+  }finally{rmSync(root,{recursive:true,force:true});}
+});

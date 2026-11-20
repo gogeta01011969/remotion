@@ -1,3 +1,4 @@
+import {isComparisonDisplayLabel} from './comparison-copy';
 import {comparisonLimits} from './comparison-limits';
 import {comparisonMetrics,comparisonUnits,isQuantityMetric,metricUnitCompatible,convertMeasurement} from './measurements';
 import {z} from 'zod';
@@ -8,7 +9,7 @@ import {sizeEnvironments} from './size-environment';
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(60);
 export const sizeItemSchema = z.object({
-  id: slug, label: z.string().min(1).max(24), displayLabel:z.string().trim().min(1).max(24).optional(), value: z.number().finite().min(-1e30).max(1e30),
+  id: slug, label: z.string().trim().min(1).max(80), displayLabel:z.string().trim().min(1).max(24).optional(), value: z.number().finite().min(-1e30).max(1e30),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   material: z.enum(['plain', 'craters', 'ocean', 'bands', 'glow', 'felt', 'seam', 'panels', 'golf', 'baseball', 'basketball']).default('plain'),
   appearance: z.enum(['earth', 'moon', 'jupiter', 'neptune', 'sun', 'mercury', 'mars', 'venus']).optional(),
@@ -19,7 +20,7 @@ export const sizeItemSchema = z.object({
   range: z.object({min: z.number().finite(), max: z.number().finite()}).strict().optional(),
   note: z.string().max(160).default(''),
 }).strict().superRefine((item, ctx) => {
-  if(item.displayLabel){const key=(text:string)=>text.normalize('NFKD').toLowerCase().replace(/[^a-z0-9]/g,'');if(!key(item.displayLabel)||!key(item.label).includes(key(item.displayLabel)))ctx.addIssue({code:'custom',message:'Display labels must be straightforward shortenings of the researched name.'});}
+  if(item.displayLabel&&!isComparisonDisplayLabel(item.label,item.displayLabel))ctx.addIssue({code:'custom',message:'Display labels must use words from the researched name in their original order.'});
   if (item.range && !(item.range.min <= item.value && item.value <= item.range.max)) ctx.addIssue({code: 'custom', message: 'Representative measurement must lie inside its range.'});
 });
 export const sizeDatasetSchema = z.object({

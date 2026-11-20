@@ -18,7 +18,7 @@ export const comparisonEpisodeSchema = z.object({
   presentation: presentationSchema.default('silent'),
   description: z.string().min(1).max(4000),
   scenes: z.array(z.object({
-    itemId: z.string(), heading: z.string().min(1).max(50),
+    itemId: z.string(), heading: z.string().min(1).max(80),
     beatId: z.string().optional(),
     durationSeconds: z.number().int().min(3).max(15),
     cues: z.array(z.string().min(1).max(240)).max(3).default([]),

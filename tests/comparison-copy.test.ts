@@ -39,3 +39,11 @@ test('new quantity subjects receive image briefs using researched identities, wi
   assert.deepEqual(result.items.map(i=>i.value),data.items.map(i=>i.value));
   }finally{rmSync(directory,{recursive:true,force:true});}
 });
+
+test('canonical identities can exceed screen-label limits and display names can omit middle words',()=>{
+  const original=fixture();
+  const data=sizeDatasetSchema.parse({...original,items:original.items.map((item,i)=>i?item:{...item,label:'Bugatti Chiron Super Sport 300+',displayLabel:'Bugatti Chiron 300+'})});
+  assert.equal(data.items[0].label,'Bugatti Chiron Super Sport 300+');
+  assert.equal(comparisonDisplayNames(data)[0],'Bugatti Chiron 300+');
+  for(const displayLabel of ['Bugatti Chiron 400+','Chiron Bugatti','Fastest car'])assert.equal(sizeDatasetSchema.safeParse({...data,items:data.items.map((item,i)=>i?item:{...item,displayLabel})}).success,false);
+});

@@ -1,3 +1,4 @@
+import {isComparisonDisplayLabel} from '../shorts/comparison-copy';
 import {comparisonLimits} from '../shorts/comparison-limits';
 import {existsSync,mkdirSync,readFileSync} from 'node:fs';
 import path from 'node:path';
@@ -54,6 +55,13 @@ export function normalizeComparisonGeneration(raw:unknown){
       return item.visual?item:{...item,visual:{kind:'box',widthToHeight:1,depthToHeight:1}};
     });
   }
+  // Display aliases are optional presentation metadata. Drop unsupported or
+  // oversized aliases rather than spending model retries repairing cosmetics.
+  if(Array.isArray(data.items))data.items=data.items.map(item=>{
+    if(!item||typeof item!=='object'||Array.isArray(item)||!('displayLabel' in item))return item;
+    if(typeof item.label==='string'&&typeof item.displayLabel==='string'&&item.displayLabel.trim().length>0&&item.displayLabel.trim().length<=24&&isComparisonDisplayLabel(item.label,item.displayLabel))return item;
+    const {displayLabel,...rest}=item;return rest;
+  });
   // Canonicalize presentation metadata/order, never values, units or sources.
   if(typeof data.context==='string')data.context=data.context.slice(0,100);
   if(typeof data.title==='string'&&(typeof data.context!=='string'||!data.context.trim()))data.context=data.title.slice(0,100);

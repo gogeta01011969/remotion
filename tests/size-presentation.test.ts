@@ -3,7 +3,7 @@ import {test} from 'node:test';
 import {sizeDatasetSchema} from '../src/shorts/size-data';
 import {resolveSizeEnvironment} from '../src/shorts/size-environment';
 import {textEntrance,sizeTextTiming} from '../src/shorts/size-text-motion';
-import {fitText,fitNoteText,type MeasureText} from '../src/shorts/text-metrics';
+import {fitText,fitNoteText,fitLabelText,type MeasureText} from '../src/shorts/text-metrics';
 import {placeSizeLabels} from '../src/shorts/size-labels';
 import {compileSizeComparison} from '../src/pipeline/size-comparison';
 import {prepareSilentInput} from '../src/shorts/silent';
@@ -62,4 +62,15 @@ test('glyph-aware fitting and label layout reserve enough room for wide names an
   }
   assert.equal(fitNoteText('One shared scale.',851,measure),30);
   assert.ok(fitNoteText('W'.repeat(240),851,measure)<30);
+});
+
+test('long chart identities fit inside their label band without overlapping the next image row',()=>{
+  const measure:MeasureText=(text,size)=>text.length*size*.95;
+  for(const width of [45,90,118]){
+    const size=fitLabelText('W'.repeat(80),18,width,66,650,measure);
+    const charactersPerLine=Math.max(1,Math.floor(width/(size*.95)));
+    assert.ok(Math.ceil(80/charactersPerLine)*size*1.18<=66.001);
+    assert.ok(size>0&&size<18);
+  }
+  assert.equal(fitLabelText('Cat',18,90,66,650,measure),18);
 });

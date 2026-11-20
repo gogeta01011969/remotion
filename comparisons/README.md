@@ -305,3 +305,12 @@ The offline `compare:examples` runner continues testing the eight-object target.
 fixtures, reusing credited artwork. Their original datasets/measurements remain
 unchanged. These fixtures test rendering, not research or real-world rankings;
 they never enter the automated topic-generation pipeline.
+
+Canonical object names retain up to 80 characters for research, image identity
+and metadata. Optional on-screen `displayLabel` values remain at most 24
+characters and may omit whole words from the original name in their original
+order. Unsupported/overlong generated aliases are discarded locally, leaving
+the canonical identity intact; they do not consume model-repair calls. Full
+canonical names still fail if they do not identify the selected evidence. Chart
+labels fit within a fixed-height band so long fallback names do not overlap the
+next row of images.
