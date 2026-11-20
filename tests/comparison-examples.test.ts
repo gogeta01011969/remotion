@@ -1,3 +1,8 @@
+import {existsSync} from 'node:fs';
+import path from 'node:path';
+import {prepareComparisonExample} from '../scripts/helpers/comparison-example';
+import {requireComparisonCount} from '../src/shorts/comparison-limits';
+import {defaultSizeEpisode} from '../src/pipeline/size-comparison';
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
 import {readFileSync} from 'node:fs';
@@ -38,4 +43,28 @@ test('map projection preserves equal area and refuses unsplit date-line geometry
   };
   assert.ok(Math.abs(area(north)/area(equator)-expected)<1e-5);
   assert.throws(()=>geographicOutline({type:'Polygon',coordinates:[[[179,0],[-179,0],[-179,10],[179,10]]]},'#AABBCC'),/antimeridian/);
+});
+
+test('every offline example satisfies the production count policy without changing historical source data',()=>{
+  const suite=JSON.parse(readFileSync('comparisons/examples/suite.json','utf8')) as {data:string;assetRoot:string}[];
+  for(const run of suite){
+    const raw=JSON.parse(readFileSync(run.data,'utf8')),snapshot=JSON.stringify(raw);
+    const {data,synthetic}=prepareComparisonExample(raw);
+    requireComparisonCount(data.items.length);
+    assert.equal(JSON.stringify(raw),snapshot);
+    assert.equal(synthetic,raw.items.length<8);
+    if(synthetic){
+      assert.match(data.title,/synthetic/);assert.match(data.basis!,/no real-world measurement claim/);
+      assert.deepEqual(data.items.map(i=>i.value),data.metric==='temperature'&&data.unit!=='K'?[-3,-2,-1,0,1,2,3,4]:[1,2,3,4,5,6,7,8]);
+      assert.equal(new Set(data.items.map(i=>i.id)).size,8);
+      assert.ok(data.items.every(i=>i.sourceIds[0]==='synthetic-fixture'));
+    }
+    for(const item of data.items)if(item.visual&&item.visual.kind!=='box'){
+      const file=item.visual.kind==='sphere'?item.visual.texture:item.visual.src;
+      assert.ok(existsSync(path.join(run.assetRoot,file)),file);
+    }
+    const episode=defaultSizeEpisode(data);
+    assert.equal(episode.scenes.length,data.items.length);
+    assert.ok(episode.scenes.reduce((n,s)=>n+s.durationSeconds,0)<=60);
+  }
 });

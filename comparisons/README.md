@@ -298,3 +298,10 @@ and names, using subtle leaders for the second row. Units and values stay on the
 chart. Physical comparisons retain their true-scale lineup and smallest/largest
 endpoint summary. Pacing reserves 2–3 settled seconds per object plus a four-second
 overview; if necessary, only arrival travel is shortened to stay within 60 seconds.
+
+The offline `compare:examples` runner enforces the same 8–15-object policy as
+production. Historical examples with fewer than eight objects are expanded in
+`out/comparison-examples/` into explicitly synthetic eight-object geometry
+fixtures, reusing credited artwork. Their original datasets/measurements remain
+unchanged. These fixtures test rendering, not research or real-world rankings;
+they never enter the automated topic-generation pipeline.
