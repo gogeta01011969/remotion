@@ -32,7 +32,7 @@ test('arrival time responds smoothly to scale, while the settled reading window 
   }
   const near=comparisonObjectTiming(dataset(4,'height',[1,3,4,5]),1);
   assert.ok(near.transitionSeconds>close.transitionSeconds&&near.transitionSeconds<large.transitionSeconds);
-  assert.equal(comparisonObjectTiming(dataset(4,'height',[1,2,2e8,1e20]),2).transitionSeconds,3);
+  assert.equal(comparisonObjectTiming(dataset(4,'height',[1,2,2e8,1e20]),2).transitionSeconds,5);
 });
 test('every physical-size subject has a two-to-three-second settled hold at 24, 30 and 60 FPS, including the last',()=>{
   for(const fps of [24,30,60])for(const values of [[1,2,3,4],[1,2,2000,10000],[1,2,2e8,1e20]]){
@@ -56,4 +56,18 @@ test('shorter comparison structures do not loosen the general timed-story contra
   const beats={beats:Array.from({length:4},(_,i)=>({name:`object-${i}`,durationSeconds:6}))};
   assert.equal(comparisonStructureSchema.safeParse(beats).success,true);
   assert.equal(structureSchema.safeParse(beats).success,false);
+});
+
+test('scale strongly separates close, moderate and extreme arrival times without extending settled focus',()=>{
+  const arrival=(span:number)=>comparisonObjectTiming(dataset(4,'height',[1,span,span+1,span+2]),1);
+  assert.equal(arrival(1.1).transitionSeconds,.35);
+  assert.equal(arrival(10).transitionSeconds,2.55);
+  assert.equal(arrival(100).transitionSeconds,4.85);
+  assert.equal(arrival(1000).transitionSeconds,5);
+  for(const span of [1,1.1,2,10,100,1000]){
+    const timing=arrival(span);assert.ok(timing.readingSeconds>=2&&timing.readingSeconds<=3);
+  }
+  const extreme=dataset(8,'height',Array.from({length:8},(_,i)=>10**(-12+i*4)));
+  const input=prepareSilentInput(compileSizeComparison(extreme,defaultSizeEpisode(extreme)));
+  assert.ok(input.scenes.reduce((sum,s)=>sum+s.durationInFrames,0)/input.fps<=60);
 });

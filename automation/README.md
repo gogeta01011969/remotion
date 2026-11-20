@@ -186,7 +186,7 @@ Per job/checkpoint, local code enforces:
 | Evidence per page / all excerpts | Up to 1,800 / 10,800 characters |
 
 Videos support 4–8 subjects throughout topic planning, research, dataset selection
-and rendering. Total duration sums scale-dependent arrivals (about 0.8–3 seconds),
+and rendering. Total duration sums scale-dependent arrivals (about 0.25–5 seconds),
 2–3 seconds of settled focus per subject, and a separate four-second overview.
 There is no fixed total or count-to-duration table. Research can verify eight targets; each gets a fair share of the
 unchanged total excerpt budget (1,350 characters each for eight targets).

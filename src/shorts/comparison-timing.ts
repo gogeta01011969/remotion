@@ -10,9 +10,9 @@ export function comparisonObjectTiming(data:Pick<SizeDataset,'metric'|'items'>,i
     // Signed/zero-based values use distance on the common axis, not temperature ratios.
     span=1+8*Math.abs(current-previous)/Math.max(1e-12,range);
   }
-  // Logarithmic travel reflects the visual scale change without allowing an
-  // astronomical jump to consume the whole Short. Keep timing local and bounded.
-  const transitionSeconds=Math.round(Math.min(3,.8+.3*Math.log2(Math.max(1,span)))*100)/100;
+  // Close sizes pass quickly; each order of magnitude adds 2.3 seconds of
+  // travel. A five-second cap keeps even eight extreme jumps inside a Short.
+  const transitionSeconds=index===0?.8:Math.round(Math.min(5,.25+2.3*Math.log10(Math.max(1,span)))*100)/100;
   // Integer beat budgets work at every FPS. The remaining settled hold stays
   // between two and three seconds rather than rounding all arrivals to one speed.
   const detailSeconds=Math.ceil(transitionSeconds)+comparisonPacing.minimumReadingSeconds;

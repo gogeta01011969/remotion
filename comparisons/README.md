@@ -260,7 +260,7 @@ command and the configured Cloudflare provider.
 ## Object-count-based pacing
 
 Automatic silent episodes give each subject 2–3 seconds of settled focus. Arrival
-varies continuously with the scale change (about 0.8–3 seconds): similar sizes
+varies continuously with the scale change (about 0.25–5 seconds): similar sizes
 arrive quickly, while larger scale jumps get more travel time. Integer scene
 budgets retain a settled hold within the requested range. The final overview has
 its own four seconds, after the last subject's full detail window. Total duration
