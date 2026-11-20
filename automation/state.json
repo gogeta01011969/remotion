@@ -253,10 +253,11 @@
       "scopeKey": "",
       "entityKeys": [],
       "actualEntityKeys": [],
-      "status": "reserved",
-      "attempts": 0,
+      "status": "needs-review",
+      "attempts": 1,
       "createdAt": "2026-11-20T05:36:30.535Z",
-      "updatedAt": "2026-11-20T05:36:30.535Z"
+      "updatedAt": "2026-11-20T05:38:28.074Z",
+      "error": "motion failed validation after three attempts: The source value for House mouse must occur in its quote; do not infer an unsupported average."
     }
   ],
   "queue": []
