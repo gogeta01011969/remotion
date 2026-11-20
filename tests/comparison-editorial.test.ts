@@ -223,3 +223,9 @@ test('non-size generation contracts accept chart-only items without requesting c
   assert.ok(normalized.items.every(item=>item.visual?.kind==='box'));
   assert.deepEqual(normalized.items.map(i=>i.value),data.items.map(i=>i.value));
 });
+
+test('verified dataset contracts ask for evidence selection rather than regenerated values',()=>{
+  const facts=[{candidate:'Reference 0',sourceId:'s1',quote:'Reference 0 has a height of 1 metres.',sourceValue:1,sourceUnit:'m' as const,conversion:'direct' as const,qualifier:'Full height',value:1,unit:'m',evidenceId:'fact-test'}];
+  const item=comparisonGenerationSchema('height',[{id:'s1',url:'https://example.com'}],facts).shape.items.element;
+  assert.ok('evidenceId' in item.shape);assert.ok(!('value' in item.shape));assert.ok(!('sourceIds' in item.shape));
+});

@@ -182,7 +182,35 @@ export async function boundedComparisonResearch(options:ComparisonRequest,depend
 export function validateMeasuredDataset(data:{unit:string;items:{value:number;sourceIds:string[]}[]},directory:string){
   const filename=path.join(directory,'research-measurements.json');if(!existsSync(filename))return;
   const evidence=JSON.parse(readFileSync(filename,'utf8')) as {measurements:ResearchFact[]};
+  const errors:string[]=[];
   for(const item of data.items){
-    if(!evidence.measurements.some(f=>f.unit===data.unit&&item.sourceIds.includes(f.sourceId)&&Math.abs(item.value-f.value)<=Math.max(1e-12,Math.abs(f.value)*.005)))throw new Error('Dataset values must match the locally converted quoted research measurements and source IDs (within 0.5% rounding).');
+    if(!evidence.measurements.some(f=>f.unit===data.unit&&item.sourceIds.includes(f.sourceId)&&Math.abs(item.value-f.value)<=Math.max(1e-12,Math.abs(f.value)*.005)))errors.push(`Dataset values must match quoted measurements: ${(item as {label?:string}).label??'item'} has ${item.value} ${data.unit} from ${item.sourceIds.join(',')}. Allowed: ${evidence.measurements.map(f=>`${f.candidate}: ${f.value} ${f.unit} [${f.sourceId}]`).join('; ')}.`);
   }
+  if(errors.length)throw new Error(errors.join('\n'));
+}
+
+export type VerifiedMeasurement=ResearchFact&{evidenceId:string};
+export function verifiedMeasurements(directory:string):VerifiedMeasurement[]{
+  const filename=path.join(directory,'research-measurements.json');if(!existsSync(filename))return [];
+  const record=z.object({measurements:z.array(factSchema.shape.measurements.element.extend({value:z.number().finite(),unit:z.string()})).min(4).max(8)}).parse(JSON.parse(readFileSync(filename,'utf8')));
+  return record.measurements.map(f=>({...f,evidenceId:`fact-${hash(JSON.stringify([f.candidate,f.sourceId,f.quote,f.value,f.unit])).slice(0,12)}`}));
+}
+const identity=(value:string)=>value.normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+export function bindVerifiedMeasurements(raw:unknown,facts:VerifiedMeasurement[]){
+  if(!facts.length||!raw||typeof raw!=='object'||Array.isArray(raw))return raw;
+  const data={...raw} as Record<string,unknown>;if(!Array.isArray(data.items))return raw;
+  const used=new Set<string>(),errors:string[]=[];
+  data.items=data.items.map(item=>{
+    if(!item||typeof item!=='object'||Array.isArray(item))return item;
+    const matches='evidenceId' in item?facts.filter(f=>f.evidenceId===item.evidenceId):facts.filter(f=>[item.id,item.label].some(name=>typeof name==='string'&&identity(name)===identity(f.candidate)));
+    const fact=matches.length===1?matches[0]:undefined;
+    if(!fact){errors.push(`${item.label??item.id}: no verified measurement. Select only from verifiedMeasurements; omit unsupported candidates and update editorial roles/omissions.`);return item;}
+    if(used.has(fact.evidenceId)){errors.push(`Repeated verified candidate: ${fact.candidate}.`);return item;}used.add(fact.evidenceId);
+    if(typeof item.label!=='string'||!identity(item.label)||!identity(fact.candidate).includes(identity(item.label))){errors.push(`Label ${item.label} does not identify the selected verified candidate ${fact.candidate}.`);return item;}
+    if(data.unit!==fact.unit){errors.push(`${fact.candidate}: retain the verified unit ${fact.unit}, not ${data.unit}.`);return item;}
+    const {evidenceId,range,...presentation}=item;
+    return {...presentation,value:fact.value,sourceIds:[fact.sourceId],note:fact.qualifier,approximate:Boolean(item.approximate||range||/\b(about|approximate|approximately|estimated?|range)\b/i.test(fact.quote+' '+fact.qualifier))};
+  });
+  if(errors.length)throw new Error(errors.join('\n'));
+  return data;
 }

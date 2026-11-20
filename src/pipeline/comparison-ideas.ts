@@ -10,6 +10,7 @@ import {structuredStage,writeJson} from './stages';
 import {comparisonIdeasPrompt} from './comparison-prompts';
 import type {Research} from './contracts';
 import type {WebFetch} from './research-web';
+import type {VerifiedMeasurement} from './bounded-research';
 import {isQuantityMetric} from '../shorts/measurements';
 
 export type ComparisonRequest={topic:string;id:string;directory:string;root:string;log:(s:string)=>void;topicBrief?:{family?:string;angle?:string;depth?:string;whyInteresting?:string;proposedObjects?:string[]}};
@@ -18,11 +19,12 @@ export type ComparisonDependencies={client?:Pick<GroqClient,'chat'>;config?:Retu
 // Visual variants/calibration make the full renderer schema unnecessarily
 // large for free-tier text requests. The prompt describes their small output
 // contracts; sizeDatasetSchema still validates the COMPLETE returned object.
-export function comparisonGenerationSchema(metric:SizeDataset['metric'],sources:{id:string;url:string}[]=[]){
+export function comparisonGenerationSchema(metric:SizeDataset['metric'],sources:{id:string;url:string}[]=[],facts:VerifiedMeasurement[]=[]){
   const [cutout,sphere,box]=comparisonVisualSchema.options;
   const visual=isQuantityMetric(metric)?box.optional():metric==='diameter'?sphere.omit({calibration:true}).extend({generation:sphere.shape.generation.unwrap()}):metric==='volume'?box:cutout.omit({calibration:true}).extend({generation:cutout.shape.generation.unwrap()});
   const {appearance,material,...base}=sizeItemSchema.shape;
-  const item=z.object({...base,visual,...(sources.length?{sourceIds:z.array(z.enum(sources.map(s=>s.id) as [string,...string[]])).min(1)}:{})});
+  const {value,sourceIds,range,note,approximate,...presentation}=base;
+  const item=facts.length?z.object({...presentation,visual,evidenceId:z.enum(facts.map(f=>f.evidenceId) as [string,...string[]])}):z.object({...base,visual,...(sources.length?{sourceIds:z.array(z.enum(sources.map(s=>s.id) as [string,...string[]])).min(1)}:{})});
   const editorial=comparisonEditorialSchema.omit({items:true}).extend({objectRoles:comparisonEditorialSchema.shape.items});
   return z.object({...sizeDatasetSchema.shape,basis:sizeDatasetSchema.shape.basis.unwrap(),editorial,items:z.array(item).min(4).max(8)});
 }

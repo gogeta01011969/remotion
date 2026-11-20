@@ -221,7 +221,13 @@ When only numeric citation markers were omitted, local matching restores the
 actual contiguous source quotation, including those markers. Changed wording or
 values still fail. Typical-lifespan briefs reject explicit maximum-age records,
 and validation reports all failed candidates together to reduce repair calls.
-Quantity-dataset generation accepts chart-only items without requesting cutouts.
+Dataset planning receives an explicit list of verified measurements with stable
+identity references. It selects `evidenceId` records; local code fills values,
+source IDs and qualifiers. Unsupported candidates cannot re-enter merely because
+a source page was opened. Older drafts map only by an unambiguous candidate name
+or ID, and failures report the unsupported object by name. Cached datasets still
+undergo the evidence-value check. Quantity-dataset generation accepts chart-only
+items without requesting cutouts.
 
 `research-plan.json`, `research-measurements.json` and `research-receipt.json`
 preserve the source plan, quotations and completed evidence. Failed dataset drafts

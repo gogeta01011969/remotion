@@ -3,7 +3,7 @@ import {strict as assert} from 'node:assert';
 import {mkdtempSync,readFileSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
-import {boundedComparisonResearch,researchLimits,validateResearchFacts,validateMeasuredDataset} from '../src/pipeline/bounded-research';
+import {boundedComparisonResearch,researchLimits,validateResearchFacts,validateMeasuredDataset,verifiedMeasurements,bindVerifiedMeasurements} from '../src/pipeline/bounded-research';
 import {pageText,blockedPage,publicAddress,publicUrl} from '../src/pipeline/research-web';
 import {automationConfigSchema,budgetClient} from '../src/pipeline/topic-automation';
 import {ideaFixture} from './helpers/comparison-editorial';
@@ -233,5 +233,25 @@ test('omitted numeric citations are restored from the exact source while altered
     assert.equal(result.measurements[0].quote,pages[0].text);
     const bad={...run.facts,measurements:run.facts.measurements.map((m,i)=>i?m:{...m,quote:m.quote.replace('1 metres','99 metres'),sourceValue:99})};
     assert.throws(()=>validateResearchFacts(bad,pages,run.concept,run.plan.targets.map(t=>t.candidate)),/exact quote/);
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('dataset selection binds identity references to frozen values and sources, never model guesses',async()=>{
+  const run=setup();
+  try{
+    await boundedComparisonResearch(run.options,run.deps,run.concept);
+    const facts=verifiedMeasurements(run.root);
+    const raw={unit:'m',items:facts.map(f=>({id:f.candidate.toLowerCase().replace(/ /g,'-'),label:f.candidate,evidenceId:f.evidenceId,value:999,sourceIds:['wrong-source'],note:'Invented value 999',range:{min:900,max:1000}}))};
+    const bound=bindVerifiedMeasurements(raw,facts) as typeof raw;
+    assert.deepEqual(bound.items.map(i=>i.value),values);assert.deepEqual(bound.items.map(i=>i.sourceIds),facts.map(f=>[f.sourceId]));
+    assert.ok(bound.items.every(i=>!('evidenceId' in i)&&!('range' in i)));
+    validateMeasuredDataset(bound,run.root);
+    const unsupported={...raw,items:[...raw.items,{id:'unsupported-rabbit',label:'Domestic rabbit',value:9,sourceIds:['s2']} ]};
+    assert.throws(()=>bindVerifiedMeasurements(unsupported,facts),/Domestic rabbit: no verified measurement/);
+    assert.throws(()=>bindVerifiedMeasurements({...raw,items:[raw.items[0],raw.items[0]]},facts),/Repeated verified candidate/);
+    assert.throws(()=>bindVerifiedMeasurements({...raw,items:[{...raw.items[0],label:'Wrong animal'}]},facts),/does not identify/);
+    assert.throws(()=>bindVerifiedMeasurements({...raw,unit:'cm'},facts),/retain the verified unit/);
+    const legacy={...raw,items:raw.items.map(({evidenceId,...item})=>item)};
+    assert.deepEqual((bindVerifiedMeasurements(legacy,facts) as typeof raw).items.map(i=>i.value),values);
   }finally{rmSync(run.root,{recursive:true,force:true});}
 });

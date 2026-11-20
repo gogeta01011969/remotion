@@ -4,7 +4,7 @@ import {spawnSync} from 'node:child_process';
 import path from 'node:path';
 import {z} from 'zod';
 import {GroqClient,loadGroqConfig} from './groq';
-import {boundedComparisonResearch,validateMeasuredDataset} from './bounded-research';
+import {boundedComparisonResearch,validateMeasuredDataset,verifiedMeasurements,bindVerifiedMeasurements} from './bounded-research';
 import {researchSchema,type Research} from './contracts';
 import {structuredStage,writeJson} from './stages';
 import {sizeDatasetSchema,type SizeDataset} from '../shorts/size-data';
@@ -60,7 +60,7 @@ export function runAssetProvider(data:SizeDataset,options:{configFile:string;dir
 export async function generateComparisonData(options:ComparisonRequest,dependencies:ComparisonDependencies={}){
   ensureComparisonRequest(options);
   const datasetPath=path.join(options.directory,'dataset.raw.json');
-  if(existsSync(datasetPath))return sizeDatasetSchema.parse(JSON.parse(readFileSync(datasetPath,'utf8')));
+  if(existsSync(datasetPath)){const cached=sizeDatasetSchema.parse(JSON.parse(readFileSync(datasetPath,'utf8')));validateMeasuredDataset(cached,options.directory);return cached;}
   const config=dependencies.config??loadGroqConfig(path.join(options.root,'.env.local'));
   const client=dependencies.client??new GroqClient({apiKey:config.apiKey,onRetry:options.log});
   const ideas=await planComparisonIdeas(options,{client,config});
@@ -73,8 +73,10 @@ export async function generateComparisonData(options:ComparisonRequest,dependenc
   const expectedSubject=comparisonSubjectHint(options.topic);
   const {id:conceptId,title,viewerQuestion,strategy,scopeReason,selectionRule,metric,unit,measurementBasis,visualApproach,openingCandidate,payoffCandidate}=concept;
   const selectedConcept={id:conceptId,title,viewerQuestion,strategy,scopeReason,selectionRule,metric,unit,basis:measurementBasis,visualApproach,openingCandidate,payoffCandidate,background:concept.background};
-  const select=()=>structuredStage({stage:'motion',artifact:'comparison-data',repairFromDraft:true,maxCompletionTokens:2800,constrained:false,nullableOptionals:true,compactSchema:true,model:config.motionModel,client,schema:comparisonGenerationSchema(metric,research.sources),directory:options.directory,log:options.log,input:JSON.stringify({topic:options.topic,selectedConcept,research:{...research,notes:research.notes.normalize('NFKC').replace(/[‐‑–—]/g,'-')},presentation:'silent',expectedSubject:expectedSubject??'infer from research'}),system:comparisonDatasetPrompt,repairInstruction:'Put the measurement definition in top-level basis, never editorial.measurementBasis. Preserve the selected viewer question and scope, use only opened sources and supported visuals, and repair the dataset plus its embedded editorial plan.',retryValidation:failure=>!(failure instanceof ComparisonEvidenceGap),validate:raw=>{
-    const normalized=normalizeComparisonGeneration(raw);
+  const select=()=>{
+    const facts=verifiedMeasurements(options.directory);
+    return structuredStage({stage:'motion',artifact:'comparison-data',repairFromDraft:true,maxCompletionTokens:2800,constrained:false,nullableOptionals:true,compactSchema:true,model:config.motionModel,client,schema:comparisonGenerationSchema(metric,research.sources,facts),directory:options.directory,log:options.log,input:JSON.stringify({topic:options.topic,selectedConcept,...(facts.length?{verifiedMeasurements:facts.map(({evidenceId,candidate,value,unit,sourceId,qualifier})=>({evidenceId,candidate,value,unit,sourceId,qualifier}))}:{}),research:{...research,notes:research.notes.normalize('NFKC').replace(/[‐‑–—]/g,'-')},presentation:'silent',expectedSubject:expectedSubject??'infer from research'}),system:comparisonDatasetPrompt,repairInstruction:'Put the measurement definition in top-level basis, never editorial.measurementBasis. Preserve the selected viewer question and scope, use only opened sources and supported visuals, and repair the dataset plus its embedded editorial plan.',retryValidation:failure=>!(failure instanceof ComparisonEvidenceGap),validate:raw=>{
+    const normalized=normalizeComparisonGeneration(bindVerifiedMeasurements(raw,facts));
     if(normalized&&typeof normalized==='object'&&'items' in normalized&&Array.isArray(normalized.items)&&normalized.items.length<4)throw new ComparisonEvidenceGap([]);
     const planned=concept.background;
     const parsed=sizeDatasetSchema.parse(planned&&normalized&&typeof normalized==='object'?{...normalized,environment:planned.environment,backgroundReason:planned.reason}:normalized);
@@ -103,7 +105,7 @@ export async function generateComparisonData(options:ComparisonRequest,dependenc
       }
     }
     return data;
-  }});
+  }});};
   const gapPath=path.join(options.directory,'research-gap.json');
   const repairEvidence=async(requestedUrls:string[])=>{
     // One focused repair, not repeated attempts to invent citations for an
