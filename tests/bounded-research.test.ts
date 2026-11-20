@@ -256,3 +256,73 @@ test('dataset selection binds identity references to frozen values and sources, 
     assert.deepEqual((bindVerifiedMeasurements(legacy,facts) as typeof raw).items.map(i=>i.value),values);
   }finally{rmSync(run.root,{recursive:true,force:true});}
 });
+
+test('adult checks use the selected measurement context without accepting calf values or losing juvenile context',()=>{
+  const run=setup();
+  try{
+    const concept={...run.concept,metric:'mass' as const,unit:'kg' as const,measurementBasis:'Adult animal body mass in kilograms, not newborn measurements.'};
+    const text='Adult blue whales weigh 150000 kg. Newborn calves weigh 3000 kg.';
+    const pages=[{id:'s1',title:'Synthetic age-context fixture',url:'https://example.com/ages',text}];
+    const fact={candidate:'Blue Whale',sourceId:'s1',quote:text,sourceValue:150000,sourceUnit:'kg',conversion:'direct',qualifier:'Adult mass; excluding newborn calves'};
+    const valid=validateResearchFacts({measurements:[fact],gaps:[]},pages,concept,['Blue Whale']);
+    assert.equal(valid.measurements[0].value,150000);
+    assert.throws(()=>validateResearchFacts({measurements:[{...fact,sourceValue:3000,qualifier:'Birth weight'}],gaps:[]},pages,concept,['Blue Whale']),/juvenile/);
+    for(const quote of ['Calves are young whales. They weigh 3000 kg.','Calf mass (at birth)\n3000 kg','A calf, while still small, weighs 3000 kg.']){
+      assert.throws(()=>validateResearchFacts({measurements:[{...fact,quote,sourceValue:3000,qualifier:'Recorded mass'}],gaps:[]},[{...pages[0],text:quote}],concept,['Blue Whale']),/juvenile/);
+    }
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('partial extraction keeps supported measurements and records quote, age and shape failures as gaps',()=>{
+  const run=setup();
+  try{
+    const pages=values.map((_,i)=>({id:`s${i+1}`,title:'Synthetic reference',url:`https://example.com/${i}`,text:quote(i)}));
+    const mixed={measurements:[...run.facts.measurements,{candidate:'Unsupported aircraft',sourceId:'s1',quote:'A fabricated aircraft quotation with no corresponding source.',sourceValue:500,sourceUnit:'m',conversion:'direct',qualifier:'Full height'},{candidate:'Malformed record',sourceId:'s2',quote:quote(1),sourceValue:'two',sourceUnit:'m',conversion:'direct',qualifier:'Invalid type'}],gaps:[]};
+    const result=validateResearchFacts(mixed,pages,run.concept,[...run.plan.targets.map(t=>t.candidate),'Unsupported aircraft','Malformed record'],{skipInvalid:true});
+    assert.deepEqual(result.measurements.map(f=>f.value),values);
+    assert.ok(result.gaps.some(g=>g.includes('Unsupported aircraft')));assert.ok(result.gaps.some(g=>g.includes('Malformed record')));
+    assert.throws(()=>validateResearchFacts(mixed,pages,run.concept,run.plan.targets.map(t=>t.candidate)));
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('bounded extraction omits two bad candidates without retrying valid facts and reuses failed cached drafts',async()=>{
+  for(const savedDraft of [false,true]){
+    const run=setup();let calls=0;
+    const names=['Blue Whale calf','Airbus A380','Blue Whale',...Array.from({length:5},(_,i)=>`Giant reference ${i+1}`)];
+    const texts=names.map((name,i)=>i===0?'A newborn blue whale calf weighs 3000 kg.':`${i===2?'An adult ':''}${name} has a documented mass of ${10000+i*1000} kg in its standard configuration.`);
+    const measurements=names.map((candidate,i)=>({candidate,sourceId:`s${i+1}`,quote:i===1?'The Airbus A380 has a fabricated mass of 999999 kg.':texts[i],sourceValue:i===0?3000:i===1?999999:10000+i*1000,sourceUnit:'kg',conversion:'direct',qualifier:i===0?'At birth':'Standard documented configuration'}));
+    run.concept.metric='mass';run.concept.unit='kg';run.concept.measurementBasis='Adult animal mass and defined standard operating configuration for engineered objects.';run.concept.visualApproach='quantity-bars';run.concept.candidates=names;
+    run.deps.webFetch=async url=>{
+      if(url.includes('/search/page?'))return {status:200,headers:{'content-type':'application/json'},body:'{"pages":[]}'};
+      const index=Number(new URL(url).pathname.slice(1));
+      return {status:200,headers:{'content-type':'text/html'},body:`<p>${texts[index]}</p><p>${'Synthetic documentation for this particular reference and measurement configuration. '.repeat(8)}</p>`};
+    };
+    run.deps.client.chat=async request=>{
+      calls++;const input=JSON.parse(request.messages[1].content);
+      const output=input.concept?{targets:names.map((candidate,i)=>({candidate,query:candidate,urls:[`https://example.com/${i}`]})),excluded:[]}:{measurements:measurements.filter(f=>input.sources.some((p:{id:string})=>p.id===f.sourceId)),gaps:[]};
+      return {usage:{total_tokens:1000},choices:[{message:{content:JSON.stringify(output)}}]};
+    };
+    try{
+      if(savedDraft)writeFileSync(path.join(run.root,'research-facts-1-attempt-3.json'),JSON.stringify({content:JSON.stringify({measurements:measurements.slice(0,6),gaps:[]})}));
+      await boundedComparisonResearch(run.options,run.deps,run.concept);
+      assert.equal(calls,savedDraft?2:3);
+      const evidence=JSON.parse(readFileSync(path.join(run.root,'research-measurements.json'),'utf8'));
+      assert.equal(evidence.measurements.length,6);assert.ok(evidence.measurements.every((f:{candidate:string})=>!['Blue Whale calf','Airbus A380'].includes(f.candidate)));
+      assert.ok(evidence.gaps.some((g:string)=>g.startsWith('Blue Whale calf:')));assert.ok(evidence.gaps.some((g:string)=>g.includes('Airbus A380')));
+      assert.equal(verifiedMeasurements(run.root).length,6);
+      await boundedComparisonResearch(run.options,run.deps,run.concept);assert.equal(calls,savedDraft?2:3);
+    }finally{rmSync(run.root,{recursive:true,force:true});}
+  }
+});
+
+test('too little supported evidence stops clearly after saving diagnostics instead of retrying extraction',async()=>{
+  const run=setup();
+  run.facts.measurements[0].sourceValue=999;
+  run.facts.measurements[1].quote='An invented quotation that does not occur in the opened source.';
+  try{
+    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/4–15 verified objects; found 2/);
+    assert.equal(run.counts().modelCalls,2);
+    const saved=JSON.parse(readFileSync(path.join(run.root,'research-measurements.json'),'utf8'));assert.equal(saved.measurements.length,2);assert.equal(saved.gaps.length,2);
+    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/found 2/);assert.equal(run.counts().modelCalls,2);
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});

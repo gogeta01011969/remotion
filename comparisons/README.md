@@ -23,7 +23,7 @@ npm run compare -- --topic "Size comparison of different flying objects" --id fl
 
 Local validation checks dimensions, supported views, role coverage/order, actual first/last objects, adjacent comparison references and source IDs. Top-N claims require a date and consistent basis; those checks do not themselves prove a complete ranking. Engagement, actual asset accuracy and factual interpretation still need editorial review. Broad flying-object ideas cannot mix wingspan, rotor diameter and body length; geographic outlines require real geographic assets. Providers must supply suitable per-run assets. Mixed fixed landmarks use subject `structures` and show sourced countries, just like statues/buildings.
 
-New runs target 8–15 supported objects, accepting 4–7 when research yields fewer; they do not fail solely for missing eight or pad with invented facts. Unopened-source references can trigger one focused follow-up, keeping source IDs stable. Unsupported evidence still stops the job before asset creation. Model output is canonicalized into measurement order and compact context text; measured values, units, ranges and sources are not changed to make a story work. Provider-compatible structured output uses nullable optional fields so missing facts need not be invented. Full local schema checks remain authoritative even when a compact request or JSON-mode fallback is used. Groq rate-limit reset intervals are honored; repeat the same topic/ID after a longer quota reset to reuse the saved stages.
+New runs target 8–15 supported objects, accepting 4–7 when research yields fewer; they do not fail solely for missing eight or pad with invented facts. Unopened-source references can trigger one focused follow-up, keeping source IDs stable. Unsupported candidate measurements are omitted and recorded as gaps; remaining verified candidates continue. Fewer than four supported objects still stops the job before asset creation. Model output is canonicalized into measurement order and compact context text; measured values, units, ranges and sources are not changed to make a story work. Provider-compatible structured output uses nullable optional fields so missing facts need not be invented. Full local schema checks remain authoritative even when a compact request or JSON-mode fallback is used. Groq rate-limit reset intervals are honored; repeat the same topic/ID after a longer quota reset to reuse the saved stages.
 
 Saved stages are reused on the same topic/ID. Existing completed datasets are not reinterpreted or regenerated with a new angle. Use a new ID to apply the new concept process to an older topic. The data-input route continues to accept curated datasets without an editorial field.
 
@@ -323,3 +323,12 @@ binding remain strict. Detailed image briefs belong to the separate image
 planner, so dataset selection accepts lightweight visual descriptors without
 `visual.generation`. Saved-draft recovery checks all three local attempts before
 requesting a new model repair.
+
+Research extraction validates records independently. Wrong-age measurements,
+unmatched source quotations, invalid units and malformed individual records
+become candidate gaps, rather than causing the entire valid batch to repeat.
+The pipeline aggregates the verified subset across all source batches and only
+continues when at least four supported objects remain. Saved failed drafts can
+be revalidated locally under this policy. Adult checks retain juvenile context
+unless the selected measurement clause explicitly establishes adulthood, so a
+separate birth-weight sentence does not invalidate an explicit adult figure.

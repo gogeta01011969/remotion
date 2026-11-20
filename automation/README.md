@@ -151,7 +151,9 @@ before reservation defer only that workflow invocation.
 At the next trigger, a due job can resume within its attempt limit. A job whose
 retry time is still in the future does not block selecting a fresh topic. Repeated
 failures eventually become `needs-review`, and selection moves on. Research or
-validation failures stop immediately; duplicates stop before asset creation.
+fatal validation failures stop immediately; duplicates stop before asset creation.
+Individual unsupported research records are omitted into gaps while the other
+verified measurements continue; the pipeline stops when fewer than four remain.
 Failed jobs remain failed, never `complete`. No retry worker or extra schedule is
 introduced: retries wait for a normal scheduled or manual trigger.
 
