@@ -291,10 +291,9 @@
       "createdAt": "2026-11-20T15:16:27.381Z",
       "updatedAt": "2026-11-20T16:08:39.446Z",
       "error": "motion failed validation after three attempts: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"generationBrief\"\n    ],\n    \"path\": [],\n    \"message\": \"Unrecognized key: \\\"generationBrief\\\"\"\n  }\n]"
-    }
-  ],
-  "queue": [
+    },
     {
+      "id": "short-2026-11-20-78d30eb0b4a9",
       "topic": "Mass comparison: blue whale, Airbus A380, Great Pyramid and other giants",
       "metric": "mass",
       "scopeKey": "mass-comparison-nature-engineered",
@@ -308,11 +307,18 @@
         "Very Large Crude Carrier (VLCC)",
         "Starship Super Heavy rocket"
       ],
+      "actualEntityKeys": [],
       "whyInteresting": "Putting the planet’s heaviest animal beside the world’s biggest aircraft and ancient stone monuments lets viewers grasp the staggering range of mass that exists on Earth, highlighting both natural marvels and human engineering feats.",
       "family": "mass-comparisons",
       "angle": "natural-vs-engineered",
-      "depth": "extreme-scale"
-    },
+      "depth": "extreme-scale",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-20T16:45:31.928Z",
+      "updatedAt": "2026-11-20T16:45:31.928Z"
+    }
+  ],
+  "queue": [
     {
       "topic": "How tall is the tallest redwood compared to iconic skyscrapers and monuments",
       "metric": "height",
