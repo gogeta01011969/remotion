@@ -178,12 +178,16 @@ Per job/checkpoint, local code enforces:
 
 | Resource | Limit |
 | --- | --- |
-| Wikimedia article-discovery searches | 6 |
+| Wikimedia article-discovery searches | 8 |
 | Source page attempts (including failures) | 8 |
 | Total HTTP requests, including redirects | 20 |
 | Redirects per resource | 2 |
 | Response size / request deadline | 4 MiB / 12 seconds |
-| Evidence per page / all excerpts | 1,800 / 10,800 characters |
+| Evidence per page / all excerpts | Up to 1,800 / 10,800 characters |
+
+Videos support 4–8 subjects throughout topic planning, research, dataset selection
+and rendering. Research can verify eight targets; each gets a fair share of the
+unchanged total excerpt budget (1,350 characters each for eight targets).
 
 The limits live in `src/pipeline/bounded-research.ts`. Wikimedia discovery uses
 its public REST search endpoint. Likely primary URLs and old source URLs are

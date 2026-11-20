@@ -171,3 +171,28 @@ test('discovery rejects unrelated media/list hits before page fetching',async()=
   assert.equal(relevantSearchPage('Shipping container',{key:'Intermodal_container'}),true);
   assert.equal(relevantSearchPage('Eiffel Tower',{key:'Eiffel_Tower'}),true);
 });
+
+test('seven and eight subjects each receive source evidence within the same HTTP and excerpt budgets',async()=>{
+  for(const count of [7,8]){
+    const run=setup();
+    try{
+      const names=Array.from({length:count},(_,i)=>`Reference ${i}`);
+      run.concept.candidates=names;
+      const quote=(i:number)=>`Reference ${i} has a total height of ${i+1} metres, measured from its base to its top.`;
+      run.deps.client.chat=async request=>({usage:{total_tokens:1000},choices:[{message:{content:JSON.stringify(JSON.parse(request.messages[1].content).concept?{targets:names.map((candidate,i)=>({candidate,query:candidate,urls:[`https://example.com/${i}`]})),excluded:[]}:{measurements:names.map((candidate,i)=>({candidate,sourceId:`s${i+1}`,quote:quote(i),sourceValue:i+1,sourceUnit:'m',conversion:'direct',qualifier:'Full height'})),gaps:[]})}}]});
+      run.deps.webFetch=async url=>{
+        if(url.includes('/search/page?'))return {status:200,headers:{'content-type':'application/json'},body:'{"pages":[]}'};
+        const i=Number(new URL(url).pathname.slice(1));
+        return {status:200,headers:{'content-type':'text/html'},body:`<p>${quote(i)}</p>${'<p>Additional specimen documentation provides context for this synthetic test reference.</p>'.repeat(40)}`};
+      };
+      const result=await boundedComparisonResearch(run.options,run.deps,run.concept);
+      const state=JSON.parse(readFileSync(path.join(run.root,'research-web.json'),'utf8'));
+      const facts=JSON.parse(readFileSync(path.join(run.root,'research-measurements.json'),'utf8'));
+      assert.equal(result.sources.length,count);assert.equal(facts.measurements.length,count);
+      assert.equal(state.searches.length,count);assert.equal(state.httpRequests,count*2);
+      assert.ok(state.httpRequests<=researchLimits.httpRequests);
+      assert.ok(state.pages.every((p:{text:string})=>p.text.length<=Math.floor(researchLimits.totalChars/count)));
+      assert.ok(state.pages.reduce((sum:number,p:{text:string})=>sum+p.text.length,0)<=researchLimits.totalChars);
+    }finally{rmSync(run.root,{recursive:true,force:true});}
+  }
+});
