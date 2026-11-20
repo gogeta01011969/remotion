@@ -92,3 +92,5 @@ npm run render -- --scale=0.5
 Tests cover invalid inputs, uneven scene weights, single/multiple scenes, varied FPS, fractional durations, and exact transition overlap accounting. Render outputs are ignored by Git. Remotion packages are pinned to the same version; commit `package-lock.json` and use `npm ci` for repeatable installs.
 
 The implementation follows Remotion's official [parameterized video](https://www.remotion.dev/docs/parameterized-rendering), [transitions](https://www.remotion.dev/docs/transitions/transitionseries), and [seeded randomness](https://www.remotion.dev/docs/random) APIs. Check [Remotion's license](https://www.remotion.dev/license) for your intended usage.
+
+Optional automatic YouTube uploads: [connect your channel and configure GitHub Actions](automation/YOUTUBE.md). Uploads are disabled until configured and default to private.

@@ -19,7 +19,10 @@
     "automate": "node --import tsx scripts/automate.ts",
     "compare:examples": "node --import tsx scripts/comparison-suite.ts",
     "compare:examples:assets": "node --import tsx scripts/prepare-comparison-examples.ts",
-    "image:test": "node --import tsx scripts/test-cloudflare-images.ts"
+    "image:test": "node --import tsx scripts/test-cloudflare-images.ts",
+    "youtube:auth": "node --import tsx scripts/youtube-auth.ts",
+    "youtube:check": "node --import tsx scripts/youtube-upload.ts --check",
+    "youtube:upload": "node --import tsx scripts/youtube-upload.ts"
   },
   "dependencies": {
     "@remotion/bundler": "4.0.542",

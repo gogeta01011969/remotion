@@ -11,3 +11,6 @@ public/shorts/
 .automation/
 __pycache__/
 /checkpoint-*.zip
+
+# Google downloaded OAuth client credentials
+/client_secret*.json

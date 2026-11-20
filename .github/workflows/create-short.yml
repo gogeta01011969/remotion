@@ -66,6 +66,15 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: node --import tsx .github/scripts/check-config.ts
+      - name: Check YouTube connection before spending generation credits
+        if: vars.YOUTUBE_UPLOAD_ENABLED == 'true'
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID }}
+          YOUTUBE_PRIVACY_STATUS: ${{ vars.YOUTUBE_PRIVACY_STATUS || 'private' }}
+        run: npm run youtube:check
       - name: Restore durable topic ledger
         id: ledger
         env:
@@ -143,6 +152,38 @@ jobs:
           CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
           VIDEO_ARTIFACT_ID: ${{ steps.video.outputs.artifact-id }}
         run: npm run automate -- --resume "$CURRENT_JOB_ID" --archive-confirmed "$VIDEO_ARTIFACT_ID"
+      - name: Prepare YouTube upload and verify the connected channel
+        id: youtube_prepare
+        if: steps.confirm.outcome == 'success' && vars.YOUTUBE_UPLOAD_ENABLED == 'true'
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID }}
+          YOUTUBE_PRIVACY_STATUS: ${{ vars.YOUTUBE_PRIVACY_STATUS || 'private' }}
+          YOUTUBE_MADE_FOR_KIDS: ${{ vars.YOUTUBE_MADE_FOR_KIDS || 'false' }}
+          YOUTUBE_CONTAINS_SYNTHETIC_MEDIA: ${{ vars.YOUTUBE_CONTAINS_SYNTHETIC_MEDIA || 'true' }}
+          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+        run: npm run youtube:upload -- --job "$CURRENT_JOB_ID" --prepare
+      - name: Persist upload intent before contacting the upload endpoint
+        id: youtube_intent
+        if: steps.youtube_prepare.outputs.status == 'prepared'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node --import tsx .github/scripts/state.ts save
+      - name: Upload the verified Short to YouTube
+        id: youtube
+        if: steps.youtube_intent.outcome == 'success'
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID }}
+          YOUTUBE_PRIVACY_STATUS: ${{ vars.YOUTUBE_PRIVACY_STATUS || 'private' }}
+          YOUTUBE_MADE_FOR_KIDS: ${{ vars.YOUTUBE_MADE_FOR_KIDS || 'false' }}
+          YOUTUBE_CONTAINS_SYNTHETIC_MEDIA: ${{ vars.YOUTUBE_CONTAINS_SYNTHETIC_MEDIA || 'true' }}
+          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+        run: npm run youtube:upload -- --job "$CURRENT_JOB_ID" --send
       - name: Persist final status (including failures)
         id: persist
         if: always() && steps.ledger.outcome == 'success'
@@ -150,7 +191,10 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: node --import tsx .github/scripts/state.ts save
       - name: Clean archived job intermediates
-        if: always() && steps.confirm.outcome == 'success' && steps.persist.outcome == 'success'
+        if: >-
+          always() && steps.confirm.outcome == 'success' && steps.persist.outcome == 'success' &&
+          (vars.YOUTUBE_UPLOAD_ENABLED != 'true' || steps.youtube.outputs.status == 'uploaded' ||
+           steps.youtube_prepare.outputs.status == 'already-uploaded')
         env:
           CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
         run: npm run automate -- --resume "$CURRENT_JOB_ID" --cleanup

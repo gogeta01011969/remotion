@@ -3,7 +3,7 @@
 Updated: November 17, 2026 (Asia/Kolkata), bounded best-effort recovery policy.
 
 Current scope: automatically create silent measurement-comparison Shorts on Linux,
-ending in a verified MP4 delivery. YouTube upload remains deferred. The current system is a working beta; unattended production
+ending in a verified MP4 delivery. Optional YouTube OAuth/resumable upload is implemented; real channel authorization and an end-to-end private test remain required. The current system is a working beta; unattended production
 reliability has not yet been established across subjects.
 
 ## Implemented
@@ -77,7 +77,7 @@ manual geographic area inputs remain available.
 
 ## Explicitly deferred
 
-- YouTube OAuth, idempotent uploads, processing checks and publication scheduling.
+- YouTube processing-status polling and publication scheduling. OAuth, guarded uploads and video-ID tracking are implemented; see [setup](YOUTUBE.md).
 - Narration, music and audio finishing; current target remains silent video.
 - Automatic geographic area acquisition: the renderer already supports supplied
   real outlines, but automatic source acquisition remains unfinished.

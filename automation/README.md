@@ -2,7 +2,7 @@
 
 The workflow selects a topic, checks history, runs the existing comparison pipeline,
 renders a silent MP4, archives the result, and cleans that job's intermediate files.
-It does not upload to YouTube. Existing `compare` commands and Mac foreground
+Optional YouTube upload is available after [one-time OAuth setup](YOUTUBE.md). Uploads stay disabled until `YOUTUBE_UPLOAD_ENABLED=true`. Existing `compare` commands and Mac foreground
 extraction remain available.
 
 ## Start on GitHub
@@ -298,12 +298,12 @@ uncommitted local changes are never visible to GitHub Actions.
 
 Final video artifacts last 30 days; the ledger retains their artifact IDs but
 cannot extend artifact retention. Permanent video storage is not a requirement.
-When YouTube upload is added, its confirmed success will become the delivery gate
-before deleting videos and intermediate assets. Keep only lightweight topic,
+When YouTube upload is enabled, confirmed upload and persisted outcome are additional gates
+before deleting generated intermediate assets. Keep only lightweight topic,
 status and upload-ID history after cleanup. A
 successful local run instead archives to `out/automation/delivery/<job-id>`.
 Cleanup never removes the ledger or final delivery and is refused before completion.
-YouTube publication is a separate future stage.
+See [YouTube setup](YOUTUBE.md) for channel authorization, private testing and public upload configuration; processing polling and publication scheduling remain future work.
 
 ## Local execution
 
