@@ -287,10 +287,10 @@
       "angle": "unexpected-neighbors",
       "depth": "specialist",
       "status": "needs-review",
-      "attempts": 2,
+      "attempts": 3,
       "createdAt": "2026-11-20T15:16:27.381Z",
-      "updatedAt": "2026-11-20T15:43:48.404Z",
-      "error": "motion failed validation after three attempts: [\n  {\n    \"origin\": \"string\",\n    \"code\": \"too_big\",\n    \"maximum\": 24,\n    \"inclusive\": true,\n    \"path\": [\n      \"items\",\n      0,\n      \"label\"\n    ],\n    \"message\": \"Too big: expected string to have <=24 characters\"\n  },\n  {\n    \"origin\": \"string\",\n    \"code\": \"too_big\",\n    \"maximum\": 24,\n    \"inclusive\": true,\n    \"path\": [\n      \"items\",\n      1,\n      \"label\"\n    ],\n    \"message\": \"Too big: expected string to have <=24 characters\"\n  },\n  {\n    \"code\": \"custom\",\n    \"message\": \"Display labels must be straightforward shortenings of the researched name.\",\n    \"path\": [\n      \"items\",\n      5\n    ]\n  }\n]"
+      "updatedAt": "2026-11-20T16:08:39.446Z",
+      "error": "motion failed validation after three attempts: [\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"generationBrief\"\n    ],\n    \"path\": [],\n    \"message\": \"Unrecognized key: \\\"generationBrief\\\"\"\n  }\n]"
     }
   ],
   "queue": [
