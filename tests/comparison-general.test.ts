@@ -1,3 +1,4 @@
+import {ensureComparisonImages} from '../src/pipeline/comparison-images';
 import {mockResearch} from './helpers/mock-research';
 import {strict as assert} from 'node:assert';
 import {test} from 'node:test';
@@ -102,13 +103,13 @@ test('provider manifests are complete and a trusted local provider is invoked wi
 
 test('prompt research produces per-run asset requests and resumes without repeating AI stages',async()=>{
   const root=mkdtempSync(path.join(tmpdir(),'comparison-prompt-')),calls:ChatRequest[]=[];
-  const raw=dataset();raw.items=Array.from({length:8},(_,i)=>({...raw.items[i%4],id:`new-object-${i}`,label:`New object ${i}`,value:i+1}));raw.items.forEach(i=>{delete (i.visual as {calibration?:unknown}).calibration;Object.assign(i.visual,{generation:{prompt:'Reference-based full object, orthographic view, transparent background.'}});i.sourceIds=['s1'];i.visual.referenceUrls=['https://example.com/one'];});
+  const raw=dataset();raw.items=Array.from({length:8},(_,i)=>({...raw.items[i%4],id:`new-object-${i}`,label:`New object ${i}`,value:i+1}));raw.items.forEach(i=>{delete (i.visual as {calibration?:unknown}).calibration;i.sourceIds=['s1'];i.visual.referenceUrls=['https://example.com/one'];});
   raw.sources=[{id:'s1',title:'Opened primary reference',url:'https://example.com/one'}];
   const client={chat:async(request:ChatRequest):Promise<Completion>=>{
     calls.push(request);
     if(request.tools)return {choices:[{message:{content:'Reviewed values, common endpoints, and object references. '+ 'Each synthetic test object uses a consistent dimension, a documented source, and a supported orthographic view. '.repeat(5),executed_tools:[{type:'browser_search'},{name:'browser.open',search_results:{results:[{url:'https://example.com/one',content:'Primary one\nValues'}]}},{name:'browser.open',search_results:{results:[{url:'https://example.com/two',content:'Primary two\nViews'}]}}]}}]};
     const input=JSON.parse(request.messages[1].content);
-    return {choices:[{message:{content:JSON.stringify(input.selectedConcept?{...raw,environment:'studio',editorial:editorialFixture(raw)}:ideaFixture())}}]};
+    return {choices:[{message:{content:JSON.stringify(input.selectedConcept?{...raw,environment:'studio',generationBrief:'Unused dataset-stage image planning text',editorial:editorialFixture(raw)}:ideaFixture())}}]};
   }};
   const options={topic:'Compare arbitrary new objects',id:'prompt-run',root,directory:root,log:()=>{}};
   const dependencies={client,research:mockResearch(client),config:{apiKey:'test-key',researchModel:'test-research',motionModel:'test-motion',scriptModel:'test-script'}};
@@ -118,6 +119,14 @@ test('prompt research produces per-run asset requests and resumes without repeat
     for(const call of calls.slice(1))assert.equal(JSON.parse(call.messages[1].content).selectedConcept.viewerQuestion,data.editorial!.viewerQuestion);
     assert.equal(JSON.parse(readFileSync(path.join(root,'editorial-plan.json'),'utf8')).payoff.itemId,data.items.at(-1)!.id);
     assert.deepEqual(await generateComparisonData(options,dependencies),data);assert.equal(calls.length,3);
+    assert.ok(data.items.every(item=>item.visual?.kind==='cutout'&&!item.visual.generation));
+    let imageRequests=0;
+    const withImages=await ensureComparisonImages(data,{directory:root,model:'image-fixture',log:()=>{},client:{chat:async request=>{
+      imageRequests++;const input=JSON.parse(request.messages[1].content);
+      return {choices:[{message:{content:JSON.stringify({images:input.objects.map((item:{id:string;label:string})=>({id:item.id,prompt:`Complete accurate isolated orthographic profile of ${item.label}, matching its real identity and proportions with neutral lighting, no labels or background.`}))})}}]};
+    }}});
+    assert.equal(imageRequests,2);assert.ok(withImages.items.every(item=>item.visual?.kind==='cutout'&&item.visual.generation));
+    assert.deepEqual(withImages.items.map(item=>item.value),data.items.map(item=>item.value));
     await assert.rejects(()=>generateComparisonData({...options,topic:'A different topic'},dependencies),/different request/);
   }finally{rmSync(root,{recursive:true,force:true});}
 });

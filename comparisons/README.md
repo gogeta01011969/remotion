@@ -314,3 +314,12 @@ the canonical identity intact; they do not consume model-repair calls. Full
 canonical names still fail if they do not identify the selected evidence. Chart
 labels fit within a fixed-height band so long fallback names do not overlap the
 next row of images.
+
+At the model-generation boundary, only recognized top-level dataset fields are
+retained. Extra planning annotations such as `generationBrief` are ignored and
+their field names logged; the original response remains in the attempt artifact.
+Required fields, nested objects, measurement dimensions, and source/evidence
+binding remain strict. Detailed image briefs belong to the separate image
+planner, so dataset selection accepts lightweight visual descriptors without
+`visual.generation`. Saved-draft recovery checks all three local attempts before
+requesting a new model repair.

@@ -28,10 +28,10 @@ export function comparisonGenerationSchema(metric:SizeDataset['metric'],sources:
   const {value,sourceIds,range,note,approximate,...presentation}=base;
   const item=facts.length?z.object({...presentation,visual,evidenceId:z.enum(facts.map(f=>f.evidenceId) as [string,...string[]])}):z.object({...base,visual,...(sources.length?{sourceIds:z.array(z.enum(sources.map(s=>s.id) as [string,...string[]])).min(1)}:{})});
   const editorial=comparisonEditorialSchema.omit({items:true}).extend({objectRoles:comparisonEditorialSchema.shape.items});
-  return z.object({...sizeDatasetSchema.shape,basis:sizeDatasetSchema.shape.basis.unwrap(),editorial,items:z.array(item).min(comparisonLimits.minimum).max(comparisonLimits.maximum)});
+  return z.object({...sizeDatasetSchema.shape,basis:sizeDatasetSchema.shape.basis.unwrap(),editorial,items:z.array(item).min(comparisonLimits.minimum).max(comparisonLimits.maximum)}).strict();
 }
 
-export function normalizeComparisonGeneration(raw:unknown){
+export function normalizeComparisonGeneration(raw:unknown,log?:(line:string)=>void){
   if(!raw||typeof raw!=='object'||Array.isArray(raw))return raw;
   const data={...raw} as Record<string,unknown>;
   let e=data.editorial;
@@ -47,6 +47,13 @@ export function normalizeComparisonGeneration(raw:unknown){
   if(e&&typeof e==='object'&&!Array.isArray(e)){
     e={...e};delete (e as Record<string,unknown>).measurementBasis;data.editorial=e;
   }
+  // Project model output onto the dataset's known root fields. Planning notes
+  // such as generationBrief are not facts, image instructions or executable
+  // content. Missing required fields and every nested contract still validate
+  // strictly below. Raw responses remain in the stage's audit artifacts.
+  const ignored=Object.keys(data).filter(key=>!Object.hasOwn(sizeDatasetSchema.shape,key));
+  for(const key of ignored)delete data[key];
+  if(ignored.length)log?.(`comparison-data: ignored non-dataset root fields ${JSON.stringify(ignored)}`);
   // Optional chart thumbnails may be planned by the asset stage. Keep supplied
   // real imagery; temporary boxes allow data validation before image planning.
   if(typeof data.metric==='string'&&isQuantityMetric(data.metric)&&Array.isArray(data.items)){

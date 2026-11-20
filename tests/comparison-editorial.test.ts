@@ -247,3 +247,27 @@ test('old drafts with long canonical names and unsupported optional aliases reco
     assert.equal(compileSizeComparison(result,episode).scenes.length,7);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
+
+test('model planning annotations are ignored at the root while facts and nested contracts remain strict',()=>{
+  const data=fixture(7),messages:string[]=[];
+  const raw={...data,generationBrief:{instructions:'Unused model planning text',value:999},renderNotes:'Unused annotation',$schema:'unused-schema-annotation'};
+  assert.equal(sizeDatasetSchema.safeParse(raw).success,false);
+  const normalized=normalizeComparisonGeneration(raw,message=>messages.push(message));
+  assert.deepEqual(sizeDatasetSchema.parse(normalized),data);
+  assert.ok(messages[0].includes('generationBrief'));assert.ok(!messages[0].includes('Unused model planning text'));
+  assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...raw,unit:'wrong-unit'})).success,false);
+  assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...raw,items:data.items.map((item,i)=>i?item:{...item,sourceIds:['unopened-source']})})).success,false);
+  assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...raw,editorial:{...data.editorial,generationBrief:'Not a role field'}})).success,false);
+  const {basis,...missing}=raw;
+  assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration(missing)).success,false);
+});
+
+test('cached recovery checks older saved drafts before making a new model request',async()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'older-valid-comparison-')),data=fixture(7);
+  try{
+    writeFileSync(path.join(root,'comparison-data-attempt-3.json'),JSON.stringify({content:JSON.stringify({...data,unit:'invalid-unit'})}));
+    writeFileSync(path.join(root,'comparison-data-attempt-2.json'),JSON.stringify({content:JSON.stringify({...data,generationBrief:'Unused planning annotation'})}));
+    const result=await structuredStage({stage:'motion',artifact:'comparison-data',repairFromDraft:true,model:'unused',schema:comparisonGenerationSchema(data.metric),system:'Cached recovery test',input:'{}',directory:root,log:()=>{},validate:raw=>sizeDatasetSchema.parse(normalizeComparisonGeneration(raw)),client:{chat:async()=>{throw new Error('Use the earlier valid draft without a model request');}}});
+    assert.deepEqual(result,data);
+  }finally{rmSync(root,{recursive:true,force:true});}
+});

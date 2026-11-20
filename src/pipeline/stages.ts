@@ -63,12 +63,13 @@ export async function structuredStage<T>(options: {
     for(let attempt=3;attempt>=1;attempt--){
       const saved=path.join(options.directory,`${label}-attempt-${attempt}.json`);
       if(!existsSync(saved))continue;
-      const record=JSON.parse(readFileSync(saved,'utf8'));
-      if(typeof record.content!=='string')continue;
-      previous=record.content;
-      try{const parsed=parseJsonContent(previous);return options.validate(options.nullableOptionals?omitNulls(parsed):parsed);}
-      catch(failure){error=failure instanceof Error?failure.message:'Invalid saved draft';repairError=error;}
-      break;
+      let record;try{record=JSON.parse(readFileSync(saved,'utf8'));}catch{continue;}
+      if(!record||typeof record.content!=='string')continue;
+      if(!previous)previous=record.content;
+      try{const parsed=parseJsonContent(record.content);return options.validate(options.nullableOptionals?omitNulls(parsed):parsed);}
+      catch(failure){if(record.content===previous){error=failure instanceof Error?failure.message:'Invalid saved draft';repairError=error;}}
+      // An older draft may validate under the current contract. Try all saved
+      // attempts locally before spending tokens on another repair request.
     }
   }
   // Timed structures use title-specific unions; prefer JSON mode and local validation
