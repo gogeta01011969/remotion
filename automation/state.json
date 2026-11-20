@@ -265,7 +265,71 @@
       "videoSha256": "c89f4b01edf7a2884da61473d891f835614a309bcb605f0f287927b4f59d2220",
       "artifactName": "short-short-2026-11-20-a14037d1a740",
       "artifactId": "14609263154"
+    },
+    {
+      "id": "short-2026-11-20-56bdf4e78cd4",
+      "topic": "Speed showdown: land predator, diving bird, race car and high‑speed train",
+      "metric": "speed",
+      "scopeKey": "speed-showdown-animal-vehicle",
+      "entityKeys": [
+        "Cheetah",
+        "Peregrine Falcon",
+        "Formula 1 car",
+        "Shinkansen bullet train",
+        "Sailfish",
+        "Usain Bolt",
+        "Eurocopter Tiger",
+        "SpaceX Falcon 9 (atmospheric phase)"
+      ],
+      "actualEntityKeys": [],
+      "whyInteresting": "By lining up the fastest animal on land, in the air, and the quickest human‑made machines, the short reveals surprising overlaps and stark gaps, satisfying curiosity about what truly moves fastest in each realm.",
+      "family": "speed-comparisons",
+      "angle": "unexpected-neighbors",
+      "depth": "specialist",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-20T15:16:27.381Z",
+      "updatedAt": "2026-11-20T15:16:27.381Z"
     }
   ],
-  "queue": []
+  "queue": [
+    {
+      "topic": "Mass comparison: blue whale, Airbus A380, Great Pyramid and other giants",
+      "metric": "mass",
+      "scopeKey": "mass-comparison-nature-engineered",
+      "entityKeys": [
+        "Blue Whale",
+        "Airbus A380",
+        "Great Pyramid of Giza",
+        "Titanic",
+        "Boeing 747-8",
+        "African Elephant",
+        "Very Large Crude Carrier (VLCC)",
+        "Starship Super Heavy rocket"
+      ],
+      "whyInteresting": "Putting the planet’s heaviest animal beside the world’s biggest aircraft and ancient stone monuments lets viewers grasp the staggering range of mass that exists on Earth, highlighting both natural marvels and human engineering feats.",
+      "family": "mass-comparisons",
+      "angle": "natural-vs-engineered",
+      "depth": "extreme-scale"
+    },
+    {
+      "topic": "How tall is the tallest redwood compared to iconic skyscrapers and monuments",
+      "metric": "height",
+      "scopeKey": "tallest-redwood-vs-skyscraper",
+      "entityKeys": [
+        "Coast Redwood (Hyperion)",
+        "Giant Sequoia (General Sherman)",
+        "Patagonian Cypress (Alerce)",
+        "Baobab (Adansonia)",
+        "Burj Khalifa",
+        "Empire State Building",
+        "Statue of Liberty",
+        "Eiffel Tower"
+      ],
+      "whyInteresting": "Viewers instantly recognise a skyscraper’s silhouette, then discover that a single living tree can rival or exceed those heights, turning a familiar cityscape into a mind‑blowing natural wonder.",
+      "family": "trees-plants",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible"
+    }
+  ]
 }
