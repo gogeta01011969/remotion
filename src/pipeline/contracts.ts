@@ -10,6 +10,8 @@ export const researchSchema = z.object({
   sources: z.array(z.object({id: z.string(), title: z.string(), url: z.string().url()})).min(2),
   searched: z.literal(true), toolExecutions: z.number().int().positive(),
 }).strict();
+
+export const comparisonResearchSchema=researchSchema.extend({sources:z.array(researchSchema.shape.sources.element).min(1)});
 export type Research = z.infer<typeof researchSchema>;
 const sceneObject = z.object({
   title: z.string().min(3).max(80), delivery: deliverySchema.optional(), spokenCues: z.array(z.string().min(1).max(300)).min(1).max(5).optional(), cues: z.array(z.string().min(1).max(180)).min(2).max(3),

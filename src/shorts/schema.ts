@@ -18,7 +18,7 @@ export const stateSchema = z.object({
 }).strict();
 const common = {id: z.string().regex(/^[a-z][a-z0-9-]*$/).max(40), state: stateSchema};
 export const actorSchema = z.discriminatedUnion('kind', [
-  z.object({...common, kind: z.literal('size-comparison'), data: sizeDatasetSchema, headings: z.array(z.string().min(1).max(80)).min(4).max(comparisonLimits.maximum+1), shots: z.array(sizeShotSchema).min(4).max(comparisonLimits.maximum+1).optional()}).strict(),
+  z.object({...common, kind: z.literal('size-comparison'), data: sizeDatasetSchema, headings: z.array(z.string().min(1).max(80)).min(comparisonLimits.minimum).max(comparisonLimits.maximum+1), shots: z.array(sizeShotSchema).min(comparisonLimits.minimum).max(comparisonLimits.maximum+1).optional()}).strict(),
   z.object({...common, kind: z.literal('sacred-symbol'), symbol: z.literal('om'), reference: z.string().min(1).max(60), associations: z.array(z.object({sound: z.enum(['A', 'U', 'M']), cue: z.number().int().min(0).max(4), meaning: z.string().min(1).max(25)}).strict()).length(3), steps: z.array(z.object({mode: z.enum(['reveal', 'resonate', 'states', 'silence', 'reflect']), heading: z.string().min(1).max(45)}).strict()).min(4).max(6)}).strict(),
   z.object({...common, kind: z.literal('symbolic-story'), symbol: z.enum(['moon', 'flame', 'lotus']), guardian: z.enum(['shiva', 'sanctuary', 'none']), steps: z.array(z.object({action: z.enum(['reveal', 'diminish', 'approach', 'protect', 'renew']), heading: z.string().min(1).max(45), cue: z.number().int().min(0).max(2)}).strict()).min(4).max(6)}).strict().describe('Continuous illustrated sacred story. phase progresses from zero to steps.length. Deity art is stylized and symbolic.'),
   z.object({...common, kind: z.literal('comparison'), mode: z.enum(['fall', 'launch', 'force']), metric: z.enum(['height', 'time']).default('height'), gravityRatio: z.number().min(0.15).max(3), referenceLabel: z.string().min(1).max(20), changedLabel: z.string().min(1).max(20), heading: z.string().min(1).max(50), takeaway: z.string().max(70)}).strict().describe('Two-body mechanics comparison. phase is normalized experiment progress 0–1; trajectories and layout are calculated by the renderer.'),
@@ -109,9 +109,10 @@ export const briefSchema = z.object({
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(60),
   voice: z.string().min(1).max(80).default('Daniel'), wordsPerMinute: z.number().int().min(130).max(210).default(172),
   sources: z.array(z.object({title: z.string(), url: z.string().url()})).default([]), description: z.string().max(5000),
-  scenes: z.array(z.object({...sceneFields, delivery: deliverySchema.optional(), spokenCues: z.array(z.string().min(1).max(300)).min(1).max(5).optional(), cues: z.array(z.string().min(1).max(240)).max(5)}).strict()).min(4).max(comparisonLimits.maximum),
+  scenes: z.array(z.object({...sceneFields, delivery: deliverySchema.optional(), spokenCues: z.array(z.string().min(1).max(300)).min(1).max(5).optional(), cues: z.array(z.string().min(1).max(240)).max(5)}).strict()).min(comparisonLimits.minimum).max(comparisonLimits.maximum),
 }).strict().superRefine((input, ctx) => {
   checkStory(input, ctx);
+  if(input.scenes.length<4&&!input.actors.every(a=>a.kind==='size-comparison'))ctx.addIssue({code:'custom',message:'General stories still require at least four scenes.'});
   if (input.presentation === 'silent' && input.scenes.some(scene => scene.spokenCues || scene.delivery || scene.cues.length > 2 || scene.cues.some(cue => cue.split(/\s+/).length > 12))) ctx.addIssue({code: 'custom', message: 'Silent scenes use at most two concise on-screen notes (12 words each), without speech or delivery settings.'});
   if (input.presentation === 'narrated' && input.scenes.some(scene => !scene.cues.length)) ctx.addIssue({code:'custom',message:'Narrated scenes need at least one speech cue.'});
   if (input.presentation === 'narrated' && input.language === 'hinglish' && input.scenes.some(scene => !scene.spokenCues)) ctx.addIssue({code: 'custom', message: 'Hinglish briefs need pronunciation-ready spokenCues for every scene.'});
@@ -126,9 +127,10 @@ export const shortSchema = z.object({
   scenes: z.array(z.object({
     ...sceneFields, durationInFrames: z.number().int().min(24),
     captions: z.array(z.object({text: z.string().min(1).max(240), from: z.number().int().min(0), duration: z.number().int().positive(), chunks: z.array(captionChunkSchema).min(1).max(12).optional()}).strict()).max(5),
-  }).strict()).min(4).max(comparisonLimits.maximum),
+  }).strict()).min(comparisonLimits.minimum).max(comparisonLimits.maximum),
 }).strict().superRefine((input, ctx) => {
   checkStory(input, ctx);
+  if(input.scenes.length<4&&!input.actors.every(a=>a.kind==='size-comparison'))ctx.addIssue({code:'custom',message:'General stories still require at least four scenes.'});
   if (input.presentation === 'silent' && (input.audio || input.scenes.some(scene => scene.captions.length > 2 || scene.captions.some(cue => cue.chunks || cue.text.split(/\s+/).length > 12 || cue.duration < readingFrames(cue.text, input.fps))))) ctx.addIssue({code:'custom',message:'Silent videos have no audio and use brief notes with sufficient reading time, not speech caption fragments.'});
   if (input.presentation === 'narrated' && input.scenes.some(scene => !scene.captions.length)) ctx.addIssue({code:'custom',message:'Narrated scenes need captions.'});
   const total = input.scenes.reduce((sum, s) => sum + s.durationInFrames, 0);

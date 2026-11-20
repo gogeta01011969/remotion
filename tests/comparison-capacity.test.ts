@@ -17,17 +17,17 @@ import {verifiedMeasurements} from '../src/pipeline/bounded-research';
 import {editorialFixture,ideaFixture} from './helpers/comparison-editorial';
 
 const dataset=(count:number,extreme=false)=>sizeDatasetSchema.parse({...mass,metric:extreme?'height':'mass',unit:extreme?'m':'kg',items:Array.from({length:count},(_,i)=>({...mass.items[i%4],id:`reference-${i}`,label:`Reference ${i}`,value:extreme?10**(-12+42*i/(count-1)):i+1}))});
-test('eight is a planning target while four through fifteen supported objects remain valid',()=>{
-  for(let n=0;n<=20;n++)if(n>=4&&n<=15)assert.doesNotThrow(()=>requireComparisonCount(n));else assert.throws(()=>requireComparisonCount(n),/4–15 verified objects/);
+test('eight is a planning target while two through fifteen supported objects remain valid',()=>{
+  for(let n=0;n<=20;n++)if(n>=2&&n<=15)assert.doesNotThrow(()=>requireComparisonCount(n));else assert.throws(()=>requireComparisonCount(n),/2–15 verified objects/);
   assert.equal(dataset(4).items.length,4);
-  for(const count of [4,7,8,15,16]){
+  for(const count of [2,3,4,7,8,15,16]){
     const data=count===16?{...dataset(15),items:[...dataset(15).items,{...dataset(15).items[0],id:'sixteenth'}]}:dataset(count);
     const {items:objectRoles,...rest}=editorialFixture({...data,items:data.items.slice(0,15)});
     assert.equal(comparisonGenerationSchema('mass').safeParse({...data,items:data.items.map(({visual,...item})=>item),editorial:{...rest,objectRoles}}).success,count<=15);
   }
 });
-test('four through fifteen subjects compile at all output frame rates with settled focus and a final overview',()=>{
-  for(const extreme of [false,true])for(let count=4;count<=15;count++){
+test('two through fifteen subjects compile at all output frame rates with settled focus and a final overview',()=>{
+  for(const extreme of [false,true])for(let count=2;count<=15;count++){
     const data=dataset(count,extreme),episode=defaultSizeEpisode(data),brief=compileSizeComparison(data,episode);
     for(const fps of [24,30,60]){
       const input=prepareSilentInput(brief,fps),frames=input.scenes.reduce((sum,s)=>sum+s.durationInFrames,0);

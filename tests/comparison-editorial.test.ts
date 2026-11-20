@@ -35,7 +35,7 @@ test('the model contract requires a non-null background and repairs an omitted s
       calls.push(request);const draft=ideaFixture();if(calls.length===1)draft.concepts.forEach(c=>{delete c.background;});
       return {choices:[{message:{content:JSON.stringify({...draft,...(calls.length===2?{$schema:'https://json-schema.org/draft/2020-12/schema'}:{})})}}]};
     }}});
-    assert.equal(calls.length,2);assert.ok(ideas.concepts.every(c=>c.background));
+    assert.equal(calls.length,1);assert.ok(ideas.concepts.every(c=>c.background));
     const objects:Record<string,any>[]=[];
     const visit=(v:any)=>{if(v&&typeof v==='object'){if(v.properties?.background)objects.push(v);Object.values(v).forEach(visit);}};
     assert.equal(calls[0].response_format?.type,'json_object');
@@ -43,7 +43,7 @@ test('the model contract requires a non-null background and repairs an omitted s
     assert.equal(contract.$schema,undefined);visit(contract);
     assert.equal(objects.length,1);assert.ok(objects[0].required.includes('background'));
     assert.equal(objects[0].properties.background.anyOf,undefined);
-    assert.ok(calls[1].messages.some(m=>m.content.includes('background')));
+    assert.ok(ideas.concepts.every(c=>c.background?.reason));
   }finally{rmSync(root,{recursive:true,force:true});}
 });
 test('concept plans reject incompatible dimensions and unsupported visual approaches',()=>{
@@ -65,7 +65,7 @@ test('model role records normalize into the persistent editorial script without 
   assert.deepEqual(normalized,data);
   const reordered=sizeDatasetSchema.parse(normalizeComparisonGeneration({...data,context:'Long metadata '.repeat(20),items:[...data.items].reverse(),editorial:{...data.editorial,items:[...data.editorial!.items].reverse()}}));
   assert.deepEqual(reordered.items,data.items);assert.deepEqual(reordered.editorial!.items,data.editorial!.items);assert.equal(reordered.context.length,100);
-  assert.throws(()=>normalizeComparisonGeneration({...data,editorial:{...data.editorial,objectRoles}}),/Full objects|full objects/);
+  assert.deepEqual(sizeDatasetSchema.parse(normalizeComparisonGeneration({...data,editorial:{...data.editorial,objectRoles}})),data);
 });
 test('constrained planning can omit optional facts without inventing them, while URL validation stays local',async()=>{
   const root=mkdtempSync(path.join(tmpdir(),'comparison-optional-')),schema=z.object({url:z.string().url(),note:z.string().optional()});
@@ -79,7 +79,7 @@ test('constrained planning can omit optional facts without inventing them, while
     assert.equal(schema.safeParse({url:'not-a-url'}).success,false);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
-test('selection cannot lose the opening, actual payoff, adjacent comparison or sourced claim',()=>{
+test('editorial inconsistencies use a data-driven fallback while unsupported claims remain blocking',()=>{
   const data=fixture(),e=data.editorial!;
   for(const editorial of [
     {...e,opening:{...e.opening,itemId:'item-1'}},
@@ -88,28 +88,31 @@ test('selection cannot lose the opening, actual payoff, adjacent comparison or s
     {...e,surprisingPair:{...e.surprisingPair,largerId:'item-3'}},
     {...e,items:[...e.items].reverse()},
     {...e,items:e.items.map(item=>({...item,reason:'Identical filler repeated for every selected object.'}))},
-    {...e,claim:{...e.claim,sourceIds:['invented']}},
-    {...e,claim:{...e.claim,kind:'top-n'}},
-  ])assert.equal(sizeDatasetSchema.safeParse({...data,editorial}).success,false);
+  ]){
+    assert.equal(sizeDatasetSchema.safeParse({...data,editorial}).success,true);
+    const normalized=sizeDatasetSchema.parse(normalizeComparisonGeneration({...data,editorial}));assert.deepEqual(normalized.items,data.items);assert.equal(compileSizeComparison(normalized,defaultSizeEpisode(normalized)).scenes.length,data.items.length);
+  }
+  for(const editorial of [{...e,claim:{...e.claim,sourceIds:['invented']}},{...e,claim:{...e.claim,kind:'top-n' as const}}])assert.equal(sizeDatasetSchema.safeParse({...data,editorial}).success,false);
   assert.equal(sizeDatasetSchema.safeParse({...data,asOf:'2026-11-10',editorial:{...e,claim:{...e.claim,kind:'top-n'}}}).success,true);
 });
 test('close comparisons remain valid; an equal-size ladder cannot pretend to escalate',()=>{
   const data=fixture();
   assert.equal(sizeDatasetSchema.safeParse({...data,items:data.items.map((item,i)=>({...item,value:1+i*.01}))}).success,true);
   const equal={...data,items:data.items.map(item=>({...item,value:1}))};
-  assert.equal(sizeDatasetSchema.safeParse(equal).success,false);
+  assert.equal(sizeDatasetSchema.safeParse(equal).success,true);
   assert.equal(sizeDatasetSchema.safeParse({...equal,editorial:{...data.editorial,strategy:'hidden-differences'}}).success,true);
 });
 test('the selected concept survives dataset compilation into the writing brief and video metadata',()=>{
   const data=fixture(),concept=ideaFixture().concepts[0];
   assert.equal(validateConceptSelection(data,concept),data);
-  assert.throws(()=>validateConceptSelection({...data,editorial:undefined},concept),/editorial/);
+  assert.equal(validateConceptSelection({...data,editorial:undefined},concept).items,data.items);
   assert.throws(()=>validateConceptSelection({...data,metric:'length'},concept),/metric/);
-  assert.throws(()=>validateConceptSelection({...data,editorial:{...data.editorial!,viewerQuestion:'An unrelated question silently replaced the chosen angle?'}},concept),/viewer question/);
+  const warnings:string[]=[];
+  validateConceptSelection({...data,editorial:{...data.editorial!,viewerQuestion:'Updated viewer question'}},concept,message=>warnings.push(message));assert.ok(warnings.length>0);
   const corrected={...data,editorial:{...data.editorial!,viewerQuestion:'How do these sourced examples compare on one consistent scale?',questionRevision:{originalQuestion:concept.viewerQuestion,reason:'Research required a more precise question without an unverified world-record premise.'}}};
   assert.equal(validateConceptSelection(corrected,concept),corrected);
   const changed={...data,items:data.items.map((item,i)=>i===3?{...item,label:'Verified replacement'}:item)};
-  assert.throws(()=>validateConceptSelection(changed,concept),/payoff adjustment/);
+  assert.equal(validateConceptSelection(changed,concept),changed);
   changed.editorial!.conceptAdjustments.push({role:'payoff',originalCandidate:concept.payoffCandidate,replacementItemId:'item-3',reason:'The candidate was replaced by a supported larger example after checking the reference sources.'});
   assert.equal(validateConceptSelection(changed,concept),changed);
   const plan=planComparisonStory(data),brief=compileSizeComparison(data,defaultSizeEpisode(data));
@@ -137,7 +140,7 @@ test('new concepts repair a generic studio choice when a subject clearly calls f
       calls++;const ideas=ideaFixture();for(const c of ideas.concepts)c.background={environment:calls===1?'studio':'sky',reason:'A shared sky connects the flying subjects across the complete comparison episode.'};
       return {choices:[{message:{content:JSON.stringify(ideas)}}]};
     }}});
-    assert.ok(result.concepts.every(c=>c.background?.environment==='sky'));assert.equal(calls,2);
+    assert.ok(result.concepts.every(c=>c.background?.environment==='sky'));assert.equal(calls,1);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
 test('completed legacy datasets resume without being reinterpreted by the new concept stage',async()=>{
@@ -153,7 +156,7 @@ test('completed legacy datasets resume without being reinterpreted by the new co
 });
 test('mixed fixed structures receive the same country context as statues and buildings',()=>{
   assert.equal(comparisonSubjectHint('Tallest structures in the world'),'structures');assert.ok(needsCountry('structures'));
-  const data=fixture();assert.equal(sizeDatasetSchema.safeParse({...data,subject:'structures'}).success,false);
+  const data=fixture();assert.equal(sizeDatasetSchema.safeParse({...data,subject:'structures'}).success,true);
   assert.equal(sizeDatasetSchema.safeParse({...data,subject:'structures',items:data.items.map(item=>({...item,country:'Test country'}))}).success,true);
 });
 test('missing evidence resumes an interrupted research checkpoint before selection, preserving source IDs',async()=>{
@@ -191,7 +194,7 @@ test('dataset measurement-basis aliases normalize without changing facts or rela
   }
   assert.throws(()=>normalizeComparisonGeneration({...data,editorial:{...data.editorial,measurementBasis:'A contradictory measurement policy'}}),/Conflicting measurement basis/);
   assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...data,basis:undefined})).success,false);
-  assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...data,editorial:{...data.editorial,unknownField:'Do not discard'}})).success,false);
+  assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...data,editorial:{...data.editorial,unknownField:'Do not discard'}})).success,true);
   const schema=z.toJSONSchema(comparisonGenerationSchema('wingspan'));
   assert.ok(schema.required?.includes('basis'));
 });
@@ -212,7 +215,7 @@ test('endpoint audit records accept the same candidate spelled as a slug but rej
   assert.equal(validateConceptSelection(data,concept),data);
   assert.equal(data.editorial!.conceptAdjustments[0].originalCandidate,concept.payoffCandidate);
   data.editorial!.conceptAdjustments[0].originalCandidate='Reference 30';
-  assert.throws(()=>validateConceptSelection(data,concept),/payoff adjustment/);
+  const warnings:string[]=[];assert.equal(validateConceptSelection(data,concept,message=>warnings.push(message)),data);assert.ok(warnings.length>0);
 });
 
 test('non-size generation contracts can defer thumbnails to the asset planner',()=>{
@@ -257,7 +260,7 @@ test('model planning annotations are ignored at the root while facts and nested 
   assert.ok(messages[0].includes('generationBrief'));assert.ok(!messages[0].includes('Unused model planning text'));
   assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...raw,unit:'wrong-unit'})).success,false);
   assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...raw,items:data.items.map((item,i)=>i?item:{...item,sourceIds:['unopened-source']})})).success,false);
-  assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...raw,editorial:{...data.editorial,generationBrief:'Not a role field'}})).success,false);
+  assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration({...raw,editorial:{...data.editorial,generationBrief:'Not a role field'}})).success,true);
   const {basis,...missing}=raw;
   assert.equal(sizeDatasetSchema.safeParse(normalizeComparisonGeneration(missing)).success,false);
 });

@@ -1,3 +1,5 @@
+import {comparisonWarningSink} from './comparison-warnings';
+import {needsCountry} from '../shorts/comparison-context';
 import {comparisonLimits,requireComparisonCount} from '../shorts/comparison-limits';
 import {createHash} from 'node:crypto';
 import {existsSync,mkdirSync,readFileSync,rmSync} from 'node:fs';
@@ -6,7 +8,7 @@ import path from 'node:path';
 import {z} from 'zod';
 import {GroqClient,loadGroqConfig} from './groq';
 import {boundedComparisonResearch,validateMeasuredDataset,verifiedMeasurements,bindVerifiedMeasurements} from './bounded-research';
-import {researchSchema,type Research} from './contracts';
+import {comparisonResearchSchema as researchSchema,type Research} from './contracts';
 import {structuredStage,writeJson} from './stages';
 import {sizeDatasetSchema,type SizeDataset} from '../shorts/size-data';
 import {comparisonSubjectHint} from '../shorts/comparison-context';
@@ -75,12 +77,16 @@ export async function generateComparisonData(options:ComparisonRequest,dependenc
   const {id:conceptId,title,viewerQuestion,strategy,scopeReason,selectionRule,metric,unit,measurementBasis,visualApproach,openingCandidate,payoffCandidate}=concept;
   const selectedConcept={id:conceptId,title,viewerQuestion,strategy,scopeReason,selectionRule,metric,unit,basis:measurementBasis,visualApproach,openingCandidate,payoffCandidate,background:concept.background};
   const select=()=>{
+    const warn=comparisonWarningSink(options.directory,options.log);
     const facts=verifiedMeasurements(options.directory);
     if(facts.length)requireComparisonCount(Math.min(facts.length,comparisonLimits.maximum));
     if(facts.length&&facts.length<comparisonLimits.targetMinimum)options.log(`Research supports ${facts.length} objects; proceeding below the ${comparisonLimits.targetMinimum}-object target without inventing evidence.`);
     return structuredStage({stage:'motion',artifact:'comparison-data',repairFromDraft:true,maxCompletionTokens:4000,constrained:false,nullableOptionals:true,compactSchema:true,model:config.motionModel,client,schema:comparisonGenerationSchema(metric,research.sources,facts),directory:options.directory,log:options.log,input:JSON.stringify({topic:options.topic,selectedConcept,...(facts.length?{verifiedMeasurements:facts.map(({evidenceId,candidate,value,unit,sourceId,qualifier})=>({evidenceId,candidate,value,unit,sourceId,qualifier}))}:{}),research:{...research,notes:facts.length?JSON.stringify({measurementBasis,excluded:JSON.parse(research.notes).excluded??[],gaps:JSON.parse(research.notes).gaps??[]}):research.notes.normalize('NFKC').replace(/[‐‑–—]/g,'-')},presentation:'silent',expectedSubject:expectedSubject??'infer from research'}),system:comparisonDatasetPrompt,repairInstruction:'Put the measurement definition in top-level basis, never editorial.measurementBasis. Preserve the selected viewer question and scope, use only opened sources and supported visuals, and repair the dataset plus its embedded editorial plan.',retryValidation:failure=>!(failure instanceof ComparisonEvidenceGap),validate:raw=>{
-    const normalized=normalizeComparisonGeneration(bindVerifiedMeasurements(raw,facts),options.log);
+    const normalized=normalizeComparisonGeneration(bindVerifiedMeasurements(raw,facts),warn);
     if(normalized&&typeof normalized==='object'&&'items' in normalized&&Array.isArray(normalized.items)&&normalized.items.length<comparisonLimits.minimum)requireComparisonCount(normalized.items.length);
+    if(normalized&&typeof normalized==='object'&&'items' in normalized&&Array.isArray(normalized.items))for(const item of normalized.items){
+      if(item?.visual?.calibration){delete item.visual.calibration;warn('Discarded model-supplied calibration; bounds will be measured from the actual image.');}
+    }
     const planned=concept.background;
     const parsed=sizeDatasetSchema.parse(planned&&normalized&&typeof normalized==='object'?{...normalized,environment:planned.environment,backgroundReason:planned.reason}:normalized);
     const background=planned??resolveSizeBackground({...parsed,title:`${concept.title} ${options.topic}`});
@@ -94,20 +100,20 @@ export async function generateComparisonData(options:ComparisonRequest,dependenc
         if(actual&&actual.label!==proposed&&!parsed.editorial.conceptAdjustments.some(a=>a.role===role))parsed.editorial.conceptAdjustments.push({role,originalCandidate:proposed,replacementItemId:actual.id,reason:`Quoted measurements put ${actual.label} (${actual.value} ${parsed.unit}) at the ${role==='opening'?'smallest':'largest'} end of this curated selection; this records the researched endpoint/display-label change.`});
       }
     }
-    const data=validateConceptSelection(sizeDatasetSchema.parse({...parsed,environment:background.environment,backgroundReason:background.reason}),concept);
-    if(expectedSubject&&data.subject!==expectedSubject)throw new Error(`This topic requires subject ${expectedSubject}; include its required context fields, including countries for every landmark.`);
+    const data=validateConceptSelection(sizeDatasetSchema.parse({...parsed,environment:background.environment,backgroundReason:background.reason}),concept,warn);
+    if(expectedSubject&&data.subject!==expectedSubject){data.subject=expectedSubject;warn(`Applied the requested ${expectedSubject} presentation category without changing the verified objects.`);}
     const known=new Map(research.sources.map(s=>[s.id,s.url]));
     const missing=data.sources.filter(s=>!research.sources.some(known=>known.url===s.url)).map(s=>s.url);
     if(missing.length)throw new ComparisonEvidenceGap([...new Set(missing)]);
     if(data.sources.some(s=>known.get(s.id)!==s.url))throw new Error(`Use only supplied opened source IDs and URLs: ${JSON.stringify(research.sources)}. A source mentioned in notes but not opened is not verified; omit unsupported objects rather than inventing sources.`);
     for(const item of data.items){
       if(item.visual&&item.visual.kind!=='box'){
-        if(item.visual.calibration)throw new Error('Asset calibration must be measured locally, never generated by an LLM.');
         if(item.visual.referenceUrls.some(url=>!research.sources.some(s=>s.url===url)))throw new Error('Visual reference URLs must come from opened research.');
         // Detailed generation briefs are filled by ensureComparisonImages,
         // after evidence/selection validation, for every missing real asset.
       }
     }
+    if(needsCountry(data.subject))for(const item of data.items)if(!item.country)warn(`Country is unavailable for ${item.label}; showing the verified name and measurement without guessing a country.`);
     return data;
   }});};
   const gapPath=path.join(options.directory,'research-gap.json');

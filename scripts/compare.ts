@@ -9,7 +9,7 @@ import {planComparisonStory} from '../src/pipeline/comparison-story';
 import {prepareComparisonAssets} from '../src/pipeline/comparison-assets';
 import {assetRequests,applyAssetManifest,runAssetProvider,generateComparisonData} from '../src/pipeline/comparison-run';
 import {writeJson} from '../src/pipeline/stages';
-import {planComparisonIdeas} from '../src/pipeline/comparison-ideas';
+import {planComparisonIdeas,normalizeComparisonGeneration} from '../src/pipeline/comparison-ideas';
 import {ensureComparisonImages} from '../src/pipeline/comparison-images';
 import {GroqClient,loadGroqConfig} from '../src/pipeline/groq';
 
@@ -22,7 +22,7 @@ async function main(){
   if(values['plan-only']&&values['prepare-only'])throw new Error('Choose either --plan-only or --prepare-only.');
   if(values['ideas-only']&&(!values.topic||values['plan-only']||values['prepare-only']||values['asset-provider']||values['asset-manifest']||values.episode))throw new Error('--ideas-only requires --topic and cannot be combined with asset, episode or render options.');
   const root=process.cwd(),read=(file:string)=>JSON.parse(readFileSync(path.resolve(file),'utf8'));
-  let data=values.data?sizeDatasetSchema.parse(read(values.data)):undefined;
+  let data=values.data?sizeDatasetSchema.parse(normalizeComparisonGeneration(read(values.data),console.error)):undefined;
   const episode=values.episode?comparisonEpisodeSchema.parse(read(values.episode)):undefined;
   const id=values.id??episode?.id??defaultSizeEpisode(data!).id;
   if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)||id.length>60)throw new Error('Invalid episode ID.');

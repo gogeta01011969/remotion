@@ -71,8 +71,8 @@ test('blocked pages and private redirects do not become evidence; failed reads r
     return {status:200,headers:{'content-type':'text/html'},body:'<title>Access denied</title><p>You do not have access to this site.</p>'};
   };
   try{
-    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/two usable sources/);
-    const before=reads;await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/two usable sources/);assert.equal(reads,before);
+    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/usable source/);
+    const before=reads;await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/usable source/);assert.equal(reads,before);
     const state=JSON.parse(readFileSync(path.join(run.root,'research-web.json'),'utf8'));
     assert.equal(state.pages.length,0);assert.ok(state.attemptedPages.length<=researchLimits.pages);assert.ok(state.httpRequests<=researchLimits.httpRequests);
   }finally{rmSync(run.root,{recursive:true,force:true});}
@@ -117,7 +117,7 @@ test('private redirect targets are refused before the network adapter sees them'
     return {status:302,headers:{'content-type':'text/html',location:'https://169.254.169.254/metadata'},body:''};
   };
   try{
-    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/two usable/);
+    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/usable source/);
     assert.equal(seen.some(url=>url.includes('169.254')),false);
   }finally{rmSync(run.root,{recursive:true,force:true});}
 });
@@ -319,10 +319,23 @@ test('too little supported evidence stops clearly after saving diagnostics inste
   const run=setup();
   run.facts.measurements[0].sourceValue=999;
   run.facts.measurements[1].quote='An invented quotation that does not occur in the opened source.';
+  run.facts.measurements[2].sourceValue=999;
   try{
-    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/4–15 verified objects; found 2/);
+    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/2–15 verified objects; found 1/);
     assert.equal(run.counts().modelCalls,2);
-    const saved=JSON.parse(readFileSync(path.join(run.root,'research-measurements.json'),'utf8'));assert.equal(saved.measurements.length,2);assert.equal(saved.gaps.length,2);
-    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/found 2/);assert.equal(run.counts().modelCalls,2);
+    const saved=JSON.parse(readFileSync(path.join(run.root,'research-measurements.json'),'utf8'));assert.equal(saved.measurements.length,1);assert.equal(saved.gaps.length,3);
+    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/found 1/);assert.equal(run.counts().modelCalls,2);
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('two verified objects from one opened source are sufficient for a valid comparison',async()=>{
+  const run=setup();
+  run.plan.targets=run.plan.targets.slice(0,2).map(target=>({...target,urls:['https://example.com/table']}));
+  run.facts.measurements=run.facts.measurements.slice(0,2).map(fact=>({...fact,sourceId:'s1'}));
+  run.deps.webFetch=async url=>url.includes('/search/page?')?{status:200,headers:{'content-type':'application/json'},body:'{"pages":[]}'}:{status:200,headers:{'content-type':'text/html'},body:`<p>${quote(0)}</p><p>${quote(1)}</p><p>${'This synthetic specification table documents both object heights. '.repeat(8)}</p>`};
+  try{
+    const result=await boundedComparisonResearch(run.options,run.deps,run.concept);
+    assert.equal(result.sources.length,1);assert.equal(verifiedMeasurements(run.root).length,2);
+    assert.equal(run.counts().modelCalls,2);
   }finally{rmSync(run.root,{recursive:true,force:true});}
 });

@@ -8,7 +8,7 @@ Every run can define new objects. The renderer does not require a hardcoded stat
 npm run compare -- --topic "Tallest statues, excluding pedestals" --id statues-run
 ```
 
-This uses the existing GroqCloud configuration (`GROQCLOUD_API_KEY` in `.env.local`) for **concept selection, research and structured object planning**. It first proposes three Shorts angles and selects one, then searches/opens sources to verify the candidates, measurement definition and visual requirements. Finally it aims for 8–15 purposeful objects (accepting 4–7 when evidence supports fewer) and writes their dataset, editorial plan and per-object visual briefs. It does not ask an LLM to generate executable React.
+This uses the existing GroqCloud configuration (`GROQCLOUD_API_KEY` in `.env.local`) for **concept selection, research and structured object planning**. It first proposes three Shorts angles and selects one, then searches/opens sources to verify the candidates, measurement definition and visual requirements. Finally it aims for 8–15 purposeful objects (accepting 2–7 when evidence supports fewer) and writes their dataset, editorial plan and per-object visual briefs. It does not ask an LLM to generate executable React.
 
 The concept stage considers a viewer question, recognizable anchor, meaningful contrasts and largest-object payoff. A broad topic can receive a stronger angle within its scope; explicitly named objects and restrictions remain constraints. Eight items are no longer a target to fill: four to six strong choices can be better. Small differences are allowed when they answer a specific question. These are editorial hypotheses, not measured audience-performance predictions.
 
@@ -23,7 +23,7 @@ npm run compare -- --topic "Size comparison of different flying objects" --id fl
 
 Local validation checks dimensions, supported views, role coverage/order, actual first/last objects, adjacent comparison references and source IDs. Top-N claims require a date and consistent basis; those checks do not themselves prove a complete ranking. Engagement, actual asset accuracy and factual interpretation still need editorial review. Broad flying-object ideas cannot mix wingspan, rotor diameter and body length; geographic outlines require real geographic assets. Providers must supply suitable per-run assets. Mixed fixed landmarks use subject `structures` and show sourced countries, just like statues/buildings.
 
-New runs target 8–15 supported objects, accepting 4–7 when research yields fewer; they do not fail solely for missing eight or pad with invented facts. Unopened-source references can trigger one focused follow-up, keeping source IDs stable. Unsupported candidate measurements are omitted and recorded as gaps; remaining verified candidates continue. Fewer than four supported objects still stops the job before asset creation. Model output is canonicalized into measurement order and compact context text; measured values, units, ranges and sources are not changed to make a story work. Provider-compatible structured output uses nullable optional fields so missing facts need not be invented. Full local schema checks remain authoritative even when a compact request or JSON-mode fallback is used. Groq rate-limit reset intervals are honored; repeat the same topic/ID after a longer quota reset to reuse the saved stages.
+New runs target 8–15 supported objects, accepting 2–7 when research yields fewer; they do not fail solely for missing eight or pad with invented facts. Unopened-source references can trigger one focused follow-up, keeping source IDs stable. Unsupported candidate measurements are omitted and recorded as gaps; remaining verified candidates continue. Fewer than two supported objects still stops the job before asset creation. Model output is canonicalized into measurement order and compact context text; measured values, units, ranges and sources are not changed to make a story work. Provider-compatible structured output uses nullable optional fields so missing facts need not be invented. Full local schema checks remain authoritative even when a compact request or JSON-mode fallback is used. Groq rate-limit reset intervals are honored; repeat the same topic/ID after a longer quota reset to reuse the saved stages.
 
 Saved stages are reused on the same topic/ID. Existing completed datasets are not reinterpreted or regenerated with a new angle. Use a new ID to apply the new concept process to an older topic. The data-input route continues to accept curated datasets without an editorial field.
 
@@ -170,14 +170,14 @@ Measurements use a curated selection, not a ranked top-eight claim. Spring Templ
 
 ## Subject-aware context
 
-`subject` classifies a dataset as `generic` (the backward-compatible default), `statues`, `buildings`, `structures`, `animals`, `vehicles`, `geography`, `space` or `sports`. Statue, building and mixed fixed-structure items must include a sourced `country` using a concise common name. The same context policy governs validation, planning and on-screen labels; balls and planets do not acquire unrelated geographic labels. For unambiguous landmark topics, the AI planning stage rejects a mismatched generic classification and requests correction. Research prompts explicitly request the country facts rather than guessing them during rendering.
+`subject` classifies a dataset as `generic` (the backward-compatible default), `statues`, `buildings`, `structures`, `animals`, `vehicles`, `geography`, `space` or `sports`. Statue, building and mixed fixed-structure items should include a sourced `country` using a concise common name when available. Missing countries produce a warning and are omitted rather than guessed. Balls and planets do not acquire unrelated geographic labels. For unambiguous landmark topics, the planning stage corrects a mismatched subject classification locally. Research prompts explicitly request the country facts rather than guessing them during rendering.
 
 Country appears beneath the active measurement and under normal comparison labels. The final object retains the same name/country/height detail treatment as its predecessors. Detail text fades out before the closing zoom begins. After it settles, the final overview shows the smallest and largest names and measurements only. These changes use the existing images and do not trigger image generation.
 
 
 ## Closing sequence and vertical alignment
 
-The planner emits one detail camera pose per item plus a final pose with `role: "overview"`. An episode still has one scene per item: the overview is compiled into the final scene, not an extra narrated scene. Actors support up to sixteen camera poses for fifteen objects. Older saved four-to-seven-object projects remain readable for Studio; new CLI and automated runs target 8–15 and accept 4–7 supported objects. In the last scene the final detail arrives at 16% of the beat, holds until 50%, zooms out from 50% to 75%, and holds the overview for the remaining 25%. Default timing gives this combined final scene eight seconds. Authored durations retain their specified total; the statue preview uses eight seconds for the final scene and runs 33 seconds overall.
+The planner emits one detail camera pose per item plus a final pose with `role: "overview"`. An episode still has one scene per item: the overview is compiled into the final scene, not an extra narrated scene. Actors support up to sixteen camera poses for fifteen objects. Older saved four-to-seven-object projects remain readable for Studio; new CLI and automated runs target 8–15 and accept 2–7 supported objects. In the last scene the final detail arrives at 16% of the beat, holds until 50%, zooms out from 50% to 75%, and holds the overview for the remaining 25%. Default timing gives this combined final scene eight seconds. Authored durations retain their specified total; the statue preview uses eight seconds for the final scene and runs 33 seconds overall.
 
 All poses preserve one common world scale for object dimensions. The overview includes camera padding so it visibly pulls back even when the largest sphere dominates the size range. The last detail uses the preceding object as its reference; the overview frames the full dataset. Source thumbnails/cutouts remain unchanged.
 
@@ -271,7 +271,7 @@ arrive quickly, while larger scale jumps get more travel time. Integer scene
 budgets retain a settled hold within the requested range. The final overview has
 its own four seconds, after the last subject's full detail window. Total duration
 is the sum of those timings, not a fixed count-to-duration table. Timed silent
-comparisons support 15–60 seconds; other video contracts retain their existing
+comparisons support 10–60 seconds; other video contracts retain their existing
 limits. Authored episode durations remain explicit overrides.
 
 Display names are separate from research identity. Simple animal qualifiers
@@ -289,7 +289,7 @@ Pacing is deterministic and requires no additional model calls.
 New runs aim for 8–15 sourced objects throughout concept generation, dataset
 selection and CLI rendering. Topic selection favors broad, accessible source
 coverage; concepts can propose up to 18 candidates to allow research exclusions.
-Four-to-seven-item comparisons are valid fallback deliveries when supported
+Two-to-seven-item comparisons are valid fallback deliveries when supported
 evidence is limited. Never pad the comparison or invent an eighth measurement. Research is extracted in batches of at
 most six source excerpts, and image briefs in batches of five subjects. Validated
 batches are cached so an interrupted later batch does not repeat earlier calls.
@@ -328,7 +328,22 @@ Research extraction validates records independently. Wrong-age measurements,
 unmatched source quotations, invalid units and malformed individual records
 become candidate gaps, rather than causing the entire valid batch to repeat.
 The pipeline aggregates the verified subset across all source batches and only
-continues when at least four supported objects remain. Saved failed drafts can
+continues when at least two supported objects remain. Saved failed drafts can
 be revalidated locally under this policy. Adult checks retain juvenile context
 unless the selected measurement clause explicitly establishes adulthood, so a
 separate birth-weight sentence does not invalidate an explicit adult figure.
+
+Quality preferences are advisory. Optional editorial metadata, rationale wording,
+concept choice bookkeeping, countries, background notes, colors and other
+presentation details are corrected locally or omitted with a warning. A valid
+comparison may contain two or three verified objects and may be supported by
+one opened source. The normal target remains 8–15 objects. Missing role metadata
+uses the measured smallest-to-largest progression; missing countries are omitted
+rather than guessed. `quality-warnings.json` records these decisions and is
+included in the delivery/checkpoint, with a count in the Actions summary.
+
+Hard stops protect material correctness and execution: fewer than two verified
+objects, incompatible dimensions, unsupported measurements/source IDs, misleading
+ranking claims, unsafe or unusable assets, failed MP4 verification, provider
+unavailability and unsafe/ambiguous YouTube uploads. These cannot be solved by
+quietly presenting a different measurement or claiming a successful delivery.

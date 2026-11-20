@@ -2,7 +2,7 @@ import {isComparisonDisplayLabel} from './comparison-copy';
 import {comparisonLimits} from './comparison-limits';
 import {comparisonMetrics,comparisonUnits,isQuantityMetric,metricUnitCompatible,convertMeasurement} from './measurements';
 import {z} from 'zod';
-import {comparisonSubjects,needsCountry} from './comparison-context';
+import {comparisonSubjects} from './comparison-context';
 import {comparisonVisualSchema} from './comparison-visual';
 import {comparisonEditorialSchema,editorialSelectionIssues} from './comparison-editorial';
 import {sizeEnvironments} from './size-environment';
@@ -31,10 +31,10 @@ export const sizeDatasetSchema = z.object({
   countBasis:z.enum(['fixed','inventory','population']).optional(),
   // Accepted for existing datasets; speed now uses bars rather than a race.
   raceDistanceM:z.number().positive().max(1000000).default(100),
-  basis: z.string().min(5).max(500).optional(),
+  basis: z.string().min(1).max(500).optional(),
   asOf: z.iso.date().optional(),
   environment: z.enum(['auto',...sizeEnvironments]).default('auto'),
-  backgroundReason:z.string().trim().min(15).max(400).optional(),
+  backgroundReason:z.string().trim().min(1).max(400).optional(),
   displayUnits:z.enum(['fixed','adaptive']).default('fixed'),
   scaleReference:z.boolean().default(false),
   context: z.string().min(1).max(100),
@@ -55,7 +55,6 @@ export const sizeDatasetSchema = z.object({
   if(data.metric!=='diameter'&&!data.basis)issue('Define a common measurement basis (including endpoints, pedestal policy, animal age or capacity definition).');
   if(data.scaleReference&&!isQuantityMetric(data.metric)&&!linear.includes(data.unit))issue('A linear camera ruler requires a linear unit.');
   for(const item of data.items){
-    if(needsCountry(data.subject)&&!item.country)issue(`${item.label}: ${data.subject} comparisons require a sourced country name.`);
     if(data.metric==='area'&&item.visual?.kind!=='cutout'&&item.visual?.kind!=='box')issue(`${item.label}: area requires an equal-area cutout or rectangular area model.`);
     if(data.metric==='diameter'&&item.visual&&item.visual.kind!=='sphere')issue(`${item.label}: diameter requires a sphere; choose height or width for other objects.`);
     if(item.visual?.kind==='box'&&item.visual.projection==='isometric'&&data.metric!=='volume')issue(`${item.label}: isometric models are for volume comparisons.`);

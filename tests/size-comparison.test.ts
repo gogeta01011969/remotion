@@ -71,7 +71,7 @@ test('one compiler accepts space and sports without subject branches and preserv
     }
   }
   assert.throws(() => compileSizeComparison(space, sportsEpisode), /story plan/);
-  assert.throws(() => compileSizeComparison(space, {...spaceEpisode, scenes: spaceEpisode.scenes.map(s => ({...s, durationSeconds: 15}))}), /15–60/);
+  assert.throws(() => compileSizeComparison(space, {...spaceEpisode, scenes: spaceEpisode.scenes.map(s => ({...s, durationSeconds: 15}))}), /10–60/);
   const invalid = compileSizeComparison(space, spaceEpisode);
   invalid.scenes[0].motion[0].keyframes[1].value = 100;
   assert.equal(briefSchema.safeParse(invalid).success, false);

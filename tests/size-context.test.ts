@@ -9,12 +9,12 @@ import balls from '../comparisons/sports-balls.json';
 import type {MeasureText} from '../src/shorts/text-metrics';
 const measure:MeasureText=(text,size,weight)=>Array.from(text).reduce((sum,c)=>sum+(c==='W'?.98:c==='i'?.25:.6)*size,0)*(weight>=650?1.04:1);
 
-test('landmark comparisons require country metadata while other subjects stay uncluttered',()=>{
+test('landmark comparisons retain optional country metadata while other subjects stay uncluttered',()=>{
   const data=sizeDatasetSchema.parse(statues);
   assert.ok(needsCountry(data.subject));assert.ok(data.items.every(i=>i.country));
   const missing={...data,items:data.items.map((i,n)=>n?i:{...i,country:undefined})};
-  assert.equal(sizeDatasetSchema.safeParse(missing).success,false);
-  assert.equal(sizeDatasetSchema.safeParse({...missing,subject:'buildings'}).success,false);
+  assert.equal(sizeDatasetSchema.safeParse(missing).success,true);
+  assert.equal(sizeDatasetSchema.safeParse({...missing,subject:'buildings'}).success,true);
   assert.equal(sizeDatasetSchema.safeParse({...missing,subject:'generic'}).success,true);
   assert.equal(needsCountry(sizeDatasetSchema.parse(balls).subject),false);
   assert.deepEqual(planComparisonStory({...data,items:data.items.map(item=>({...item,visual:{kind:'box',widthToHeight:.5,depthToHeight:.5}}))}).context.requiredFields,['country']);

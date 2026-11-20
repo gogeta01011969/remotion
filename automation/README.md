@@ -153,7 +153,7 @@ retry time is still in the future does not block selecting a fresh topic. Repeat
 failures eventually become `needs-review`, and selection moves on. Research or
 fatal validation failures stop immediately; duplicates stop before asset creation.
 Individual unsupported research records are omitted into gaps while the other
-verified measurements continue; the pipeline stops when fewer than four remain.
+verified measurements continue; the pipeline stops when fewer than two remain.
 Failed jobs remain failed, never `complete`. No retry worker or extra schedule is
 introduced: retries wait for a normal scheduled or manual trigger.
 
@@ -188,7 +188,7 @@ Per job/checkpoint, local code enforces:
 | Evidence per page / all excerpts | Up to 1,800 / 21,600 characters |
 
 Videos target 8–15 subjects throughout topic planning, research, dataset selection
-and rendering; 4–7 verified subjects are a valid fallback. Total duration sums scale-dependent arrivals (about 0.25–5 seconds),
+and rendering; 2–7 verified subjects are a valid fallback. Total duration sums scale-dependent arrivals (about 0.25–5 seconds),
 2–3 seconds of settled focus per subject, and a separate four-second overview.
 There is no fixed total. Topic selection favors broad, sourceable subject pools and proposes 10–15 objects;
 concepts/research can consider up to 18 candidates to allow exclusions. Research uses at most 18 searches,

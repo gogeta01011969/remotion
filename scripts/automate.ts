@@ -1,4 +1,4 @@
-import {readFileSync,mkdirSync,appendFileSync} from 'node:fs';
+import {existsSync,readFileSync,mkdirSync,appendFileSync} from 'node:fs';
 import path from 'node:path';
 import {parseArgs} from 'node:util';
 import {automationConfigSchema,loadLedger,saveLedger,lockAutomation,reserveTopic,budgetClient,AutomationDeferredError} from '../src/pipeline/topic-automation';
@@ -57,6 +57,12 @@ async function main(){
         mkdirSync(path.join(root,'out/comparisons',job.id),{recursive:true});
         writeJson(path.join(root,'out/comparisons',job.id,'automation-usage.json'),client.usage());
         summary();
+        const warningsFile=path.join(root,'out/comparisons',job.id,'quality-warnings.json');
+        if(process.env.GITHUB_STEP_SUMMARY&&existsSync(warningsFile)){
+          try{const notes=JSON.parse(readFileSync(warningsFile,'utf8'));
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\nNon-blocking quality warnings: ${Array.isArray(notes.warnings)?notes.warnings.length:0}. See quality-warnings.json in the generated files.\n`);
+          }catch{console.error('Optional quality diagnostics could not be read; the generated-video outcome is unchanged.');}
+        }
         if(process.env.GITHUB_STEP_SUMMARY){
           const usage=client.usage();
           appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\nApplication usage: ${usage.stageRequests}/${usage.limits.stageRequests} logical requests; ${usage.reportedTokens}/${usage.limits.reportedTokens} reported tokens.\n\n| Request | Kind | Outcome | Reported tokens | Tool executions |\n| --- | --- | --- | --- | --- |\n${usage.calls.map((call,i)=>`| ${i+1} | ${call.kind} | ${call.status} | ${call.reportedTokens} | ${call.toolExecutions} |`).join('\n')}\n`);

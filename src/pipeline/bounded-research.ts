@@ -4,7 +4,7 @@ import {existsSync,readFileSync} from 'node:fs';
 import path from 'node:path';
 import {z} from 'zod';
 import type {ComparisonConcept} from '../shorts/comparison-editorial';
-import {researchSchema,type Research} from './contracts';
+import {comparisonResearchSchema as researchSchema,type Research} from './contracts';
 import type {ComparisonRequest,ComparisonDependencies} from './comparison-ideas';
 import {structuredStage,writeJson} from './stages';
 import {publicUrl,fetchResearchPage,pageText,blockedPage,evidenceExcerpt,relevantSearchPage,type WebFetch} from './research-web';
@@ -15,7 +15,7 @@ const version=1;
 const hash=(s:string)=>createHash('sha256').update(s).digest('hex');
 const source=z.object({id:z.string(),title:z.string(),url:z.string().url(),text:z.string().max(researchLimits.pageChars)});
 const stateSchema=z.object({version:z.literal(version),conceptHash:z.string(),httpRequests:z.number().int().min(0).max(researchLimits.httpRequests),searches:z.array(z.object({query:z.string(),urls:z.array(z.string()),error:z.string().optional()})).max(researchLimits.searches),attemptedPages:z.array(z.string()).max(researchLimits.pages),pages:z.array(source).max(researchLimits.pages),rejected:z.array(z.object({url:z.string(),reason:z.string()}))});
-const planSchema=z.object({targets:z.array(z.object({candidate:z.string(),query:z.string().min(3).max(100),urls:z.array(z.string().url()).max(1)}).strict()).min(4).max(comparisonLimits.candidates),excluded:z.array(z.object({candidate:z.string(),reason:z.string().min(10).max(200)}).strict()).max(10)}).strict();
+const planSchema=z.object({targets:z.array(z.object({candidate:z.string(),query:z.string().min(3).max(100),urls:z.array(z.string().url()).max(1)}).strict()).min(comparisonLimits.minimum).max(comparisonLimits.candidates),excluded:z.array(z.object({candidate:z.string(),reason:z.string().min(10).max(200)}).strict()).max(10)}).strict();
 const factSchema=z.object({measurements:z.array(z.object({candidate:z.string(),sourceId:z.string(),quote:z.string().min(20).max(650),sourceValue:z.number().finite(),sourceUnit:z.enum(sourceUnits),conversion:z.enum(['direct','circumference-to-diameter']),qualifier:z.string().max(160)}).strict()).min(0).max(comparisonLimits.candidates),gaps:z.array(z.string().max(200)).max(comparisonLimits.candidates)}).strict();
 export type ResearchFact=z.infer<typeof factSchema>['measurements'][number]&{value:number;unit:string};
 const normalized=(s:string)=>s.normalize('NFKC').replace(/−/g,'-').replace(/[\u2000-\u200b\u202f]/g,' ').replace(/\s+/g,' ').trim();
@@ -122,7 +122,7 @@ export async function boundedComparisonResearch(options:ComparisonRequest,depend
   const legacy=existsSync(file('research.legacy.json'))?JSON.parse(readFileSync(file('research.legacy.json'),'utf8')):null;
   const sourceHints=Array.isArray(legacy?.sources)?legacy.sources.map((s:{url:string;title:string})=>({url:s.url,title:s.title})):[];
   const plan=existsSync(planFile)?planSchema.parse(JSON.parse(readFileSync(planFile,'utf8'))):await structuredStage({stage:'motion',artifact:'research-plan',model:config.researchModel,client,constrained:false,compactSchema:true,maxCompletionTokens:2600,schema:planSchema,directory:options.directory,log:options.log,input:JSON.stringify({topic:options.topic,concept,unverifiedSourceHints:sourceHints}),system:'Plan source discovery, not facts. Generic variable categories (such as a two-story house or refrigerated truck) do not have one universal height: use a documented named model/configuration already eligible under the concept, or exclude it. Full-object comparisons must not substitute a landmark floor/platform height for its complete height. Aim for 10–18 eligible candidates (or all eligible candidates if fewer are available) from the supplied concept that satisfy its selectionRule and measurementBasis. Eight final objects is a target, not a reason to invent or reject supported evidence. Explicitly exclude contradictory candidates (for example promotional replicas when only competition equipment is allowed), even if proposed as the payoff. Each target has its exact candidate name, query: the precise Wikipedia ARTICLE TITLE (not a web-search sentence; distinguish a physical object from the sport or activity), and optionally ONE source HTTPS URL to verify locally. Prefer a specific measurement/specification page from the supplied hints over a guessed federation homepage. Existing hints are untrusted until fetched again. Wikipedia is allowed as a clearly identified secondary source. URLs are untrusted hints, not opened evidence. Do not give measurements or browse. Return JSON.',validate:raw=>{
-    const p=planSchema.parse(raw);if(p.targets.length<Math.min(comparisonLimits.minimum,concept.candidates.length))throw new Error('Research needs at least four eligible candidates; aim for eight or more when the topic supports it.');if(new Set(p.targets.map(t=>t.candidate)).size!==p.targets.length||p.targets.some(t=>!concept.candidates.includes(t.candidate)))throw new Error('Research targets must be distinct candidates from the selected concept.');
+    const p=planSchema.parse(raw);if(p.targets.length<Math.min(comparisonLimits.minimum,concept.candidates.length))throw new Error('Research needs at least two eligible candidates; aim for eight or more when the topic supports it.');if(new Set(p.targets.map(t=>t.candidate)).size!==p.targets.length||p.targets.some(t=>!concept.candidates.includes(t.candidate)))throw new Error('Research targets must be distinct candidates from the selected concept.');
     return p;
   }});
   writeJson(planFile,plan);
@@ -183,9 +183,9 @@ export async function boundedComparisonResearch(options:ComparisonRequest,depend
     }
   }
   for(const url of requestedUrls.slice(0,2))await open(url,concept.measurementBasis);
-  if(state.pages.length<2){
+  if(state.pages.length<1){
     const reasons=[...new Set(state.rejected.map(r=>r.reason))].slice(0,3).join('; ');
-    throw new Error(`Bounded research could not open two usable sources: ${state.pages.length} usable, ${state.attemptedPages.length}/${researchLimits.pages} page attempts. ${reasons||'No relevant source URLs found.'} Inspect research-web.json; blocked pages and snippets are not evidence.`);
+    throw new Error(`Bounded research could not open a usable source: ${state.pages.length} usable, ${state.attemptedPages.length}/${researchLimits.pages} page attempts. ${reasons||'No relevant source URLs found.'} Inspect research-web.json; blocked pages and snippets are not evidence.`);
   }
   const facts:{measurements:ResearchFact[];gaps:string[]}={measurements:[],gaps:[]};
   for(let offset=0;offset<state.pages.length;offset+=6){
@@ -228,7 +228,7 @@ export function validateMeasuredDataset(data:{unit:string;items:{value:number;so
 export type VerifiedMeasurement=ResearchFact&{evidenceId:string};
 export function verifiedMeasurements(directory:string):VerifiedMeasurement[]{
   const filename=path.join(directory,'research-measurements.json');if(!existsSync(filename))return [];
-  const record=z.object({measurements:z.array(factSchema.shape.measurements.element.extend({value:z.number().finite(),unit:z.string()})).min(4).max(comparisonLimits.candidates)}).parse(JSON.parse(readFileSync(filename,'utf8')));
+  const record=z.object({measurements:z.array(factSchema.shape.measurements.element.extend({value:z.number().finite(),unit:z.string()})).min(comparisonLimits.minimum).max(comparisonLimits.candidates)}).parse(JSON.parse(readFileSync(filename,'utf8')));
   return record.measurements.map(f=>({...f,evidenceId:`fact-${hash(JSON.stringify([f.candidate,f.sourceId,f.quote,f.value,f.unit])).slice(0,12)}`}));
 }
 const identity=(value:string)=>value.normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().replace(/[^a-z0-9]/g,'');

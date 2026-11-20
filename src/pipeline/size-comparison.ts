@@ -26,7 +26,7 @@ export const comparisonEpisodeSchema = z.object({
     referenceIds: z.array(z.string()).min(1).max(3).optional(),
     references: z.array(z.object({at:z.number().min(0).max(.9),itemId:z.string()}).strict()).min(1).max(3).optional(),
     delivery: deliverySchema.optional(),
-  }).strict()).min(4).max(comparisonLimits.maximum),
+  }).strict()).min(comparisonLimits.minimum).max(comparisonLimits.maximum),
 }).strict();
 
 // The common template can build a silent episode directly from validated data.
@@ -56,7 +56,7 @@ export function compileSizeComparison(rawData: unknown, rawEpisode: unknown) {
     }
   });
   const seconds = episode.scenes.reduce((sum, s) => sum + s.durationSeconds, 0);
-  if (seconds < (episode.presentation==='silent'?15:30) || seconds > (episode.presentation==='silent'?60:45)) throw new Error(episode.presentation==='silent'?'Silent comparisons must be 15–60 seconds, based on object count.':'Narrated comparisons must be 30–45 seconds.');
+  if (seconds < (episode.presentation==='silent'?10:30) || seconds > (episode.presentation==='silent'?60:45)) throw new Error(episode.presentation==='silent'?'Silent comparisons must be 10–60 seconds, based on object count.':'Narrated comparisons must be 30–45 seconds.');
   const shots=plan.shots.map((shot,i)=>({...shot,reference:shot.role==='overview'?0:Math.min(shot.reference,...(episode.scenes[i].references??[]).map(ref=>data.items.findIndex(item=>item.id===ref.itemId)))}));
   return briefSchema.parse({
     id: episode.id, schemaVersion: 2, genre: 'explainer', language: episode.language, presentation:episode.presentation,
