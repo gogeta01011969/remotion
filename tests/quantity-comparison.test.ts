@@ -113,13 +113,13 @@ test('eight-column overviews keep bar and image bounds inside the chart',()=>{
   }
 });
 
-test('chart-only subjects skip image planning and discard unused legacy image requests',async()=>{
+test('quantity charts preserve prepared image briefs instead of discarding them',async()=>{
   const {ensureComparisonImages}=await import('../src/pipeline/comparison-images');
   const original=quantityFixture();
   const withImages=sizeDatasetSchema.parse({...original,items:original.items.map(item=>({...item,visual:{kind:'cutout',src:`${item.id}.png`,view:'front',attribution:'Legacy image',referenceUrls:['https://example.com/reference'],generation:{prompt:'A complete isolated reference object with realistic shape and material, no labels or scenery.'}}}))});
-  const chart=await ensureComparisonImages(withImages,{directory:'unused',model:'unused',log:()=>{},client:{chat:async()=>{throw new Error('Chart must not request image planning');}}});
+  const chart=await ensureComparisonImages(withImages,{directory:'unused',model:'unused',log:()=>{},client:{chat:async()=>{throw new Error('Existing image briefs should be reused');}}});
   assert.deepEqual(chart.items.map(i=>i.value),original.items.map(i=>i.value));
-  assert.ok(chart.items.every(i=>i.visual?.kind==='box'&&!i.appearance));
+  assert.ok(chart.items.every(i=>i.visual?.kind==='cutout'&&i.visual.generation));
 });
 
 test('all allowed subject counts compile to count-based durations and counts outside 4–8 are rejected',()=>{

@@ -21,7 +21,7 @@ export type ComparisonDependencies={client?:Pick<GroqClient,'chat'>;config?:Retu
 // contracts; sizeDatasetSchema still validates the COMPLETE returned object.
 export function comparisonGenerationSchema(metric:SizeDataset['metric'],sources:{id:string;url:string}[]=[],facts:VerifiedMeasurement[]=[]){
   const [cutout,sphere,box]=comparisonVisualSchema.options;
-  const visual=isQuantityMetric(metric)?box.optional():metric==='diameter'?sphere.omit({calibration:true}).extend({generation:sphere.shape.generation.unwrap()}):metric==='volume'?box:cutout.omit({calibration:true}).extend({generation:cutout.shape.generation.unwrap()});
+  const visual=isQuantityMetric(metric)?cutout.omit({calibration:true}).optional():metric==='diameter'?sphere.omit({calibration:true}).extend({generation:sphere.shape.generation.unwrap()}):metric==='volume'?box:cutout.omit({calibration:true}).extend({generation:cutout.shape.generation.unwrap()});
   const {appearance,material,...base}=sizeItemSchema.shape;
   const {value,sourceIds,range,note,approximate,...presentation}=base;
   const item=facts.length?z.object({...presentation,visual,evidenceId:z.enum(facts.map(f=>f.evidenceId) as [string,...string[]])}):z.object({...base,visual,...(sources.length?{sourceIds:z.array(z.enum(sources.map(s=>s.id) as [string,...string[]])).min(1)}:{})});
@@ -45,12 +45,12 @@ export function normalizeComparisonGeneration(raw:unknown){
   if(e&&typeof e==='object'&&!Array.isArray(e)){
     e={...e};delete (e as Record<string,unknown>).measurementBasis;data.editorial=e;
   }
-  // Quantity charts contain bars/names only. Match the renderer's existing
-  // no-image policy even when a model omits visuals or echoes an old image brief.
+  // Optional chart thumbnails may be planned by the asset stage. Keep supplied
+  // real imagery; temporary boxes allow data validation before image planning.
   if(typeof data.metric==='string'&&isQuantityMetric(data.metric)&&Array.isArray(data.items)){
     data.items=data.items.map(item=>{
       if(!item||typeof item!=='object'||Array.isArray(item))return item;
-      const next={...item,visual:{kind:'box',widthToHeight:1,depthToHeight:1}};delete next.appearance;return next;
+      return item.visual?item:{...item,visual:{kind:'box',widthToHeight:1,depthToHeight:1}};
     });
   }
   // Canonicalize presentation metadata/order, never values, units or sources.

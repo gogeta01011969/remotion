@@ -1,5 +1,6 @@
 import {comparisonObjectTiming,comparisonSceneTiming} from './comparison-timing';
 import {isQuantityMetric} from './measurements';
+import {comparisonDisplayNames} from './comparison-copy';
 import {SizeOverviewSummary} from './SizeOverviewSummary';
 import {QuantityComparison} from './QuantityComparison';
 import {useCurrentFrame,useVideoConfig} from 'remotion';
@@ -18,6 +19,7 @@ const SizeGeometryComparison=({actor,state,language='en',textTiming}:{actor:Extr
   const frame=useCurrentFrame(),{fps}=useVideoConfig(),{data}=actor;
   const measure=useTextMetrics(language==='hi'?'SacredDevanagari, Arial, sans-serif':'Arial, Helvetica, sans-serif');
   const active=Math.max(0,Math.min(data.items.length-1,Math.round(state.value)));
+  const displayNames=comparisonDisplayNames(data);
   const reference=Math.max(0,Math.min(active,Math.round(state.reference)));
   const shotIndex=actor.shots?Math.max(0,Math.min(actor.shots.length-1,Math.round(state.shot))):active;
   const shot=actor.shots?.[shotIndex],item=data.items[active],ref=data.items[reference];
@@ -26,7 +28,7 @@ const SizeGeometryComparison=({actor,state,language='en',textTiming}:{actor:Extr
   const settled=actor.shots?sampleSizeShots(data.items,actor.shots,shotIndex,data.metric):sample;
   const showCountry=needsCountry(data.subject);
   const isOverview=shot?.role==='overview';
-  const labels=isOverview?[]:placeSizeLabels(data.items,settled.bodies,active,reference,measure,{showCountry});
+  const labels=isOverview?[]:placeSizeLabels(data.items.map((item,i)=>({...item,label:displayNames[i]})),settled.bodies,active,reference,measure,{showCountry});
   const timing=textTiming??{localFrame:frame,durationInFrames:fps*8,referenceChangedAt:0};
   const isLastDetail=shot?.role==='detail'&&active===data.items.length-1;
   const beat=comparisonSceneTiming(timing.durationInFrames/fps,comparisonObjectTiming(data,active).transitionSeconds,active===data.items.length-1);
@@ -41,7 +43,7 @@ const SizeGeometryComparison=({actor,state,language='en',textTiming}:{actor:Extr
   const arrived=shotIndex===0?1:Math.max(0,Math.min(1,(state.phase-shotIndex+.25)/.22));
   const approximate=Boolean(item.range||ref.range||item.approximate||ref.approximate);
   const value=shot?.metric==='question'?'?':shot?.metric==='difference'?`${approximate?'≈ ':''}${formatSize(item.value-ref.value)} ${formatUnit(data.unit)}`:shot?.metric==='percent'?`${approximate?'≈ ':''}${formatSize((item.value/ref.value-1)*100)}%`:`${approximate?'≈ ':''}${formatRatio(item.value/ref.value)}`;
-  const explanation=`${item.label} / ${ref.label}`;
+  const explanation=`${displayNames[active]} / ${displayNames[reference]}`;
   const valueSize=fitText(value,74,836,750,measure,-3);
   const valueWidth=measure(value,valueSize,750,-3);
   const explanationWidth=measure(explanation,27,500);
@@ -51,7 +53,7 @@ const SizeGeometryComparison=({actor,state,language='en',textTiming}:{actor:Extr
   const metricLabel=item.visual?.kind==='box'&&item.visual.projection==='isometric'?'capacity · cube model':data.metric;
   return <div style={{width:900,height:1150,position:'relative'}}><div data-size-stage style={{width:900,height:1150,position:'relative',transform:`translateY(${verticalOffset}px)`}}>
     {!isOverview?<>
-    <div data-size-text="name" style={{position:'absolute',left:24,top:-37,width:836,fontSize:fitText(item.label,82,836,750,measure,-2.8),fontWeight:750,letterSpacing:-2.8,lineHeight:1.05,color:'#F3F7FA',opacity:titleMotion.opacity,transform:`translateY(${titleMotion.offsetY}px)`}}>{item.label}</div>
+    <div data-size-text="name" style={{position:'absolute',left:24,top:-37,width:836,fontSize:fitText(displayNames[active],82,836,750,measure,-2.8),fontWeight:750,letterSpacing:-2.8,lineHeight:1.05,color:'#F3F7FA',opacity:titleMotion.opacity,transform:`translateY(${titleMotion.offsetY}px)`}}>{displayNames[active]}</div>
     <div data-size-text="diameter" style={{position:'absolute',left:26,top:65,display:'flex',alignItems:'baseline',gap:16,opacity:sizeMotion.opacity,transform:`translateY(${sizeMotion.offsetY}px)`}}>
       <span style={{fontSize:fitText(quantity,34,836-16-measure(metricLabel,24,400),500,measure),fontWeight:500,color:'#D9E4EB',fontVariantNumeric:'tabular-nums'}}>{quantity}</span>
       <span style={{fontSize:24,color:'#849EAF'}}>{metricLabel}</span>

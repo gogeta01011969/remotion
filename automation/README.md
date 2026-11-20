@@ -122,8 +122,8 @@ metrics; invalid combinations are rejected before research. See
 
 Mass, counts, speed, duration, energy, power and temperature are enabled.
 Sequential vertical bars encode values with colored names below the chart and
-no object thumbnails or duplicate focus headings. Quantity charts skip image
-planning and generation. Each subject enters individually, earlier bars remain, and the final
+real subject thumbnails and no duplicate focus headings. Quantity charts plan
+identification cutouts through the existing cached image provider. Each subject enters individually, earlier bars remain, and the final
 labelled overview includes all subjects. Shared linear axes reframe consistently;
 temperature bars can extend below zero. Counts declare fixed/inventory/population scope; changing counts require
 a date. Units are dimension-checked; temperature uses differences, never ratios. Geographic area still needs reliable
@@ -226,8 +226,9 @@ identity references. It selects `evidenceId` records; local code fills values,
 source IDs and qualifiers. Unsupported candidates cannot re-enter merely because
 a source page was opened. Older drafts map only by an unambiguous candidate name
 or ID, and failures report the unsupported object by name. Cached datasets still
-undergo the evidence-value check. Quantity-dataset generation accepts chart-only
-items without requesting cutouts.
+undergo the evidence-value check. Quantity-dataset generation may defer
+thumbnail briefs to the image-planning stage. Display labels simplify names
+without changing source identities; measurement headings omit irrelevant dates.
 
 `research-plan.json`, `research-measurements.json` and `research-receipt.json`
 preserve the source plan, quotations and completed evidence. Failed dataset drafts

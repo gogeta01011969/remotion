@@ -9,7 +9,7 @@ export function sampleQuantityBars(values:number[],metric:string,active:number,l
   const count=overview?values.length:focus+1,previous=Math.max(1,count-1);
   const target=quantityDomain(values.slice(0,count),metric),from=quantityDomain(values.slice(0,Math.max(1,focus)),metric);
   const domain={min:from.min+(target.min-from.min)*progress,max:from.max+(target.max-from.max)*progress};
-  const chart={left:130,width:730,top:230,height:620};
+  const chart={left:130,width:730,top:230,height:520};
   const y=(value:number)=>chart.top+chart.height*(1-(value-domain.min)/(domain.max-domain.min));
   const center=(i:number,n:number)=>chart.left+chart.width*(i+.5)/n;
   return {domain,chart,progress,zeroY:y(0),bars:values.map((value,i)=>{

@@ -232,14 +232,16 @@ The same research → editorial → Cloudflare assets → render workflow now su
 All non-size templates reveal one subject and its vertical bar at a time. Earlier
 bars remain visible and the last subject gets its own detail beat before the full
 labelled overview. Bar height represents the measurement. Colored names below the bars identify
-subjects, without thumbnails, repeated focus headings or an overview heading.
+subjects alongside consistent-size cutout thumbnails, without repeated focus
+headings or an overview heading.
 Each value appears once at its bar endpoint, and axis units appear once. A shared linear axis reframes as larger values
 arrive, applying the same scale to every visible bar. Tick labels show that scale.
 Temperature bars extend above/below zero and never use ratios.
 
-Quantity charts do not request, prepare or render object images. Legacy image
-briefs in quantity datasets are normalized away before provisioning. Physical-size
-comparisons still require Cloudflare images in topic-driven runs. Unit conversion is
+Quantity charts plan real subject cutouts through the same cached Cloudflare
+provider as physical-size comparisons. Thumbnails identify the subjects; bar
+height alone encodes the measured quantity. Authored offline box fixtures do not
+show placeholder boxes as thumbnails. Unit conversion is
 local and dimension-checked, including affine Celsius/Fahrenheit conversion.
 
 Count datasets require `countBasis` (`fixed`, `inventory`, or `population`).
@@ -267,6 +269,12 @@ its own four seconds, after the last subject's full detail window. Total duratio
 is the sum of those timings, not a fixed count-to-duration table. Timed silent
 comparisons support 15–60 seconds; other video contracts retain their existing
 limits. Authored episode durations remain explicit overrides.
+
+Display names are separate from research identity. Simple animal qualifiers
+such as domestic/house are shortened when unambiguous; species/model distinctions
+and colliding names retain their identifying qualifiers. New plans can supply a
+validated `displayLabel`. Measurement headings use audience-facing language
+(`Lifespan (years)`), with dates reserved for changing population/inventory counts.
 
 The same local timing rules drive object motion, chart growth, label arrival and
 the final overview. Physical scale uses linear extent (area/volume use square/cube
