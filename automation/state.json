@@ -286,10 +286,11 @@
       "family": "speed-comparisons",
       "angle": "unexpected-neighbors",
       "depth": "specialist",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "needs-review",
+      "attempts": 1,
       "createdAt": "2026-11-20T15:16:27.381Z",
-      "updatedAt": "2026-11-20T15:16:27.381Z"
+      "updatedAt": "2026-11-20T15:20:16.930Z",
+      "error": "New comparisons require 8–15 supported objects; found 7. Broaden the topic or provide more verified candidates; never pad with unsupported objects."
     }
   ],
   "queue": [
