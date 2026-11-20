@@ -5,9 +5,9 @@ import {comparisonLimits,requireComparisonCount} from '../../src/shorts/comparis
 // synthetic geometry fixtures, never researched datasets for production jobs.
 export function prepareComparisonExample(raw:unknown):{data:SizeDataset;synthetic:boolean}{
   const data=sizeDatasetSchema.parse(raw);
-  if(data.items.length>=comparisonLimits.minimum){requireComparisonCount(data.items.length);return {data,synthetic:false};}
+  if(data.items.length>=comparisonLimits.targetMinimum){requireComparisonCount(data.items.length);return {data,synthetic:false};}
   const sourceId='synthetic-fixture';
-  const items=Array.from({length:comparisonLimits.minimum},(_,i)=>{
+  const items=Array.from({length:comparisonLimits.targetMinimum},(_,i)=>{
     const original=data.items[i%data.items.length];
     const {range,...item}=original;
     return {...item,id:`fixture-${i+1}`,label:`Reference ${String.fromCharCode(65+i)}`,displayLabel:undefined,

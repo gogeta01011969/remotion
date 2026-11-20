@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
-import {mkdtempSync,rmSync} from 'node:fs';
+import {mkdtempSync,rmSync,writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import mass from '../comparisons/examples/mass.json';
@@ -12,20 +12,22 @@ import {compileSizeComparison,defaultSizeEpisode} from '../src/pipeline/size-com
 import {prepareSilentInput} from '../src/shorts/silent';
 import {ensureComparisonImages} from '../src/pipeline/comparison-images';
 import {comparisonGenerationSchema} from '../src/pipeline/comparison-ideas';
-import {editorialFixture} from './helpers/comparison-editorial';
+import {generateComparisonData} from '../src/pipeline/comparison-run';
+import {verifiedMeasurements} from '../src/pipeline/bounded-research';
+import {editorialFixture,ideaFixture} from './helpers/comparison-editorial';
 
 const dataset=(count:number,extreme=false)=>sizeDatasetSchema.parse({...mass,metric:extreme?'height':'mass',unit:extreme?'m':'kg',items:Array.from({length:count},(_,i)=>({...mass.items[i%4],id:`reference-${i}`,label:`Reference ${i}`,value:extreme?10**(-12+42*i/(count-1)):i+1}))});
-test('new comparison count policy accepts only eight through fifteen and retains readable legacy data',()=>{
-  for(let n=0;n<=20;n++)if(n>=8&&n<=15)assert.doesNotThrow(()=>requireComparisonCount(n));else assert.throws(()=>requireComparisonCount(n),/8–15 supported objects/);
+test('eight is a planning target while four through fifteen supported objects remain valid',()=>{
+  for(let n=0;n<=20;n++)if(n>=4&&n<=15)assert.doesNotThrow(()=>requireComparisonCount(n));else assert.throws(()=>requireComparisonCount(n),/4–15 verified objects/);
   assert.equal(dataset(4).items.length,4);
-  for(const count of [4,7,16]){
+  for(const count of [4,7,8,15,16]){
     const data=count===16?{...dataset(15),items:[...dataset(15).items,{...dataset(15).items[0],id:'sixteenth'}]}:dataset(count);
     const {items:objectRoles,...rest}=editorialFixture({...data,items:data.items.slice(0,15)});
-    assert.equal(comparisonGenerationSchema('mass').safeParse({...data,editorial:{...rest,objectRoles}}).success,false);
+    assert.equal(comparisonGenerationSchema('mass').safeParse({...data,items:data.items.map(({visual,...item})=>item),editorial:{...rest,objectRoles}}).success,count<=15);
   }
 });
-test('eight through fifteen subjects compile at all output frame rates with settled focus and a final overview',()=>{
-  for(const extreme of [false,true])for(let count=8;count<=15;count++){
+test('four through fifteen subjects compile at all output frame rates with settled focus and a final overview',()=>{
+  for(const extreme of [false,true])for(let count=4;count<=15;count++){
     const data=dataset(count,extreme),episode=defaultSizeEpisode(data),brief=compileSizeComparison(data,episode);
     for(const fps of [24,30,60]){
       const input=prepareSilentInput(brief,fps),frames=input.scenes.reduce((sum,s)=>sum+s.durationInFrames,0);
@@ -59,5 +61,29 @@ test('fifteen image briefs use small batches and reuse successful batches after 
     const result=await ensureComparisonImages(data,{directory,model:'test',log:()=>{},client});
     assert.equal(calls,4);assert.equal(result.items.length,15);assert.ok(result.items.every(i=>i.visual?.kind==='cutout'&&i.visual.generation));
     assert.deepEqual(result.items.map(i=>i.value),data.items.map(i=>i.value));
+  }finally{rmSync(directory,{recursive:true,force:true});}
+});
+
+test('seven saved verified measurements proceed to selection without repeating research or inventing an eighth',async()=>{
+  const directory=mkdtempSync(path.join(tmpdir(),'seven-supported-')),data=dataset(7),ideas=ideaFixture();let requests=0,researchCalls=0;
+  const options={topic:'Synthetic mass comparison',id:'seven-verified',root:directory,directory,log:()=>{}};
+  for(const concept of ideas.concepts){concept.metric='mass';concept.unit='kg';concept.visualApproach='quantity-bars';}
+  const records=data.items.map(item=>({candidate:item.label,sourceId:data.sources[0].id,quote:`${item.label} has a measured mass of ${item.value} kg in the documented configuration.`,sourceValue:item.value,sourceUnit:'kg',conversion:'direct',qualifier:'Documented configuration',value:item.value,unit:'kg'}));
+  try{
+    writeFileSync(path.join(directory,'idea-plan.json'),JSON.stringify(ideas));
+    writeFileSync(path.join(directory,'research-measurements.json'),JSON.stringify({measurements:records}));
+    writeFileSync(path.join(directory,'research.json'),JSON.stringify({topic:options.topic,model:'test',notes:JSON.stringify({measurementBasis:data.basis,gaps:['An eighth candidate has no supported measurement.']}).padEnd(110,' '),sources:[...data.sources,{id:'secondary',title:'Second opened fixture source',url:'https://example.com/secondary'}],searched:true,toolExecutions:7}));
+    const facts=verifiedMeasurements(directory),{items:objectRoles,...editorial}=editorialFixture(data);
+    const result=await generateComparisonData(options,{
+      config:{apiKey:'test',researchModel:'test',scriptModel:'test',motionModel:'test'},
+      research:async()=>{researchCalls++;throw new Error('Reuse saved research');},
+      client:{chat:async request=>{
+        requests++;assert.equal(JSON.parse(request.messages[1].content).verifiedMeasurements.length,7);
+        return {choices:[{message:{content:JSON.stringify({...data,editorial:{...editorial,objectRoles},items:data.items.map((item,i)=>({id:item.id,label:item.label,color:item.color,evidenceId:facts[i].evidenceId}))})}}]};
+      }},
+    });
+    assert.equal(researchCalls,0);assert.equal(requests,1);assert.equal(result.items.length,7);
+    assert.deepEqual(result.items.map(i=>i.value),data.items.map(i=>i.value));
+    assert.equal(prepareSilentInput(compileSizeComparison(result,defaultSizeEpisode(result))).scenes.length,7);
   }finally{rmSync(directory,{recursive:true,force:true});}
 });

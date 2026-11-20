@@ -8,7 +8,7 @@ Every run can define new objects. The renderer does not require a hardcoded stat
 npm run compare -- --topic "Tallest statues, excluding pedestals" --id statues-run
 ```
 
-This uses the existing GroqCloud configuration (`GROQCLOUD_API_KEY` in `.env.local`) for **concept selection, research and structured object planning**. It first proposes three Shorts angles and selects one, then searches/opens sources to verify the candidates, measurement definition and visual requirements. Finally it selects 8–15 purposeful objects and writes their dataset, editorial plan and per-object visual briefs. It does not ask an LLM to generate executable React.
+This uses the existing GroqCloud configuration (`GROQCLOUD_API_KEY` in `.env.local`) for **concept selection, research and structured object planning**. It first proposes three Shorts angles and selects one, then searches/opens sources to verify the candidates, measurement definition and visual requirements. Finally it aims for 8–15 purposeful objects (accepting 4–7 when evidence supports fewer) and writes their dataset, editorial plan and per-object visual briefs. It does not ask an LLM to generate executable React.
 
 The concept stage considers a viewer question, recognizable anchor, meaningful contrasts and largest-object payoff. A broad topic can receive a stronger angle within its scope; explicitly named objects and restrictions remain constraints. Eight items are no longer a target to fill: four to six strong choices can be better. Small differences are allowed when they answer a specific question. These are editorial hypotheses, not measured audience-performance predictions.
 
@@ -23,7 +23,7 @@ npm run compare -- --topic "Size comparison of different flying objects" --id fl
 
 Local validation checks dimensions, supported views, role coverage/order, actual first/last objects, adjacent comparison references and source IDs. Top-N claims require a date and consistent basis; those checks do not themselves prove a complete ranking. Engagement, actual asset accuracy and factual interpretation still need editorial review. Broad flying-object ideas cannot mix wingspan, rotor diameter and body length; geographic outlines require real geographic assets. Providers must supply suitable per-run assets. Mixed fixed landmarks use subject `structures` and show sourced countries, just like statues/buildings.
 
-New runs require 8–15 supported objects, including supplied datasets. If research cannot substantiate eight, generation stops before image creation; it never pads with invented facts. Unopened-source references can trigger one focused follow-up, keeping source IDs stable. Unsupported evidence still stops the job before asset creation. Model output is canonicalized into measurement order and compact context text; measured values, units, ranges and sources are not changed to make a story work. Provider-compatible structured output uses nullable optional fields so missing facts need not be invented. Full local schema checks remain authoritative even when a compact request or JSON-mode fallback is used. Groq rate-limit reset intervals are honored; repeat the same topic/ID after a longer quota reset to reuse the saved stages.
+New runs target 8–15 supported objects, accepting 4–7 when research yields fewer; they do not fail solely for missing eight or pad with invented facts. Unopened-source references can trigger one focused follow-up, keeping source IDs stable. Unsupported evidence still stops the job before asset creation. Model output is canonicalized into measurement order and compact context text; measured values, units, ranges and sources are not changed to make a story work. Provider-compatible structured output uses nullable optional fields so missing facts need not be invented. Full local schema checks remain authoritative even when a compact request or JSON-mode fallback is used. Groq rate-limit reset intervals are honored; repeat the same topic/ID after a longer quota reset to reuse the saved stages.
 
 Saved stages are reused on the same topic/ID. Existing completed datasets are not reinterpreted or regenerated with a new angle. Use a new ID to apply the new concept process to an older topic. The data-input route continues to accept curated datasets without an editorial field.
 
@@ -177,7 +177,7 @@ Country appears beneath the active measurement and under normal comparison label
 
 ## Closing sequence and vertical alignment
 
-The planner emits one detail camera pose per item plus a final pose with `role: "overview"`. An episode still has one scene per item: the overview is compiled into the final scene, not an extra narrated scene. Actors support up to sixteen camera poses for fifteen objects. Older saved four-to-seven-object projects remain readable for Studio; new CLI and automated runs require 8–15. In the last scene the final detail arrives at 16% of the beat, holds until 50%, zooms out from 50% to 75%, and holds the overview for the remaining 25%. Default timing gives this combined final scene eight seconds. Authored durations retain their specified total; the statue preview uses eight seconds for the final scene and runs 33 seconds overall.
+The planner emits one detail camera pose per item plus a final pose with `role: "overview"`. An episode still has one scene per item: the overview is compiled into the final scene, not an extra narrated scene. Actors support up to sixteen camera poses for fifteen objects. Older saved four-to-seven-object projects remain readable for Studio; new CLI and automated runs target 8–15 and accept 4–7 supported objects. In the last scene the final detail arrives at 16% of the beat, holds until 50%, zooms out from 50% to 75%, and holds the overview for the remaining 25%. Default timing gives this combined final scene eight seconds. Authored durations retain their specified total; the statue preview uses eight seconds for the final scene and runs 33 seconds overall.
 
 All poses preserve one common world scale for object dimensions. The overview includes camera padding so it visibly pulls back even when the largest sphere dominates the size range. The last detail uses the preceding object as its reference; the overview frames the full dataset. Source thumbnails/cutouts remain unchanged.
 
@@ -286,10 +286,11 @@ roots); signed/zero-based charts use axis distance rather than invalid ratios.
 Pacing is deterministic and requires no additional model calls.
 
 
-New runs require 8–15 sourced objects throughout concept generation, dataset
-selection and CLI rendering. Concepts can propose up to 18 candidates to allow
-research exclusions. Existing four-to-seven-item projects remain readable; they
-are not valid new pipeline deliveries. Research is extracted in batches of at
+New runs aim for 8–15 sourced objects throughout concept generation, dataset
+selection and CLI rendering. Topic selection favors broad, accessible source
+coverage; concepts can propose up to 18 candidates to allow research exclusions.
+Four-to-seven-item comparisons are valid fallback deliveries when supported
+evidence is limited. Never pad the comparison or invent an eighth measurement. Research is extracted in batches of at
 most six source excerpts, and image briefs in batches of five subjects. Validated
 batches are cached so an interrupted later batch does not repeat earlier calls.
 
@@ -299,8 +300,7 @@ chart. Physical comparisons retain their true-scale lineup and smallest/largest
 endpoint summary. Pacing reserves 2–3 settled seconds per object plus a four-second
 overview; if necessary, only arrival travel is shortened to stay within 60 seconds.
 
-The offline `compare:examples` runner enforces the same 8–15-object policy as
-production. Historical examples with fewer than eight objects are expanded in
+The offline `compare:examples` runner continues testing the eight-object target. Historical examples with fewer than eight objects are expanded in
 `out/comparison-examples/` into explicitly synthetic eight-object geometry
 fixtures, reusing credited artwork. Their original datasets/measurements remain
 unchanged. These fixtures test rendering, not research or real-world rankings;

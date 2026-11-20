@@ -63,3 +63,13 @@ test('the chosen family, angle, depth and curiosity rationale reach concept plan
     assert.deepEqual(JSON.parse(readFileSync(path.join(root,'request.json'),'utf8')).topicBrief,topicBrief);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
+
+test('equally diverse queued topics favor a broader candidate pool without rejecting shorter topics',async()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'horizon-breadth-'));
+  const broad={...candidates[0]},narrow={...candidates[0],topic:'How do four familiar spires compare in height?',scopeKey:'four-spires',entityKeys:['Spire A','Spire B','Spire C','Spire D']};
+  const ledger=ledgerSchema.parse({version:1,queue:[narrow,broad],jobs:[]});
+  try{
+    const job=await reserveTopic({ledger,config,root,directory:root,now,model:'test',log:()=>{},client:{chat:async()=>{throw new Error('Use the existing queue');}}});
+    assert.equal(job.topic,broad.topic);assert.equal(ledger.queue[0].topic,narrow.topic);
+  }finally{rmSync(root,{recursive:true,force:true});}
+});

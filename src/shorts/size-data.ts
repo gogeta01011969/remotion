@@ -38,7 +38,7 @@ export const sizeDatasetSchema = z.object({
   scaleReference:z.boolean().default(false),
   context: z.string().min(1).max(100),
   editorial:comparisonEditorialSchema.optional(),
-  items: z.array(sizeItemSchema).min(comparisonLimits.legacyMinimum).max(comparisonLimits.maximum),
+  items: z.array(sizeItemSchema).min(comparisonLimits.minimum).max(comparisonLimits.maximum),
   sources: z.array(z.object({id: slug, title: z.string().min(1), url: z.string().url()}).strict()).min(1),
 }).strict().superRefine((data, ctx) => {
   const issue=(message:string)=>ctx.addIssue({code:'custom',message});

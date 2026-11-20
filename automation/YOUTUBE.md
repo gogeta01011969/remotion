@@ -99,8 +99,8 @@ On **Actions → Create a comparison Short → Run workflow**:
 
 1. Branch: `main` (after the upload changes have been pushed).
 2. Mode: `auto`.
-3. Topic: optionally supply a broad comparison with at least eight supportable
-   objects, or leave blank for automatic selection.
+3. Topic: optionally supply a broad comparison likely to support eight or more
+   objects (a smaller verified subset is acceptable), or leave blank for automatic selection.
 4. Leave Resume job empty for a new test.
 
 The workflow will:

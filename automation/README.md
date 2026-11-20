@@ -185,17 +185,17 @@ Per job/checkpoint, local code enforces:
 | Response size / request deadline | 4 MiB / 12 seconds |
 | Evidence per page / all excerpts | Up to 1,800 / 21,600 characters |
 
-Videos support 8–15 subjects throughout topic planning, research, dataset selection
-and rendering. Total duration sums scale-dependent arrivals (about 0.25–5 seconds),
+Videos target 8–15 subjects throughout topic planning, research, dataset selection
+and rendering; 4–7 verified subjects are a valid fallback. Total duration sums scale-dependent arrivals (about 0.25–5 seconds),
 2–3 seconds of settled focus per subject, and a separate four-second overview.
-There is no fixed total. New runs require 8–15 supported objects; concepts can
-propose up to 18 candidates to allow exclusions. Research uses at most 18 searches,
+There is no fixed total. Topic selection favors broad, sourceable subject pools and proposes 10–15 objects;
+concepts/research can consider up to 18 candidates to allow exclusions. Research uses at most 18 searches,
 22 page attempts, 48 HTTP requests and 21,600 excerpt characters. Extraction is
 batched by six pages; image planning by five objects, with validated batch caches.
 For dense charts, names/images alternate two rows. Scale-sensitive travel is
 shortened only when necessary to preserve settled focus and remain under 60 seconds.
-Older saved projects remain readable, but are not silently delivered as new
-four-item runs. The 12-request/65,000-token invocation budget remains unchanged.
+Below-target supported comparisons proceed without padding, invented facts or
+additional research solely to reach eight. The 12-request/65,000-token invocation budget remains unchanged.
 
 The limits live in `src/pipeline/bounded-research.ts`. Wikimedia discovery uses
 its public REST search endpoint. Likely primary URLs and old source URLs are
