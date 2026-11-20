@@ -3,9 +3,9 @@ import {smoothStep} from './size-text-motion';
 
 // Sequential reveals share a linear axis. Reframing changes the axis for every
 // visible bar together, preserving values and ratios as the next subject arrives.
-export function sampleQuantityBars(values:number[],metric:string,active:number,localFrame:number,fps:number,overview=false){
+export function sampleQuantityBars(values:number[],metric:string,active:number,localFrame:number,fps:number,overview=false,transitionSeconds=1){
   const focus=Math.max(0,Math.min(values.length-1,Math.round(active)));
-  const progress=overview?1:smoothStep((localFrame-fps*.15)/Math.max(1,fps*1.1));
+  const progress=overview?1:smoothStep(localFrame/Math.max(1,fps*transitionSeconds));
   const count=overview?values.length:focus+1,previous=Math.max(1,count-1);
   const target=quantityDomain(values.slice(0,count),metric),from=quantityDomain(values.slice(0,Math.max(1,focus)),metric);
   const domain={min:from.min+(target.min-from.min)*progress,max:from.max+(target.max-from.max)*progress};

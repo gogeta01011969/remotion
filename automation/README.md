@@ -186,7 +186,9 @@ Per job/checkpoint, local code enforces:
 | Evidence per page / all excerpts | Up to 1,800 / 10,800 characters |
 
 Videos support 4–8 subjects throughout topic planning, research, dataset selection
-and rendering. Research can verify eight targets; each gets a fair share of the
+and rendering. Automatic duration grows with object count: usually 24/29/34/39/44
+seconds for 4/5/6/7/8 objects. Each subject gets four seconds of settled focus;
+large jumps add transition time, and the final overview has its own four seconds. Research can verify eight targets; each gets a fair share of the
 unchanged total excerpt budget (1,350 characters each for eight targets).
 
 The limits live in `src/pipeline/bounded-research.ts`. Wikimedia discovery uses

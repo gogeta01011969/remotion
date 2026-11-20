@@ -7,7 +7,7 @@ export function prepareSilentInput(brief: Brief, fps = 30): ShortInput {
     ? brief.structure.beats.map(beat => beat.durationSeconds * fps)
     : brief.scenes.map(scene => Math.max(5 * fps, Math.round(1.8 * fps) + scene.cues.reduce((sum,text) => sum + readingFrames(text,fps),0)));
   const total = budgets.reduce((a,b)=>a+b,0);
-  if (total < 30 * fps) {
+  if (!brief.structure && total < 30 * fps) {
     const extra = 30 * fps - total;
     budgets.forEach((_,i)=>{budgets[i] += Math.floor(extra/budgets.length)+(i<extra%budgets.length?1:0);});
   }

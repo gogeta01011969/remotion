@@ -4,6 +4,7 @@ import {sizeDatasetSchema} from '../src/shorts/size-data';
 import {sampleSizeShots} from '../src/shorts/size-shots';
 import {overviewTiming,sizePresentationOffset,detailTextOpacity} from '../src/shorts/size-presentation';
 import {compileSizeComparison,defaultSizeEpisode} from '../src/pipeline/size-comparison';
+import {comparisonObjectTiming,comparisonSceneTiming} from '../src/shorts/comparison-timing';
 import {prepareSilentInput} from '../src/shorts/silent';
 import {compileStory,sampleActor} from '../src/shorts/motion';
 import space from '../comparisons/solar-system.json';
@@ -16,12 +17,13 @@ test('the final object gets its own held detail pose before the separate overvie
     const n=data.items.length,shots=actor.shots!,last=input.scenes.at(-1)!,compiled=compileStory(input),start=compiled.starts.at(-1)!;
     assert.equal(shots.length,n+1);assert.equal(shots[n-1].role,'detail');assert.equal(shots[n-1].reference,n-2);
     assert.equal(shots[n].role,'overview');assert.equal(shots[n].visible.length,n);
-    assert.equal(episode.scenes.at(-1)!.durationSeconds,8);
+    const timing=comparisonSceneTiming(episode.scenes.at(-1)!.durationSeconds,comparisonObjectTiming(data,n-1).transitionSeconds,true);
+    assert.equal(episode.scenes.at(-1)!.durationSeconds,timing.arrivalSeconds+8);
     const frame=(progress:number)=>start+Math.round(progress*(last.durationInFrames-1));
-    for(const progress of [.2,.3,.42]){
+    for(const progress of [timing.detailArrival+.02,(timing.detailArrival+timing.zoomStart)/2,timing.zoomStart-.02]){
       const state=sampleActor(compiled,'sizes',frame(progress));assert.equal(state.shot,n-1);assert.equal(state.phase,n-1);
     }
-    const overview=sampleActor(compiled,'sizes',frame(.8));assert.equal(overview.shot,n);assert.equal(overview.phase,n);
+    const overview=sampleActor(compiled,'sizes',frame(timing.zoomEnd+.02));assert.equal(overview.shot,n);assert.equal(overview.phase,n);
     const detail=sampleSizeShots(data.items,shots,n-1,data.metric),wide=sampleSizeShots(data.items,shots,overview.phase,data.metric);
     assert.ok(wide.scale<detail.scale);assert.ok(wide.bodies.every(b=>b.opacity===1));
     for(const b of wide.bodies)assert.ok(b.x-b.width/2>=39.99&&b.x+b.width/2<=860.01);

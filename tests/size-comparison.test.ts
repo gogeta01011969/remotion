@@ -71,7 +71,7 @@ test('one compiler accepts space and sports without subject branches and preserv
     }
   }
   assert.throws(() => compileSizeComparison(space, sportsEpisode), /story plan/);
-  assert.throws(() => compileSizeComparison(space, {...spaceEpisode, scenes: spaceEpisode.scenes.map(s => ({...s, durationSeconds: 3}))}), /30–45/);
+  assert.throws(() => compileSizeComparison(space, {...spaceEpisode, scenes: spaceEpisode.scenes.map(s => ({...s, durationSeconds: 15}))}), /20–60/);
   const invalid = compileSizeComparison(space, spaceEpisode);
   invalid.scenes[0].motion[0].keyframes[1].value = 100;
   assert.equal(briefSchema.safeParse(invalid).success, false);
@@ -191,8 +191,8 @@ test('silent comparison inputs enforce names and stats without explanatory cues'
   assert.throws(()=>compileSizeComparison(sports,edited),/names and stats only/);
   for(const dataset of [sports,space]){
     const episode=defaultSizeEpisode(dataset);
-    assert.equal(episode.scenes.reduce((n,s)=>n+s.durationSeconds,0),30);
+    assert.ok(episode.scenes.reduce((n,s)=>n+s.durationSeconds,0)>=44);
     assert.equal(episode.scenes.length,8);
-    assert.ok(episode.scenes.every(s=>s.cues.length===0)&&episode.scenes.slice(0,-1).every(s=>s.durationSeconds<=4)&&episode.scenes.at(-1)!.durationSeconds===8);
+    assert.ok(episode.scenes.every(s=>s.cues.length===0)&&episode.scenes.slice(0,-1).every(s=>s.durationSeconds>=5&&s.durationSeconds<=6)&&episode.scenes.at(-1)!.durationSeconds>=9);
   }
 });

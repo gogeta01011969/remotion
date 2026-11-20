@@ -1,3 +1,4 @@
+import {comparisonObjectTiming,comparisonSceneTiming} from './comparison-timing';
 import {isQuantityMetric} from './measurements';
 import {QuantityComparison} from './QuantityComparison';
 import {useCurrentFrame,useVideoConfig} from 'remotion';
@@ -9,7 +10,7 @@ import {needsCountry} from './comparison-context';
 import {sizePresentationOffset,detailTextOpacity} from './size-presentation';
 import {placeSizeLabels} from './size-labels';
 import {ComparisonObject} from './ComparisonObject';
-import {textEntrance,type SizeTextTiming} from './size-text-motion';
+import {textEntrance,smoothStep,type SizeTextTiming} from './size-text-motion';
 import {fitText,useTextMetrics} from './text-metrics';
 
 const SizeGeometryComparison=({actor,state,language='en',textTiming}:{actor:Extract<Actor,{kind:'size-comparison'}>;state:ActorState;language?:Language;textTiming?:SizeTextTiming})=>{
@@ -27,11 +28,13 @@ const SizeGeometryComparison=({actor,state,language='en',textTiming}:{actor:Extr
   const labels=isOverview?[]:placeSizeLabels(data.items,settled.bodies,active,reference,measure,{showCountry});
   const timing=textTiming??{localFrame:frame,durationInFrames:fps*8,referenceChangedAt:0};
   const isLastDetail=shot?.role==='detail'&&active===data.items.length-1;
-  const textOpacity=detailTextOpacity(isLastDetail,timing.localFrame/Math.max(1,timing.durationInFrames-1));
+  const beat=comparisonSceneTiming(timing.durationInFrames/fps,comparisonObjectTiming(data,active).transitionSeconds,isLastDetail);
+  const textOpacity=detailTextOpacity(isLastDetail,timing.localFrame/Math.max(1,timing.durationInFrames-1),beat.zoomStart,.2/(timing.durationInFrames/fps));
+  const objectEntrance=shotIndex===0?smoothStep(timing.localFrame/Math.max(1,beat.arrivalSeconds*fps)):1;
   const verticalOffset=actor.shots?sizePresentationOffset(data,actor.shots,state.phase,showCountry):0;
   const entrance=(from:number,duration=fps*.3)=>{const motion=textEntrance(timing.localFrame,from,duration,timing.durationInFrames,fps);return {...motion,opacity:motion.opacity*textOpacity};};
   const titleMotion=entrance(fps*.06),sizeMotion=entrance(fps*.22),countryMotion=entrance(fps*.34);
-  const labelFrom=shotIndex===0?fps*.28:timing.durationInFrames*.20;
+  const labelFrom=beat.arrivalSeconds*fps;
   const metricMotion=entrance(Math.max(labelFrom+fps*.16,timing.referenceChangedAt),fps*.3);
   const arrived=shotIndex===0?1:Math.max(0,Math.min(1,(state.phase-shotIndex+.25)/.22));
   const approximate=Boolean(item.range||ref.range||item.approximate||ref.approximate);
@@ -63,7 +66,7 @@ const SizeGeometryComparison=({actor,state,language='en',textTiming}:{actor:Extr
       {sample.bodies.map((b,i)=>{
         if(b.opacity<.001||b.diameter<.15||b.diameter>12000||b.x+b.width/2<0||b.x-b.width/2>900)return null;
         const source=data.items[i];
-        return <g key={source.id} data-size-object={source.id} opacity={b.opacity}>
+        return <g key={source.id} data-size-object={source.id} opacity={b.opacity*objectEntrance}>
           {source.material==='glow'&&b.diameter<2000?<circle cx={b.x} cy={b.y} r={b.diameter*.515} fill="none" stroke={source.color} strokeWidth={b.diameter*.015} strokeOpacity=".18"/>:null}
           <g opacity={1-b.outline*.9} transform={`translate(${b.x} ${b.y})`}><ComparisonObject item={source} width={b.width} height={b.height} turn={frame/fps*.045}/></g>
           {b.outline>.001?<rect x={b.x-b.width/2} y={b.y-b.height/2} width={b.width} height={b.height} fill="none" stroke={source.color} strokeWidth="3" strokeDasharray="8 6" opacity={b.outline}/>:null}

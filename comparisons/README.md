@@ -256,3 +256,18 @@ use explicitly synthetic data and simple local shapes to verify the renderer
 without API credentials; they are not researched publication-ready videos.
 Topic-based runs use the existing `npm run compare -- --topic "..." --id ...`
 command and the configured Cloudflare provider.
+
+## Object-count-based pacing
+
+Automatic silent episodes reserve four seconds of settled focus per object, plus
+a one-second reveal (two to three seconds for large scale jumps), followed by a separate
+four-second overview. Typical durations for 4/5/6/7/8 objects are 24/29/34/39/44
+seconds; large jumps add transition time without reducing reading time. The last
+object gets its full detail window before the overview begins. These timed silent
+comparisons support 20–60 seconds; other video contracts retain their existing
+limits. Authored episode durations remain explicit overrides.
+
+The same local timing rules drive object motion, chart growth, label arrival and
+the final overview. Large physical-scale jumps use the measured linear extent
+(area/volume use square/cube roots); temperature never uses multiplicative ratios.
+Pacing is deterministic and requires no additional model calls.

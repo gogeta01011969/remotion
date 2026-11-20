@@ -1,14 +1,16 @@
 import {z} from 'zod';
 
-export const structureSchema = z.object({
+const timedStructure = (minimum:number)=>z.object({
   endWithQuestion: z.boolean().default(false),
   hook: z.string().min(1).max(180).optional(),
   beats: z.array(z.object({name: z.string().min(1).max(80), durationSeconds: z.number().int().min(2).max(60)}).strict()).min(4).max(8),
 }).strict().superRefine((structure, ctx) => {
   const duration = structure.beats.reduce((sum, b) => sum + b.durationSeconds, 0);
-  if (duration < 30 || duration > 60) ctx.addIssue({code: 'custom', message: 'A timed structure must total 30–60 seconds.'});
+  if (duration < minimum || duration > 60) ctx.addIssue({code: 'custom', message: `A timed structure must total ${minimum}–60 seconds.`});
   if (new Set(structure.beats.map(b => b.name)).size !== structure.beats.length) ctx.addIssue({code: 'custom', message: 'Beat names must be unique.'});
 });
+export const structureSchema=timedStructure(30);
+export const comparisonStructureSchema=timedStructure(20);
 export type Structure = z.infer<typeof structureSchema>;
 export const structureDuration = (structure: Structure) => structure.beats.reduce((sum, b) => sum + b.durationSeconds, 0);
 

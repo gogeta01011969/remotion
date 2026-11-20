@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {structureSchema, structureDuration} from './structure';
+import {comparisonStructureSchema, structureDuration} from './structure';
 import {deliverySchema, captionModeSchema} from './delivery';
 import {languageSchema} from './locale';
 import {genreSchema} from './genres';
@@ -45,10 +45,11 @@ export const motionSchema = z.object({
   keyframes: z.array(z.object({at: anchorSchema, value: finite, easing: z.enum(['linear', 'smooth', 'hold', 'accelerate', 'decelerate']).default('linear')}).strict()).min(2).max(16),
 }).strict();
 const sceneFields = {title: z.string().min(1).max(80), motion: z.array(motionSchema).min(1).max(60)};
-const shared = {presentation: presentationSchema.default('narrated'), captionMode: captionModeSchema.default('sentence'), language: languageSchema.default('en'), structure: structureSchema.optional(), genre: genreSchema.default('what-if'), schemaVersion: z.literal(2), topic: z.string().min(5).max(200), seed: z.number().int(), accent: color, actors: z.array(actorSchema).min(1).max(40)};
+const shared = {presentation: presentationSchema.default('narrated'), captionMode: captionModeSchema.default('sentence'), language: languageSchema.default('en'), structure: comparisonStructureSchema.optional(), genre: genreSchema.default('what-if'), schemaVersion: z.literal(2), topic: z.string().min(5).max(200), seed: z.number().int(), accent: color, actors: z.array(actorSchema).min(1).max(40)};
 
 // The same semantic checks run on authored briefs and prepared render inputs.
-function checkStory(input: {actors: Actor[]; scenes: {motion: z.infer<typeof motionSchema>[]; cues?: string[]; spokenCues?: string[]; delivery?: {rates?: number[]; pausesAfterMs: number[]}; captions?: {from: number; duration: number}[]}[]}, ctx: z.RefinementCtx) {
+function checkStory(input: {structure?:z.infer<typeof comparisonStructureSchema>;actors: Actor[]; scenes: {motion: z.infer<typeof motionSchema>[]; cues?: string[]; spokenCues?: string[]; delivery?: {rates?: number[]; pausesAfterMs: number[]}; captions?: {from: number; duration: number}[]}[]}, ctx: z.RefinementCtx) {
+  if(input.structure&&structureDuration(input.structure)<30&&!input.actors.every(a=>a.kind==='size-comparison'))ctx.addIssue({code:'custom',message:'Only comparison videos may use timed structures shorter than 30 seconds.'});
   const ids = input.actors.map(a => a.id);
   if (new Set(ids).size !== ids.length || ids.includes('camera')) ctx.addIssue({code: 'custom', path: ['actors'], message: 'Actor IDs must be unique. camera is reserved.'});
   const neutral = stateSchema.parse({});

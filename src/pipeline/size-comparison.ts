@@ -6,7 +6,7 @@ import {languageSchema, voiceFor} from '../shorts/locale';
 import {deliverySchema} from '../shorts/delivery';
 import {planComparisonStory} from './comparison-story';
 import {presentationSchema} from '../shorts/presentation';
-import {overviewTiming} from '../shorts/size-presentation';
+import {comparisonPacing,comparisonObjectTiming,comparisonSceneTiming} from '../shorts/comparison-timing';
 import {materialProfiles} from '../shorts/object-materials';
 
 // Narration is an editorial input, separate from sourced numerical facts.
@@ -31,8 +31,8 @@ export const comparisonEpisodeSchema = z.object({
 // The common template can build a silent episode directly from validated data.
 // Optional authored episodes only tune reading time, timing and reference choices.
 export function defaultSizeEpisode(rawData:unknown) {
-  const data=sizeDatasetSchema.parse(rawData), seconds=30;
-  return comparisonEpisodeSchema.parse({id:`${data.id.slice(0,48).replace(/-$/,'')}-comparison`,language:'en',presentation:'silent',description:`${data.title}. A silent smallest-to-largest ${data.metric} comparison. ${isQuantityMetric(data.metric)?'Colored names identify subjects; bar heights encode the measured values.':'Object dimensions use the correct dimensional scale; display spacing is illustrative.'} Measurements and applicable visual credits are included below.`,scenes:data.items.map((item,i)=>({itemId:item.id,heading:item.label,durationSeconds:i===data.items.length-1?8:Math.floor((seconds-8)/(data.items.length-1))+(i<(seconds-8)%(data.items.length-1)?1:0),cues:[]}))});
+  const data=sizeDatasetSchema.parse(rawData);
+  return comparisonEpisodeSchema.parse({id:`${data.id.slice(0,48).replace(/-$/,'')}-comparison`,language:'en',presentation:'silent',description:`${data.title}. A silent smallest-to-largest ${data.metric} comparison. ${isQuantityMetric(data.metric)?'Colored names identify subjects; bar heights encode the measured values.':'Object dimensions use the correct dimensional scale; display spacing is illustrative.'} Measurements and applicable visual credits are included below.`,scenes:data.items.map((item,i)=>({itemId:item.id,heading:item.label,durationSeconds:comparisonObjectTiming(data,i).detailSeconds+(i===data.items.length-1?comparisonPacing.overviewSeconds:0),cues:[]}))});
 }
 
 export function compileSizeComparison(rawData: unknown, rawEpisode: unknown) {
@@ -55,7 +55,7 @@ export function compileSizeComparison(rawData: unknown, rawEpisode: unknown) {
     }
   });
   const seconds = episode.scenes.reduce((sum, s) => sum + s.durationSeconds, 0);
-  if (seconds < 30 || seconds > 45) throw new Error('Size-comparison Shorts must be 30–45 seconds.');
+  if (seconds < (episode.presentation==='silent'?20:30) || seconds > (episode.presentation==='silent'?60:45)) throw new Error(episode.presentation==='silent'?'Silent comparisons must be 20–60 seconds, based on object count.':'Narrated comparisons must be 30–45 seconds.');
   const shots=plan.shots.map((shot,i)=>({...shot,reference:shot.role==='overview'?0:Math.min(shot.reference,...(episode.scenes[i].references??[]).map(ref=>data.items.findIndex(item=>item.id===ref.itemId)))}));
   return briefSchema.parse({
     id: episode.id, schemaVersion: 2, genre: 'explainer', language: episode.language, presentation:episode.presentation,
@@ -65,24 +65,27 @@ export function compileSizeComparison(rawData: unknown, rawEpisode: unknown) {
     sources: data.sources.map(({id: _id, ...source}) => source),
     structure: {beats: episode.scenes.map((s, i) => ({name: plan.shots[i].id, durationSeconds: s.durationSeconds}))},
     actors: [{id: 'sizes', kind: 'size-comparison', data:{...data,environment:plan.background.environment,backgroundReason:plan.background.reason}, shots, headings: [...episode.scenes.map(s => s.heading),'All objects'], state: {x: 500, y: 960, value: plan.shots[0].focus, reference: plan.shots[0].reference}}],
-    scenes: episode.scenes.map((s, i) => ({
+    scenes: episode.scenes.map((s, i) => {
+      const timing=comparisonSceneTiming(s.durationSeconds,comparisonObjectTiming(data,i).transitionSeconds,i===data.items.length-1);
+      return {
       title: s.heading, cues: s.cues, spokenCues: s.spokenCues, delivery: s.delivery,
       motion: [
+        ...(i===0?[{actor:'sizes',property:'scale',keyframes:[{at:'start',value:.96},{at:{progress:timing.detailArrival},value:1,easing:'smooth'},{at:'end',value:1,easing:'hold'}]}]:[]),
         {actor: 'sizes', property: 'phase', keyframes: i === 0 ? [
-          {at: 'start', value: 0}, {at: 'end', value: .08, easing: 'smooth'},
+          {at: 'start', value: 0}, {at: 'end', value: 0, easing: 'hold'},
         ] : i===data.items.length-1 ? [
-          {at:'start',value:i-1+.08},
-          {at:{progress:overviewTiming.detailArrival},value:i,easing:'smooth'},
-          {at:{progress:overviewTiming.zoomStart},value:i,easing:'hold'},
-          {at:{progress:overviewTiming.zoomEnd},value:i+1,easing:'smooth'},
+          {at:'start',value:i-1},
+          {at:{progress:timing.detailArrival},value:i,easing:'smooth'},
+          {at:{progress:timing.zoomStart},value:i,easing:'hold'},
+          {at:{progress:timing.zoomEnd},value:i+1,easing:'smooth'},
           {at:'end',value:i+1,easing:'hold'},
         ] : [
-          {at: 'start', value: i - 1 + .08},
-          {at: episode.presentation==='silent' ? {progress:data.scaleReference ? .8 : .27} : {cue: 0, offset: .85}, value: i - .025, easing: 'smooth'},
-          {at: 'end', value: Math.min(i + .08, plan.shots.length - 1), easing: 'linear'},
+          {at: 'start', value: i - 1},
+          {at: episode.presentation==='silent' ? {progress:timing.detailArrival} : {cue: 0, offset: .85}, value: i, easing: 'smooth'},
+          {at: 'end', value: i, easing: 'hold'},
         ]},
         {actor: 'sizes', property: 'value', keyframes: [{at: 'start', value: plan.shots[i].focus, easing: 'hold'}, {at: 'end', value: plan.shots[i].focus, easing: 'hold'}]},
-        {actor: 'sizes', property: 'shot', keyframes: [{at: 'start', value: i, easing: 'hold'}, ...(i===data.items.length-1?[{at:{progress:overviewTiming.zoomStart},value:i+1,easing:'hold'}]:[]), {at: 'end', value: i===data.items.length-1?i+1:i, easing: 'hold'}]},
+        {actor: 'sizes', property: 'shot', keyframes: [{at: 'start', value: i, easing: 'hold'}, ...(i===data.items.length-1?[{at:{progress:timing.zoomStart},value:i+1,easing:'hold'}]:[]), {at: 'end', value: i===data.items.length-1?i+1:i, easing: 'hold'}]},
         {actor: 'sizes', property: 'reference', keyframes: episode.presentation==='silent' ? [
           {at:'start',value:s.references?data.items.findIndex(item=>item.id===s.references![0].itemId):plan.shots[i].reference,easing:'hold'},
           ...(s.references??[]).slice(1).map(ref=>({at:{progress:ref.at},value:data.items.findIndex(item=>item.id===ref.itemId),easing:'hold'})),
@@ -93,6 +96,6 @@ export function compileSizeComparison(rawData: unknown, rawEpisode: unknown) {
           {at: 'end', value: s.referenceIds ? data.items.findIndex(item => item.id === s.referenceIds![s.cues.length - 1]) : plan.shots[i].reference, easing: 'hold'},
         ]},
       ],
-    })),
+    };}),
   });
 }

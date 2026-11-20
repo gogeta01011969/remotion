@@ -21,6 +21,6 @@ export function sizePresentationOffset(data:SizeDataset,shots:SizeShot[],phase:n
   };
   return offset(lo)+(offset(hi)-offset(lo))*smoothStep(p-lo);
 }
-export function detailTextOpacity(isLastDetail:boolean,progress:number){
-  return isLastDetail?1-smoothStep((progress-(overviewTiming.zoomStart-.06))/.06):1;
+export function detailTextOpacity(isLastDetail:boolean,progress:number,zoomStart:number=overviewTiming.zoomStart,fade=.06){
+  return isLastDetail?1-smoothStep((progress-(zoomStart-fade))/fade):1;
 }

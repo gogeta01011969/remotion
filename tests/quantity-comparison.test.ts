@@ -14,7 +14,7 @@ import {evidenceExcerpt} from '../src/pipeline/research-web';
 export function quantityFixture(metric='mass',unit='kg',values=[1,2,4,8]){
   return sizeDatasetSchema.parse({template:'size-comparison',id:`test-${metric}`,title:`Synthetic ${metric} comparison`,metric,unit,basis:'Synthetic fixture values only, one common measurement definition and shared conditions.',context:'Synthetic fixture, not researched real-world claims',countBasis:metric==='count'?'fixed':undefined,environment:'laboratory',items:values.map((value,i)=>({id:`reference-${i}`,label:`Reference ${String.fromCharCode(65+i)}`,value,color:['#73DDD1','#78AEFC','#C5A4FB','#FFBD77'][i%4],sourceIds:['s1'],visual:{kind:'box',widthToHeight:1,depthToHeight:1}})),sources:[{id:'s1',title:'Synthetic values for renderer tests only',url:'https://example.com/synthetic-fixture'}]});
 }
-test('all new measurements compile through the existing silent 30-second pipeline without geometry scaling',()=>{
+test('all new measurements compile through the count-based silent pipeline without geometry scaling',()=>{
   const units={mass:'kg',count:'count',speed:'m/s',duration:'year',energy:'kWh',power:'W',temperature:'C'};
   for(const metric of quantityMetrics){
     const data=quantityFixture(metric,units[metric],metric==='temperature'?[-40,0,20,100]:[1,2,4,8]);
@@ -23,7 +23,7 @@ test('all new measurements compile through the existing silent 30-second pipelin
     assert.ok(plan.scaling.objects.every(o=>o.width===1&&o.height===1));
     assert.deepEqual(plan.shots.slice(0,-1).map(s=>s.visible),data.items.map((_,i)=>data.items.slice(0,i+1).map((_,j)=>j)));
     assert.equal(plan.shots.at(-1)!.visible.length,data.items.length);
-    assert.equal(input.presentation,'silent');assert.equal(shortDuration(input),900);
+    assert.equal(input.presentation,'silent');assert.equal(shortDuration(input),720);
     assert.ok(automationConfigSchema.parse({niche:'Comparison test fixture',allowedMetrics:[metric],assetProvider:'unused'}));
   }
 });
@@ -122,11 +122,11 @@ test('chart-only subjects skip image planning and discard unused legacy image re
   assert.ok(chart.items.every(i=>i.visual?.kind==='box'&&!i.appearance));
 });
 
-test('all allowed subject counts compile to a 30-second video and counts outside 4–8 are rejected',()=>{
+test('all allowed subject counts compile to count-based durations and counts outside 4–8 are rejected',()=>{
   for(let count=4;count<=8;count++){
     const data=quantityFixture('mass','kg',Array.from({length:count},(_,i)=>i+1));
     const input=previewInput(compileSizeComparison(data,defaultSizeEpisode(data)));
-    assert.equal(input.scenes.length,count);assert.equal(shortDuration(input),900);
+    assert.equal(input.scenes.length,count);assert.equal(shortDuration(input),(count*5+4)*30);
     assert.equal(planComparisonStory(data).shots.at(-1)!.visible.length,count);
   }
   assert.throws(()=>quantityFixture('mass','kg',[1,2,3]));

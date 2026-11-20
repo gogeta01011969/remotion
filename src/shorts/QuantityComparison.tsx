@@ -2,6 +2,7 @@ import {useCurrentFrame,useVideoConfig} from 'remotion';
 import type {Actor,ActorState} from './schema';
 import {formatSize,formatUnit} from './size-data';
 import {quantityTemplate} from './measurements';
+import {comparisonObjectTiming} from './comparison-timing';
 import {sampleQuantityBars} from './quantity-bars';
 import type {SizeTextTiming} from './size-text-motion';
 const compact=(n:number)=>Math.abs(n)>=1e15?`${formatSize(n/1e15)}Q`:Math.abs(n)>=1e12?`${formatSize(n/1e12)}T`:Math.abs(n)>=1e9?`${formatSize(n/1e9)}B`:Math.abs(n)>=1e6?`${formatSize(n/1e6)}M`:Math.abs(n)>=1e3?`${formatSize(n/1e3)}K`:formatSize(n);
@@ -9,7 +10,7 @@ const compact=(n:number)=>Math.abs(n)>=1e15?`${formatSize(n/1e15)}Q`:Math.abs(n)
 export const QuantityComparison=({actor,state,textTiming}:{actor:Extract<Actor,{kind:'size-comparison'}>;state:ActorState;textTiming?:SizeTextTiming})=>{
   const frame=useCurrentFrame(),{fps}=useVideoConfig(),{data}=actor;
   const active=Math.max(0,Math.min(data.items.length-1,Math.round(state.value))),overview=state.shot>=data.items.length;
-  const sample=sampleQuantityBars(data.items.map(i=>i.value),data.metric,active,textTiming?.localFrame??frame,fps,overview);
+  const sample=sampleQuantityBars(data.items.map(i=>i.value),data.metric,active,textTiming?.localFrame??frame,fps,overview,comparisonObjectTiming(data,active).transitionSeconds);
   const unit=formatUnit(data.unit);
   const valueText=(value:number)=>compact(data.metric==='count'?Math.round(value):value);
   return <div data-quantity-template={quantityTemplate(data.metric)} style={{width:900,height:1000,position:'relative',color:'#F3F7FA'}}>
