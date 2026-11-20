@@ -102,7 +102,7 @@ test('provider manifests are complete and a trusted local provider is invoked wi
 
 test('prompt research produces per-run asset requests and resumes without repeating AI stages',async()=>{
   const root=mkdtempSync(path.join(tmpdir(),'comparison-prompt-')),calls:ChatRequest[]=[];
-  const raw=dataset();raw.items.forEach(i=>{delete (i.visual as {calibration?:unknown}).calibration;Object.assign(i.visual,{generation:{prompt:'Reference-based full object, orthographic view, transparent background.'}});i.sourceIds=['s1'];i.visual.referenceUrls=['https://example.com/one'];});
+  const raw=dataset();raw.items=Array.from({length:8},(_,i)=>({...raw.items[i%4],id:`new-object-${i}`,label:`New object ${i}`,value:i+1}));raw.items.forEach(i=>{delete (i.visual as {calibration?:unknown}).calibration;Object.assign(i.visual,{generation:{prompt:'Reference-based full object, orthographic view, transparent background.'}});i.sourceIds=['s1'];i.visual.referenceUrls=['https://example.com/one'];});
   raw.sources=[{id:'s1',title:'Opened primary reference',url:'https://example.com/one'}];
   const client={chat:async(request:ChatRequest):Promise<Completion>=>{
     calls.push(request);
@@ -113,7 +113,7 @@ test('prompt research produces per-run asset requests and resumes without repeat
   const options={topic:'Compare arbitrary new objects',id:'prompt-run',root,directory:root,log:()=>{}};
   const dependencies={client,research:mockResearch(client),config:{apiKey:'test-key',researchModel:'test-research',motionModel:'test-motion',scriptModel:'test-script'}};
   try{
-    const data=await generateComparisonData(options,dependencies);assert.equal(calls.length,3);assert.equal(assetRequests(data).objects.length,4);
+    const data=await generateComparisonData(options,dependencies);assert.equal(calls.length,3);assert.equal(assetRequests(data).objects.length,8);
     assert.equal(data.environment,'architecture');assert.equal(data.backgroundReason,ideaFixture().concepts[0].background!.reason);
     for(const call of calls.slice(1))assert.equal(JSON.parse(call.messages[1].content).selectedConcept.viewerQuestion,data.editorial!.viewerQuestion);
     assert.equal(JSON.parse(readFileSync(path.join(root,'editorial-plan.json'),'utf8')).payoff.itemId,data.items.at(-1)!.id);

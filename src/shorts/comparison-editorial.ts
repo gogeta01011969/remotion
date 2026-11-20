@@ -1,3 +1,4 @@
+import {comparisonLimits} from './comparison-limits';
 import {comparisonMetrics,comparisonUnits,isQuantityMetric,metricUnitCompatible,quantityTemplate} from './measurements';
 import {z} from 'zod';
 import {sizeEnvironments} from './size-environment';
@@ -18,7 +19,7 @@ const concept=z.object({
   measurementBasis:reason,
   visualApproach:z.enum(['textured-spheres','grounded-cutouts','side-cutouts','top-cutouts','equal-area-outlines','equivalent-volume-models','quantity-bars','temperature-axis']),
   background:z.object({environment:z.enum(sizeEnvironments),reason}).strict().optional(),
-  candidates:z.array(z.string().trim().min(2).max(80)).min(4).max(10),
+  candidates:z.array(z.string().trim().min(2).max(80)).min(4).max(comparisonLimits.candidates),
   openingCandidate:z.string().min(2).max(80),payoffCandidate:z.string().min(2).max(80),
   openingIdea:reason,payoffIdea:reason,
   feasibilityNotes:z.array(reason).min(1).max(4),
@@ -48,7 +49,7 @@ export const comparisonIdeasSchema=z.object({
 // Legacy saved plans can omit a background. New model output must supply it:
 // a nullable optional in the strict decoder otherwise permits repeated nulls.
 export const comparisonIdeasGenerationSchema=comparisonIdeasSchema.safeExtend({
-  concepts:z.array(concept.safeExtend({background:concept.shape.background.unwrap()})).length(3),
+  concepts:z.array(concept.safeExtend({background:concept.shape.background.unwrap(),candidates:concept.shape.candidates.min(comparisonLimits.minimum)})).length(3),
 });
 export type ComparisonIdeas=z.infer<typeof comparisonIdeasSchema>;
 export type ComparisonConcept=ComparisonIdeas['concepts'][number];
@@ -63,7 +64,7 @@ export const comparisonEditorialSchema=z.object({
   familiarAnchor:z.object({itemId:id,reason}).strict(),
   surprisingPair:z.object({smallerId:id,largerId:id,reason}).strict(),
   payoff:z.object({itemId:id,reason}).strict(),
-  items:z.array(z.object({itemId:id,role:z.enum(['anchor','bridge','contrast','payoff']),reason}).strict()).min(4).max(8),
+  items:z.array(z.object({itemId:id,role:z.enum(['anchor','bridge','contrast','payoff']),reason}).strict()).min(4).max(comparisonLimits.maximum),
   omittedCandidates:z.array(z.object({label:z.string().min(1).max(80),reason}).strict()).max(10),
   conceptAdjustments:z.array(z.object({role:z.enum(['opening','payoff']),originalCandidate:z.string().min(2).max(80),replacementItemId:id,reason}).strict()).max(2).default([]),
   questionRevision:z.object({originalQuestion:z.string().min(15).max(180),reason}).strict().optional(),

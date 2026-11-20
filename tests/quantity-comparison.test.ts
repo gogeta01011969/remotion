@@ -122,13 +122,13 @@ test('quantity charts preserve prepared image briefs instead of discarding them'
   assert.ok(chart.items.every(i=>i.visual?.kind==='cutout'&&i.visual.generation));
 });
 
-test('all allowed subject counts compile to count-based durations and counts outside 4–8 are rejected',()=>{
-  for(let count=4;count<=8;count++){
+test('all eight-to-fifteen subject counts compile and legacy renderer bounds are retained',()=>{
+  for(let count=8;count<=15;count++){
     const data=quantityFixture('mass','kg',Array.from({length:count},(_,i)=>i+1));
     const input=previewInput(compileSizeComparison(data,defaultSizeEpisode(data)));
     assert.equal(input.scenes.length,count);assert.equal(shortDuration(input),defaultSizeEpisode(data).scenes.reduce((sum,s)=>sum+s.durationSeconds,0)*input.fps);
     assert.equal(planComparisonStory(data).shots.at(-1)!.visible.length,count);
   }
   assert.throws(()=>quantityFixture('mass','kg',[1,2,3]));
-  assert.throws(()=>quantityFixture('mass','kg',Array.from({length:9},(_,i)=>i+1)));
+  assert.throws(()=>quantityFixture('mass','kg',Array.from({length:16},(_,i)=>i+1)));
 });

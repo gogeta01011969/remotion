@@ -23,10 +23,10 @@ test('plain ball plans receive one generated texture per object, preserve measur
     assert.equal(resumed,result);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
-test('generated-object schema requires an image and generation brief even for supported planets or sports balls',()=>{
+test('generated-object schema requires an image while detailed briefs may be deferred',()=>{
   const visual=comparisonGenerationSchema('diameter').shape.items.element.shape.visual;
   assert.equal(visual.isOptional(),false);
-  assert.equal(visual.safeParse({kind:'sphere',texture:'ball.png',attribution:'Pending',referenceUrls:['https://example.com']}).success,false);
+  assert.equal(visual.safeParse({kind:'sphere',texture:'ball.png',attribution:'Pending',referenceUrls:['https://example.com']}).success,true);
 });
 test('Cloudflare briefs enforce surface-map format and real-object identity within the prompt size limit',()=>{
   const prompt=cloudflareObjectPrompt('Baseball','sphere','x'.repeat(2000));

@@ -1,6 +1,6 @@
 # Size-comparison pipeline
 
-Every run can define new objects. The renderer does not require a hardcoded statue, animal, vehicle or country catalog. Existing ball materials and planet maps remain optional reusable visuals. All subjects share the silent smallest-to-largest presentation: names, measurements, named ratios, contextual backgrounds and deterministic camera motion. Default episodes last 30 seconds with 4–8 items, reserving eight seconds for the final detail/overview sequence; authored episodes may total 30–45 seconds.
+Every run can define new objects. The renderer does not require a hardcoded statue, animal, vehicle or country catalog. Existing ball materials and planet maps remain optional reusable visuals. All subjects share the silent smallest-to-largest presentation: names, measurements, named ratios, contextual backgrounds and deterministic camera motion. Default duration follows object count and scale-dependent arrivals, with 2–3 settled seconds per subject and a four-second final overview, within 60 seconds.
 
 ## Run from a topic
 
@@ -8,7 +8,7 @@ Every run can define new objects. The renderer does not require a hardcoded stat
 npm run compare -- --topic "Tallest statues, excluding pedestals" --id statues-run
 ```
 
-This uses the existing GroqCloud configuration (`GROQCLOUD_API_KEY` in `.env.local`) for **concept selection, research and structured object planning**. It first proposes three Shorts angles and selects one, then searches/opens sources to verify the candidates, measurement definition and visual requirements. Finally it selects 4–8 purposeful objects and writes their dataset, editorial plan and per-object visual briefs. It does not ask an LLM to generate executable React.
+This uses the existing GroqCloud configuration (`GROQCLOUD_API_KEY` in `.env.local`) for **concept selection, research and structured object planning**. It first proposes three Shorts angles and selects one, then searches/opens sources to verify the candidates, measurement definition and visual requirements. Finally it selects 8–15 purposeful objects and writes their dataset, editorial plan and per-object visual briefs. It does not ask an LLM to generate executable React.
 
 The concept stage considers a viewer question, recognizable anchor, meaningful contrasts and largest-object payoff. A broad topic can receive a stronger angle within its scope; explicitly named objects and restrictions remain constraints. Eight items are no longer a target to fill: four to six strong choices can be better. Small differences are allowed when they answer a specific question. These are editorial hypotheses, not measured audience-performance predictions.
 
@@ -23,7 +23,7 @@ npm run compare -- --topic "Size comparison of different flying objects" --id fl
 
 Local validation checks dimensions, supported views, role coverage/order, actual first/last objects, adjacent comparison references and source IDs. Top-N claims require a date and consistent basis; those checks do not themselves prove a complete ranking. Engagement, actual asset accuracy and factual interpretation still need editorial review. Broad flying-object ideas cannot mix wingspan, rotor diameter and body length; geographic outlines require real geographic assets. Providers must supply suitable per-run assets. Mixed fixed landmarks use subject `structures` and show sourced countries, just like statues/buildings.
 
-If a selection has fewer than four supported objects or cites unopened pages, the controller makes one focused follow-up research request, keeps existing source IDs stable, and retries selection. Unsupported evidence still stops the job before asset creation. Model output is canonicalized into measurement order and compact context text; measured values, units, ranges and sources are not changed to make a story work. Provider-compatible structured output uses nullable optional fields so missing facts need not be invented. Full local schema checks remain authoritative even when a compact request or JSON-mode fallback is used. Groq rate-limit reset intervals are honored; repeat the same topic/ID after a longer quota reset to reuse the saved stages.
+New runs require 8–15 supported objects, including supplied datasets. If research cannot substantiate eight, generation stops before image creation; it never pads with invented facts. Unopened-source references can trigger one focused follow-up, keeping source IDs stable. Unsupported evidence still stops the job before asset creation. Model output is canonicalized into measurement order and compact context text; measured values, units, ranges and sources are not changed to make a story work. Provider-compatible structured output uses nullable optional fields so missing facts need not be invented. Full local schema checks remain authoritative even when a compact request or JSON-mode fallback is used. Groq rate-limit reset intervals are honored; repeat the same topic/ID after a longer quota reset to reuse the saved stages.
 
 Saved stages are reused on the same topic/ID. Existing completed datasets are not reinterpreted or regenerated with a new angle. Use a new ID to apply the new concept process to an older topic. The data-input route continues to accept curated datasets without an editorial field.
 
@@ -57,7 +57,7 @@ npm run compare -- --data /path/to/run/dataset.json --asset-root /path/to/run/im
 # Optional: --prepare-only or --plan-only
 ```
 
-Without `--asset-root`, paths resolve relative to the dataset file. A minimal complete height dataset looks like this (replace the example measurements and source with researched facts):
+Without `--asset-root`, paths resolve relative to the dataset file. A complete eight-object height dataset looks like this (replace the example measurements and source with researched facts):
 
 ```json
 {
@@ -73,7 +73,11 @@ Without `--asset-root`, paths resolve relative to the dataset file. A minimal co
     {"id":"a","label":"Object A","value":10,"color":"#8CBBD4","sourceIds":["s1"],"visual":{"kind":"cutout","src":"a.png","view":"front","attribution":"Your asset provenance","referenceUrls":["https://example.com/source"]}},
     {"id":"b","label":"Object B","value":20,"color":"#8CBBD4","sourceIds":["s1"],"visual":{"kind":"cutout","src":"b.png","view":"front","attribution":"Your asset provenance","referenceUrls":["https://example.com/source"]}},
     {"id":"c","label":"Object C","value":40,"color":"#8CBBD4","sourceIds":["s1"],"visual":{"kind":"cutout","src":"c.png","view":"front","attribution":"Your asset provenance","referenceUrls":["https://example.com/source"]}},
-    {"id":"d","label":"Object D","value":80,"color":"#8CBBD4","sourceIds":["s1"],"visual":{"kind":"cutout","src":"d.png","view":"front","attribution":"Your asset provenance","referenceUrls":["https://example.com/source"]}}
+    {"id":"d","label":"Object D","value":80,"color":"#8CBBD4","sourceIds":["s1"],"visual":{"kind":"cutout","src":"d.png","view":"front","attribution":"Your asset provenance","referenceUrls":["https://example.com/source"]}},
+    {"id":"e","label":"Object E","value":100,"color":"#8CBBD4","sourceIds":["s1"],"visual":{"kind":"cutout","src":"e.png","view":"front","attribution":"Your asset provenance","referenceUrls":["https://example.com/source"]}},
+    {"id":"f","label":"Object F","value":120,"color":"#8CBBD4","sourceIds":["s1"],"visual":{"kind":"cutout","src":"f.png","view":"front","attribution":"Your asset provenance","referenceUrls":["https://example.com/source"]}},
+    {"id":"g","label":"Object G","value":160,"color":"#8CBBD4","sourceIds":["s1"],"visual":{"kind":"cutout","src":"g.png","view":"front","attribution":"Your asset provenance","referenceUrls":["https://example.com/source"]}},
+    {"id":"h","label":"Object H","value":200,"color":"#8CBBD4","sourceIds":["s1"],"visual":{"kind":"cutout","src":"h.png","view":"front","attribution":"Your asset provenance","referenceUrls":["https://example.com/source"]}}
   ],
   "sources":[{"id":"s1","title":"Measurement reference","url":"https://example.com/source"}]
 }
@@ -173,7 +177,7 @@ Country appears beneath the active measurement and under normal comparison label
 
 ## Closing sequence and vertical alignment
 
-The planner emits one detail camera pose per item plus a final pose with `role: "overview"`. An episode still has one scene per item: the overview is compiled into the final scene, not an extra narrated scene. Actors support up to nine camera poses for eight objects. In the last scene the final detail arrives at 16% of the beat, holds until 50%, zooms out from 50% to 75%, and holds the overview for the remaining 25%. Default timing gives this combined final scene eight seconds. Authored durations retain their specified total; the statue preview uses eight seconds for the final scene and runs 33 seconds overall.
+The planner emits one detail camera pose per item plus a final pose with `role: "overview"`. An episode still has one scene per item: the overview is compiled into the final scene, not an extra narrated scene. Actors support up to sixteen camera poses for fifteen objects. Older saved four-to-seven-object projects remain readable for Studio; new CLI and automated runs require 8–15. In the last scene the final detail arrives at 16% of the beat, holds until 50%, zooms out from 50% to 75%, and holds the overview for the remaining 25%. Default timing gives this combined final scene eight seconds. Authored durations retain their specified total; the statue preview uses eight seconds for the final scene and runs 33 seconds overall.
 
 All poses preserve one common world scale for object dimensions. The overview includes camera padding so it visibly pulls back even when the largest sphere dominates the size range. The last detail uses the preceding object as its reference; the overview frames the full dataset. Source thumbnails/cutouts remain unchanged.
 
@@ -280,3 +284,17 @@ The same local timing rules drive object motion, chart growth, label arrival and
 the final overview. Physical scale uses linear extent (area/volume use square/cube
 roots); signed/zero-based charts use axis distance rather than invalid ratios.
 Pacing is deterministic and requires no additional model calls.
+
+
+New runs require 8–15 sourced objects throughout concept generation, dataset
+selection and CLI rendering. Concepts can propose up to 18 candidates to allow
+research exclusions. Existing four-to-seven-item projects remain readable; they
+are not valid new pipeline deliveries. Research is extracted in batches of at
+most six source excerpts, and image briefs in batches of five subjects. Validated
+batches are cached so an interrupted later batch does not repeat earlier calls.
+
+Charts with more than eight visible bars alternate two rows of subject images
+and names, using subtle leaders for the second row. Units and values stay on the
+chart. Physical comparisons retain their true-scale lineup and smallest/largest
+endpoint summary. Pacing reserves 2–3 settled seconds per object plus a four-second
+overview; if necessary, only arrival travel is shortened to stay within 60 seconds.

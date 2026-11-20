@@ -1,3 +1,4 @@
+import {requireComparisonCount} from '../src/shorts/comparison-limits';
 import {existsSync,readFileSync,mkdirSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import path from 'node:path';
@@ -43,6 +44,7 @@ async function main(){
       data=await ensureComparisonImages(data,{directory,client:new GroqClient({apiKey:config.apiKey,onRetry:console.error}),model:config.motionModel,log:console.error});
       writeJson(path.join(directory,'dataset.raw.json'),data);
     }
+    requireComparisonCount(data.items.length);
     const requests=assetRequests(data);writeJson(path.join(directory,'asset-requests.json'),{...requests,outputDirectory:assetRoot});
     if(values['asset-manifest'])data=applyAssetManifest(data,read(values['asset-manifest']));
     else if(values['asset-provider']||values.topic)data=runAssetProvider(data,{configFile:path.resolve(values['asset-provider']??(process.platform==='linux'?'comparisons/cloudflare-linux.provider.json':'comparisons/cloudflare-klein.provider.json')),directory,assetRoot,root});

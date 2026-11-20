@@ -1,3 +1,4 @@
+import {requireComparisonCount} from '../shorts/comparison-limits';
 import {createHash} from 'node:crypto';
 import {existsSync,readFileSync,mkdirSync,cpSync,rmSync,readdirSync,lstatSync} from 'node:fs';
 import path from 'node:path';
@@ -97,6 +98,7 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
     const rawFile=path.join(dir,'dataset.raw.json');
     if(archiveOnly&&!existsSync(rawFile))throw new Error('Rendered job needs its checkpoint restored before archival; no new API calls were made.');
     let data=archiveOnly?sizeDatasetSchema.parse(JSON.parse(readFileSync(rawFile,'utf8'))):await (dependencies.generateData??generateComparisonData)({topic:job.topic,id:job.id,directory:dir,root,log:options.log,topicBrief:{family:job.family,angle:job.angle,depth:job.depth,whyInteresting:job.whyInteresting,proposedObjects:job.entityKeys}},{client:options.client,config:options.groqConfig});
+    if(!archiveOnly)requireComparisonCount(data.items.length);
     if(!config.allowedMetrics.includes(data.metric as AutomationConfig['allowedMetrics'][number]))throw new Error('This metric needs an asset provider not enabled for unattended runs.');
     if(job.metric&&job.metric!==data.metric)throw new Error('The researched metric changed from the reserved topic; review the comparison scope.');
     const duplicate=actualDuplicate(job,data,ledger);

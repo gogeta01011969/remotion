@@ -16,8 +16,8 @@ import type {ChatRequest} from '../src/pipeline/groq';
 import {z} from 'zod';
 import {structuredStage} from '../src/pipeline/stages';
 
-function fixture(){
-  const data=sizeDatasetSchema.parse({template:'size-comparison',id:'editorial-test',title:'Synthetic reference to the extreme',metric:'height',unit:'m',basis:'Synthetic complete-object heights on one ground baseline.',context:'Synthetic editorial contract test',items:[1,2,4,10].map((value,i)=>({id:`item-${i}`,label:`Reference ${i}`,value,color:'#AABBCC',sourceIds:['s1'],visual:{kind:'box',widthToHeight:.5,depthToHeight:.5}})),sources:[{id:'s1',title:'Synthetic test reference',url:'https://example.com/source'}]});
+function fixture(count=4){
+  const data=sizeDatasetSchema.parse({template:'size-comparison',id:'editorial-test',title:'Synthetic reference to the extreme',metric:'height',unit:'m',basis:'Synthetic complete-object heights on one ground baseline.',context:'Synthetic editorial contract test',items:(count===4?[1,2,4,10]:Array.from({length:count},(_,i)=>i+1)).map((value,i)=>({id:`item-${i}`,label:`Reference ${i}`,value,color:'#AABBCC',sourceIds:['s1'],visual:{kind:'box',widthToHeight:.5,depthToHeight:.5}})),sources:[{id:'s1',title:'Synthetic test reference',url:'https://example.com/source'}]});
   return sizeDatasetSchema.parse({...data,editorial:editorialFixture(data)});
 }
 test('new idea output requires contextual backgrounds while saved legacy plans remain readable',()=>{
@@ -157,7 +157,7 @@ test('mixed fixed structures receive the same country context as statues and bui
   assert.equal(sizeDatasetSchema.safeParse({...data,subject:'structures',items:data.items.map(item=>({...item,country:'Test country'}))}).success,true);
 });
 test('missing evidence resumes an interrupted research checkpoint before selection, preserving source IDs',async()=>{
-  const root=mkdtempSync(path.join(tmpdir(),'comparison-evidence-')),data=fixture(),order:string[]=[];
+  const root=mkdtempSync(path.join(tmpdir(),'comparison-evidence-')),data=fixture(8),order:string[]=[];
   data.sources.push({id:'s3',title:'New payoff evidence',url:'https://example.com/payoff'});data.items.at(-1)!.sourceIds=['s3'];
   const completion=(urls:string[])=>({choices:[{message:{content:'Reviewed synthetic measurement definitions, selected references and object appearances. '.repeat(4),executed_tools:[{type:'browser_search'},...urls.map(url=>({name:'browser.open',search_results:{results:[{url,content:'Primary synthetic reference\nKnown measurements'}]}}))]}}]});
   let researchCalls=0;
@@ -216,7 +216,7 @@ test('endpoint audit records accept the same candidate spelled as a slug but rej
 });
 
 test('non-size generation contracts can defer thumbnails to the asset planner',()=>{
-  const data=fixture(),{items:objectRoles,...editorial}=data.editorial!;
+  const data=fixture(8),{items:objectRoles,...editorial}=data.editorial!;
   const raw={...data,metric:'duration' as const,unit:'year' as const,editorial:{...editorial,objectRoles},items:data.items.map(({visual,appearance,...item})=>item)};
   assert.equal(comparisonGenerationSchema('duration').safeParse(raw).success,true);
   const normalized=sizeDatasetSchema.parse(normalizeComparisonGeneration(raw));

@@ -1,3 +1,4 @@
+import {comparisonLimits} from './comparison-limits';
 import {comparisonMetrics,comparisonUnits,isQuantityMetric,metricUnitCompatible,convertMeasurement} from './measurements';
 import {z} from 'zod';
 import {comparisonSubjects,needsCountry} from './comparison-context';
@@ -37,7 +38,7 @@ export const sizeDatasetSchema = z.object({
   scaleReference:z.boolean().default(false),
   context: z.string().min(1).max(100),
   editorial:comparisonEditorialSchema.optional(),
-  items: z.array(sizeItemSchema).min(4).max(8),
+  items: z.array(sizeItemSchema).min(comparisonLimits.legacyMinimum).max(comparisonLimits.maximum),
   sources: z.array(z.object({id: slug, title: z.string().min(1), url: z.string().url()}).strict()).min(1),
 }).strict().superRefine((data, ctx) => {
   const issue=(message:string)=>ctx.addIssue({code:'custom',message});

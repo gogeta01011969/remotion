@@ -1,3 +1,4 @@
+import {comparisonLimits} from '../shorts/comparison-limits';
 import {existsSync,mkdirSync,readFileSync} from 'node:fs';
 import path from 'node:path';
 import {z} from 'zod';
@@ -21,12 +22,12 @@ export type ComparisonDependencies={client?:Pick<GroqClient,'chat'>;config?:Retu
 // contracts; sizeDatasetSchema still validates the COMPLETE returned object.
 export function comparisonGenerationSchema(metric:SizeDataset['metric'],sources:{id:string;url:string}[]=[],facts:VerifiedMeasurement[]=[]){
   const [cutout,sphere,box]=comparisonVisualSchema.options;
-  const visual=isQuantityMetric(metric)?cutout.omit({calibration:true}).optional():metric==='diameter'?sphere.omit({calibration:true}).extend({generation:sphere.shape.generation.unwrap()}):metric==='volume'?box:cutout.omit({calibration:true}).extend({generation:cutout.shape.generation.unwrap()});
+  const visual=isQuantityMetric(metric)?cutout.omit({calibration:true}).optional():metric==='diameter'?sphere.omit({calibration:true}):metric==='volume'?box:cutout.omit({calibration:true});
   const {appearance,material,...base}=sizeItemSchema.shape;
   const {value,sourceIds,range,note,approximate,...presentation}=base;
   const item=facts.length?z.object({...presentation,visual,evidenceId:z.enum(facts.map(f=>f.evidenceId) as [string,...string[]])}):z.object({...base,visual,...(sources.length?{sourceIds:z.array(z.enum(sources.map(s=>s.id) as [string,...string[]])).min(1)}:{})});
   const editorial=comparisonEditorialSchema.omit({items:true}).extend({objectRoles:comparisonEditorialSchema.shape.items});
-  return z.object({...sizeDatasetSchema.shape,basis:sizeDatasetSchema.shape.basis.unwrap(),editorial,items:z.array(item).min(4).max(8)});
+  return z.object({...sizeDatasetSchema.shape,basis:sizeDatasetSchema.shape.basis.unwrap(),editorial,items:z.array(item).min(comparisonLimits.minimum).max(comparisonLimits.maximum)});
 }
 
 export function normalizeComparisonGeneration(raw:unknown){

@@ -15,6 +15,7 @@ const values=[1,2,4,10];
 const quote=(i:number)=>`Reference ${i} has a total height of ${values[i]} metres, measured from the base.`;
 function setup(){
   const root=mkdtempSync(path.join(tmpdir(),'bounded-research-')),concept=ideaFixture().concepts[0];
+  concept.candidates=values.map((_,i)=>`Reference ${i}`);
   const options={topic:'Synthetic height comparison',id:'bounded-test',directory:root,root,log:()=>{}};
   const plan={targets:values.map((_,i)=>({candidate:`Reference ${i}`,query:`Reference ${i}`,urls:[`https://example.com/${i}`]})),excluded:[]};
   const facts={measurements:values.map((value,i)=>({candidate:`Reference ${i}`,sourceId:`s${i+1}`,quote:quote(i),sourceValue:value,sourceUnit:'m',conversion:'direct',qualifier:'Full height'})),gaps:[]};
@@ -172,14 +173,14 @@ test('discovery rejects unrelated media/list hits before page fetching',async()=
   assert.equal(relevantSearchPage('Eiffel Tower',{key:'Eiffel_Tower'}),true);
 });
 
-test('seven and eight subjects each receive source evidence within the same HTTP and excerpt budgets',async()=>{
-  for(const count of [7,8]){
+test('eight to fifteen subjects receive evidence in bounded source batches',async()=>{
+  for(const count of [8,12,15]){
     const run=setup();
     try{
       const names=Array.from({length:count},(_,i)=>`Reference ${i}`);
       run.concept.candidates=names;
       const quote=(i:number)=>`Reference ${i} has a total height of ${i+1} metres, measured from its base to its top.`;
-      run.deps.client.chat=async request=>({usage:{total_tokens:1000},choices:[{message:{content:JSON.stringify(JSON.parse(request.messages[1].content).concept?{targets:names.map((candidate,i)=>({candidate,query:candidate,urls:[`https://example.com/${i}`]})),excluded:[]}:{measurements:names.map((candidate,i)=>({candidate,sourceId:`s${i+1}`,quote:quote(i),sourceValue:i+1,sourceUnit:'m',conversion:'direct',qualifier:'Full height'})),gaps:[]})}}]});
+      run.deps.client.chat=async request=>({usage:{total_tokens:1000},choices:[{message:{content:JSON.stringify(JSON.parse(request.messages[1].content).concept?{targets:names.map((candidate,i)=>({candidate,query:candidate,urls:[`https://example.com/${i}`]})),excluded:[]}:{measurements:names.map((candidate,i)=>({candidate,sourceId:`s${i+1}`,quote:quote(i),sourceValue:i+1,sourceUnit:'m',conversion:'direct',qualifier:'Full height'})).filter(f=>JSON.parse(request.messages[1].content).sources.some((s:{id:string})=>s.id===f.sourceId)),gaps:[]})}}]});
       run.deps.webFetch=async url=>{
         if(url.includes('/search/page?'))return {status:200,headers:{'content-type':'application/json'},body:'{"pages":[]}'};
         const i=Number(new URL(url).pathname.slice(1));

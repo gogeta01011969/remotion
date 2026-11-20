@@ -1,3 +1,4 @@
+import type {ChatRequest} from '../src/pipeline/groq';
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,rmSync,symlinkSync} from 'node:fs';
@@ -14,11 +15,11 @@ const now='2026-11-10T00:00:00.000Z';
 const config=automationConfigSchema.parse({niche:'Silent physical comparisons',allowedMetrics:['height','wingspan','volume'],assetProvider:'unused.json'});
 const job=()=>jobSchema.parse({id:'short-test-123',topic:'A new synthetic height ladder',metric:'height',scopeKey:'synthetic-ladder',entityKeys:['one','two','three','four'],status:'reserved',attempts:0,createdAt:now,updatedAt:now});
 const empty=():TopicLedger=>({version:1,jobs:[],queue:[]});
-const data=()=>sizeDatasetSchema.parse({template:'size-comparison',id:'synthetic-data',title:'A useful synthetic comparison',metric:'height',unit:'m',basis:'Synthetic test dimensions only',context:'Lifecycle test',items:[1,2,4,8].map((value,i)=>({id:`item-${i}`,label:`Reference ${i}`,value,color:'#AABBCC',sourceIds:['s1'],visual:{kind:'box',widthToHeight:1,depthToHeight:1}})),sources:[{id:'s1',title:'Synthetic source',url:'https://example.com'}]});
+const data=()=>sizeDatasetSchema.parse({template:'size-comparison',id:'synthetic-data',title:'A useful synthetic comparison',metric:'height',unit:'m',basis:'Synthetic test dimensions only',context:'Lifecycle test',items:[1,2,3,4,5,6,7,8].map((value,i)=>({id:`item-${i}`,label:`Reference ${i}`,value,color:'#AABBCC',sourceIds:['s1'],visual:{kind:'box',widthToHeight:1,depthToHeight:1}})),sources:[{id:'s1',title:'Synthetic source',url:'https://example.com'}]});
 const proposals=[
- {family:'landmarks',angle:'record-ladder',depth:'accessible',topic:'How tall are iconic towers compared?',metric:'height',scopeKey:'iconic-structure-heights',entityKeys:['Eiffel','Burj','Shanghai','Skytree'],whyInteresting:'Use familiar landmarks to make extreme heights relatable.'},
- {family:'cross-category',angle:'unexpected-neighbors',depth:'accessible',topic:'Which flying objects have the widest wings?',metric:'wingspan',scopeKey:'extended-flight-wings',entityKeys:['Bee','Albatross','Cessna','A380'],whyInteresting:'A familiar flying animal connects to giant aircraft wings.'},
- {family:'storage-capacity',angle:'familiar-to-extreme',depth:'accessible',topic:'How much can familiar containers hold?',metric:'volume',scopeKey:'nominal-storage-capacity',entityKeys:['Bottle','Drum','IBC','Cargo'],whyInteresting:'Show surprising differences using equivalent-capacity cubes.'}
+ {family:'landmarks',angle:'record-ladder',depth:'accessible',topic:'How tall are iconic towers compared?',metric:'height',scopeKey:'iconic-structure-heights',entityKeys:['Eiffel','Burj','Shanghai','Skytree','Additional 0 Eiffel','Additional 1 Eiffel','Additional 2 Eiffel','Additional 3 Eiffel'],whyInteresting:'Use familiar landmarks to make extreme heights relatable.'},
+ {family:'cross-category',angle:'unexpected-neighbors',depth:'accessible',topic:'Which flying objects have the widest wings?',metric:'wingspan',scopeKey:'extended-flight-wings',entityKeys:['Bee','Albatross','Cessna','A380','Additional 0 Bee','Additional 1 Bee','Additional 2 Bee','Additional 3 Bee'],whyInteresting:'A familiar flying animal connects to giant aircraft wings.'},
+ {family:'storage-capacity',angle:'familiar-to-extreme',depth:'accessible',topic:'How much can familiar containers hold?',metric:'volume',scopeKey:'nominal-storage-capacity',entityKeys:['Bottle','Drum','IBC','Cargo','Additional 0 Bottle','Additional 1 Bottle','Additional 2 Bottle','Additional 3 Bottle'],whyInteresting:'Show surprising differences using equivalent-capacity cubes.'}
 ];
 test('failed CLI generation writes the final status, error and usage to Actions diagnostics',()=>{
   const root=mkdtempSync(path.join(tmpdir(),'automation-cli-failure-')),current=job();
@@ -96,9 +97,9 @@ test('archive failure resumes a verified render without new generation; completi
 test('the default automatic path upgrades missing image plans before the renderer receives a dataset',async()=>{
   const root=mkdtempSync(path.join(tmpdir(),'automatic-required-images-')),run=lifecycle(root);let imageCalls=0;
   try{
-    const options={...run.options,client:{chat:async()=>{imageCalls++;return {choices:[{message:{content:JSON.stringify({images:data().items.map(i=>({id:i.id,prompt:`Accurate complete orthographic view of ${i.label}, with its actual material, typical colors, full geometry and distinctive markings, isolated without labels or ground.`}))})}}]};}}};
+    const options={...run.options,client:{chat:async (request:ChatRequest)=>{imageCalls++;return {choices:[{message:{content:JSON.stringify({images:data().items.filter(i=>JSON.parse(request.messages[1].content).objects.some((o:{id:string})=>o.id===i.id)).map(i=>({id:i.id,prompt:`Accurate complete orthographic view of ${i.label}, with its actual material, typical colors, full geometry and distinctive markings, isolated without labels or ground.`}))})}}]};}}};
     const result=await createAutomationVideo(options,{...run.dependencies,planImages:undefined});
-    assert.equal(result.status,'rendered');assert.equal(imageCalls,1);
+    assert.equal(result.status,'rendered');assert.equal(imageCalls,2);
     const saved=JSON.parse(readFileSync(path.join(root,'out/comparisons',run.current.id,'dataset.raw.json'),'utf8'));
     assert.ok(saved.items.every((i:{visual:{kind:string;generation?:unknown}})=>i.visual.kind==='cutout'&&i.visual.generation));
     assert.deepEqual(saved.items.map((i:{value:number})=>i.value),data().items.map(i=>i.value));

@@ -1,3 +1,4 @@
+import {comparisonLimits} from './comparison-limits';
 import {z} from 'zod';
 import {sizePose,objectExtent,type GeometryItem,type SizeMetric} from './size-data';
 
@@ -5,8 +6,8 @@ export const sizeShotSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   role: z.enum(['detail','overview']).default('detail'),
   layout: z.enum(['zoom', 'side-by-side', 'overlay', 'lineup']),
-  focus: z.number().int().min(0).max(7), reference: z.number().int().min(0).max(7),
-  visible: z.array(z.number().int().min(0).max(7)).min(1).max(8),
+  focus: z.number().int().min(0).max(comparisonLimits.maximum-1), reference: z.number().int().min(0).max(comparisonLimits.maximum-1),
+  visible: z.array(z.number().int().min(0).max(comparisonLimits.maximum-1)).min(1).max(comparisonLimits.maximum),
   metric: z.enum(['question', 'ratio', 'difference', 'percent']),
 }).strict();
 export type SizeShot = z.infer<typeof sizeShotSchema>;

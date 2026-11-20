@@ -1,3 +1,6 @@
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import path from 'node:path';
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
 import {comparisonDisplayNames,comparisonMeasurementLabel} from '../src/shorts/comparison-copy';
@@ -25,12 +28,14 @@ test('measurement copy uses audience language and omits an irrelevant study date
   assert.equal(comparisonMeasurementLabel({...data,metric:'count',unit:'count',countBasis:'fixed'}),'Count');
 });
 test('new quantity subjects receive image briefs using researched identities, with no measurement changes',async()=>{
-  const data=fixture();let calls=0;
-  const result=await ensureComparisonImages(data,{directory:'/tmp',model:'test',log:()=>{},client:{chat:async request=>{
+  const data=fixture();let calls=0;const directory=mkdtempSync(path.join(tmpdir(),'comparison-copy-'));
+  try{
+  const result=await ensureComparisonImages(data,{directory,model:'test',log:()=>{},client:{chat:async request=>{
     calls++;const input=JSON.parse(request.messages[1].content);
     assert.equal(input.objects[0].label,'House mouse');
     return {choices:[{message:{content:JSON.stringify({images:input.objects.map((i:{id:string;label:string})=>({id:i.id,prompt:`Accurate full-body side view of ${i.label}, matching the actual species and natural colors, consistent neutral lighting, no text or scenery.`}))})}}]};
   }}});
   assert.equal(calls,1);assert.ok(result.items.every(i=>i.visual?.kind==='cutout'&&i.visual.generation));
   assert.deepEqual(result.items.map(i=>i.value),data.items.map(i=>i.value));
+  }finally{rmSync(directory,{recursive:true,force:true});}
 });
