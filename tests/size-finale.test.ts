@@ -18,7 +18,7 @@ test('the final object gets its own held detail pose before the separate overvie
     assert.equal(shots.length,n+1);assert.equal(shots[n-1].role,'detail');assert.equal(shots[n-1].reference,n-2);
     assert.equal(shots[n].role,'overview');assert.equal(shots[n].visible.length,n);
     const timing=comparisonSceneTiming(episode.scenes.at(-1)!.durationSeconds,comparisonObjectTiming(data,n-1).transitionSeconds,true);
-    assert.equal(episode.scenes.at(-1)!.durationSeconds,timing.arrivalSeconds+8);
+    assert.equal(episode.scenes.at(-1)!.durationSeconds,comparisonObjectTiming(data,n-1).detailSeconds+4);
     const frame=(progress:number)=>start+Math.round(progress*(last.durationInFrames-1));
     for(const progress of [timing.detailArrival+.02,(timing.detailArrival+timing.zoomStart)/2,timing.zoomStart-.02]){
       const state=sampleActor(compiled,'sizes',frame(progress));assert.equal(state.shot,n-1);assert.equal(state.phase,n-1);

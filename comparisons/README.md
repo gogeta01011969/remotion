@@ -259,15 +259,16 @@ command and the configured Cloudflare provider.
 
 ## Object-count-based pacing
 
-Automatic silent episodes reserve four seconds of settled focus per object, plus
-a one-second reveal (two to three seconds for large scale jumps), followed by a separate
-four-second overview. Typical durations for 4/5/6/7/8 objects are 24/29/34/39/44
-seconds; large jumps add transition time without reducing reading time. The last
-object gets its full detail window before the overview begins. These timed silent
-comparisons support 20–60 seconds; other video contracts retain their existing
+Automatic silent episodes give each subject 2–3 seconds of settled focus. Arrival
+varies continuously with the scale change (about 0.8–3 seconds): similar sizes
+arrive quickly, while larger scale jumps get more travel time. Integer scene
+budgets retain a settled hold within the requested range. The final overview has
+its own four seconds, after the last subject's full detail window. Total duration
+is the sum of those timings, not a fixed count-to-duration table. Timed silent
+comparisons support 15–60 seconds; other video contracts retain their existing
 limits. Authored episode durations remain explicit overrides.
 
 The same local timing rules drive object motion, chart growth, label arrival and
-the final overview. Large physical-scale jumps use the measured linear extent
-(area/volume use square/cube roots); temperature never uses multiplicative ratios.
+the final overview. Physical scale uses linear extent (area/volume use square/cube
+roots); signed/zero-based charts use axis distance rather than invalid ratios.
 Pacing is deterministic and requires no additional model calls.

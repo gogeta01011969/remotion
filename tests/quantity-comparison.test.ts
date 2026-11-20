@@ -23,7 +23,7 @@ test('all new measurements compile through the count-based silent pipeline witho
     assert.ok(plan.scaling.objects.every(o=>o.width===1&&o.height===1));
     assert.deepEqual(plan.shots.slice(0,-1).map(s=>s.visible),data.items.map((_,i)=>data.items.slice(0,i+1).map((_,j)=>j)));
     assert.equal(plan.shots.at(-1)!.visible.length,data.items.length);
-    assert.equal(input.presentation,'silent');assert.equal(shortDuration(input),720);
+    assert.equal(input.presentation,'silent');assert.equal(shortDuration(input),570);
     assert.ok(automationConfigSchema.parse({niche:'Comparison test fixture',allowedMetrics:[metric],assetProvider:'unused'}));
   }
 });
@@ -126,7 +126,7 @@ test('all allowed subject counts compile to count-based durations and counts out
   for(let count=4;count<=8;count++){
     const data=quantityFixture('mass','kg',Array.from({length:count},(_,i)=>i+1));
     const input=previewInput(compileSizeComparison(data,defaultSizeEpisode(data)));
-    assert.equal(input.scenes.length,count);assert.equal(shortDuration(input),(count*5+4)*30);
+    assert.equal(input.scenes.length,count);assert.equal(shortDuration(input),(count*3+5)*30);
     assert.equal(planComparisonStory(data).shots.at(-1)!.visible.length,count);
   }
   assert.throws(()=>quantityFixture('mass','kg',[1,2,3]));

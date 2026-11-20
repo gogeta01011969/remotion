@@ -10,7 +10,7 @@ const timedStructure = (minimum:number)=>z.object({
   if (new Set(structure.beats.map(b => b.name)).size !== structure.beats.length) ctx.addIssue({code: 'custom', message: 'Beat names must be unique.'});
 });
 export const structureSchema=timedStructure(30);
-export const comparisonStructureSchema=timedStructure(20);
+export const comparisonStructureSchema=timedStructure(15);
 export type Structure = z.infer<typeof structureSchema>;
 export const structureDuration = (structure: Structure) => structure.beats.reduce((sum, b) => sum + b.durationSeconds, 0);
 
