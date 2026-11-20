@@ -215,6 +215,14 @@ early query cannot consume the entire page budget before later subjects are trie
 The source gate reports usable-page and attempted-page counts plus rejection
 reasons; it never treats snippets or blocked pages as evidence.
 Counts survive runner restarts; budget deferral does not reset browsing limits.
+Quoted values may be written as digits or simple English number words (for
+example, “two to three years” supports either endpoint, never an inferred 2.5).
+When only numeric citation markers were omitted, local matching restores the
+actual contiguous source quotation, including those markers. Changed wording or
+values still fail. Typical-lifespan briefs reject explicit maximum-age records,
+and validation reports all failed candidates together to reduce repair calls.
+Quantity-dataset generation accepts chart-only items without requesting cutouts.
+
 `research-plan.json`, `research-measurements.json` and `research-receipt.json`
 preserve the source plan, quotations and completed evidence. Failed dataset drafts
 are revalidated/repaired on resume, rather than regenerated blindly. A focused

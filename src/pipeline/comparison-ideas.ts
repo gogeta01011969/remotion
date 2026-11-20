@@ -20,7 +20,7 @@ export type ComparisonDependencies={client?:Pick<GroqClient,'chat'>;config?:Retu
 // contracts; sizeDatasetSchema still validates the COMPLETE returned object.
 export function comparisonGenerationSchema(metric:SizeDataset['metric'],sources:{id:string;url:string}[]=[]){
   const [cutout,sphere,box]=comparisonVisualSchema.options;
-  const visual=metric==='diameter'?sphere.omit({calibration:true}).extend({generation:sphere.shape.generation.unwrap()}):metric==='volume'?box:cutout.omit({calibration:true}).extend({generation:cutout.shape.generation.unwrap()});
+  const visual=isQuantityMetric(metric)?box.optional():metric==='diameter'?sphere.omit({calibration:true}).extend({generation:sphere.shape.generation.unwrap()}):metric==='volume'?box:cutout.omit({calibration:true}).extend({generation:cutout.shape.generation.unwrap()});
   const {appearance,material,...base}=sizeItemSchema.shape;
   const item=z.object({...base,visual,...(sources.length?{sourceIds:z.array(z.enum(sources.map(s=>s.id) as [string,...string[]])).min(1)}:{})});
   const editorial=comparisonEditorialSchema.omit({items:true}).extend({objectRoles:comparisonEditorialSchema.shape.items});
@@ -42,6 +42,14 @@ export function normalizeComparisonGeneration(raw:unknown){
   delete data.measurementBasis;
   if(e&&typeof e==='object'&&!Array.isArray(e)){
     e={...e};delete (e as Record<string,unknown>).measurementBasis;data.editorial=e;
+  }
+  // Quantity charts contain bars/names only. Match the renderer's existing
+  // no-image policy even when a model omits visuals or echoes an old image brief.
+  if(typeof data.metric==='string'&&isQuantityMetric(data.metric)&&Array.isArray(data.items)){
+    data.items=data.items.map(item=>{
+      if(!item||typeof item!=='object'||Array.isArray(item))return item;
+      const next={...item,visual:{kind:'box',widthToHeight:1,depthToHeight:1}};delete next.appearance;return next;
+    });
   }
   // Canonicalize presentation metadata/order, never values, units or sources.
   if(typeof data.context==='string')data.context=data.context.slice(0,100);

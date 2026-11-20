@@ -196,3 +196,42 @@ test('seven and eight subjects each receive source evidence within the same HTTP
     }finally{rmSync(run.root,{recursive:true,force:true});}
   }
 });
+
+test('English number-word ranges verify as exact endpoints without inventing an average or changing quotations',()=>{
+  const run=setup();
+  try{
+    const concept={...run.concept,metric:'duration' as const,unit:'year' as const,measurementBasis:'Typical reported lifespans; preserve a documented range endpoint.'};
+    const texts=['Reference 0 often lives two to three years.','Reference 1 often lives two to three years.','Reference 2 has a typical lifespan of twenty-five years.','Reference 3 has a typical lifespan of thirty years.'];
+    const pages=texts.map((text,i)=>({id:`s${i+1}`,url:`https://example.com/${i}`,title:'Synthetic source',text}));
+    const facts={measurements:[2,3,25,30].map((value,i)=>({...run.facts.measurements[i],sourceValue:value,sourceUnit:'year',quote:texts[i]})),gaps:[]};
+    const result=validateResearchFacts(facts,pages,concept,run.plan.targets.map(t=>t.candidate));
+    assert.deepEqual(result.measurements.map(m=>m.value),[2,3,25,30]);assert.deepEqual(result.measurements.map(m=>m.quote),texts);
+    assert.throws(()=>validateResearchFacts({...facts,measurements:facts.measurements.map((m,i)=>i?m:{...m,sourceValue:2.5})},pages,concept,run.plan.targets.map(t=>t.candidate)),/must occur/);
+    const unsupported='Reference 0 has a typical lifespan of one point five years.';
+    assert.throws(()=>validateResearchFacts({...facts,measurements:facts.measurements.map((m,i)=>i?m:{...m,quote:unsupported,sourceValue:5})},pages.map((p,i)=>i?p:{...p,text:unsupported}),concept,run.plan.targets.map(t=>t.candidate)),/Unsupported compound number/);
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+test('all extraction issues are reported together and maximum records cannot fill a typical-lifespan slot',()=>{
+  const run=setup();
+  try{
+    const concept={...run.concept,metric:'duration' as const,unit:'year' as const,measurementBasis:'Average typical lifespan excluding record outliers'};
+    const texts=['Reference 0 has a maximum recorded lifespan of thirteen years.','Reference 1 has a typical lifespan of two years.','Reference 2 has a typical lifespan of four years.','Reference 3 has a typical lifespan of ten years.'];
+    const pages=texts.map((text,i)=>({id:`s${i+1}`,title:'Synthetic source',url:`https://example.com/${i}`,text}));
+    const facts={measurements:[13,999,4,10].map((value,i)=>({...run.facts.measurements[i],sourceValue:value,sourceUnit:'year',quote:texts[i]})),gaps:[]};
+    assert.throws(()=>validateResearchFacts(facts,pages,concept,run.plan.targets.map(t=>t.candidate)),error=>{
+      assert.ok(error instanceof Error);assert.match(error.message,/Reference 0.*maximum\/record/);assert.match(error.message,/Reference 1.*must occur/);return true;
+    });
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('omitted numeric citations are restored from the exact source while altered prose and values stay rejected',()=>{
+  const run=setup();
+  try{
+    const pages=values.map((_,i)=>({id:`s${i+1}`,url:`https://example.com/${i}`,title:'Synthetic source',text:quote(i)}));
+    pages[0].text='Reference 0 has a total height of 1 metres,[12]: 33 [13] measured from the base.';
+    const result=validateResearchFacts(run.facts,pages,run.concept,run.plan.targets.map(t=>t.candidate));
+    assert.equal(result.measurements[0].quote,pages[0].text);
+    const bad={...run.facts,measurements:run.facts.measurements.map((m,i)=>i?m:{...m,quote:m.quote.replace('1 metres','99 metres'),sourceValue:99})};
+    assert.throws(()=>validateResearchFacts(bad,pages,run.concept,run.plan.targets.map(t=>t.candidate)),/exact quote/);
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});

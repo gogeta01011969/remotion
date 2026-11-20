@@ -214,3 +214,12 @@ test('endpoint audit records accept the same candidate spelled as a slug but rej
   data.editorial!.conceptAdjustments[0].originalCandidate='Reference 30';
   assert.throws(()=>validateConceptSelection(data,concept),/payoff adjustment/);
 });
+
+test('non-size generation contracts accept chart-only items without requesting cutouts',()=>{
+  const data=fixture(),{items:objectRoles,...editorial}=data.editorial!;
+  const raw={...data,metric:'duration' as const,unit:'year' as const,editorial:{...editorial,objectRoles},items:data.items.map(({visual,appearance,...item})=>item)};
+  assert.equal(comparisonGenerationSchema('duration').safeParse(raw).success,true);
+  const normalized=sizeDatasetSchema.parse(normalizeComparisonGeneration(raw));
+  assert.ok(normalized.items.every(item=>item.visual?.kind==='box'));
+  assert.deepEqual(normalized.items.map(i=>i.value),data.items.map(i=>i.value));
+});
