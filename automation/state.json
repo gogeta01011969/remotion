@@ -249,15 +249,22 @@
     {
       "id": "short-2026-11-20-a14037d1a740",
       "topic": "Compare the typical lifespans of a house mouse, domestic rabbit, domestic cat, horse and Asian elephant, in years.",
-      "metric": null,
+      "metric": "duration",
       "scopeKey": "",
       "entityKeys": [],
-      "actualEntityKeys": [],
-      "status": "needs-review",
-      "attempts": 2,
+      "actualEntityKeys": [
+        "House mouse",
+        "Domestic cat",
+        "Horse",
+        "Asian elephant"
+      ],
+      "status": "complete",
+      "attempts": 3,
       "createdAt": "2026-11-20T05:36:30.535Z",
-      "updatedAt": "2026-11-20T06:07:35.255Z",
-      "error": "motion failed validation after three attempts: Dataset values must match the locally converted quoted research measurements and source IDs (within 0.5% rounding)."
+      "updatedAt": "2026-11-20T07:13:19.875Z",
+      "videoSha256": "c89f4b01edf7a2884da61473d891f835614a309bcb605f0f287927b4f59d2220",
+      "artifactName": "short-short-2026-11-20-a14037d1a740",
+      "artifactId": "14609263154"
     }
   ],
   "queue": []
