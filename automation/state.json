@@ -254,10 +254,10 @@
       "entityKeys": [],
       "actualEntityKeys": [],
       "status": "needs-review",
-      "attempts": 1,
+      "attempts": 2,
       "createdAt": "2026-11-20T05:36:30.535Z",
-      "updatedAt": "2026-11-20T05:38:28.074Z",
-      "error": "motion failed validation after three attempts: The source value for House mouse must occur in its quote; do not infer an unsupported average."
+      "updatedAt": "2026-11-20T06:07:35.255Z",
+      "error": "motion failed validation after three attempts: Dataset values must match the locally converted quoted research measurements and source IDs (within 0.5% rounding)."
     }
   ],
   "queue": []
