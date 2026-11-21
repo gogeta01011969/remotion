@@ -1,3 +1,4 @@
+import {UnworkableTopicError} from './generation-errors';
 import {isComparisonDisplayLabel} from '../shorts/comparison-copy';
 import {comparisonLimits,requireComparisonCount} from '../shorts/comparison-limits';
 import {createHash} from 'node:crypto';
@@ -297,7 +298,7 @@ export async function boundedComparisonResearch(options:ComparisonRequest,depend
   }
   if(state.pages.length<1){
     const reasons=[...new Set(state.rejected.map(r=>r.reason))].slice(0,3).join('; ');
-    throw new Error(`Bounded research could not open a usable source: ${state.pages.length} usable, ${state.attemptedPages.length}/${researchLimits.pages} page attempts. ${reasons||'No relevant source URLs found.'} Inspect research-web.json; blocked pages and snippets are not evidence.`);
+    throw new UnworkableTopicError(`Bounded research could not open a usable source: ${state.pages.length} usable, ${state.attemptedPages.length}/${researchLimits.pages} page attempts. ${reasons||'No relevant source URLs found.'} Inspect research-web.json; blocked pages and snippets are not evidence.`);
   }
   facts.measurements.sort((a,b)=>a.value-b.value);
   const candidateNames=plan.targets.map(t=>t.candidate).sort((a,b)=>b.length-a.length);
@@ -306,7 +307,7 @@ export async function boundedComparisonResearch(options:ComparisonRequest,depend
     return !candidate||!facts.measurements.some(f=>f.candidate===candidate);
   });
   writeJson(file('research-measurements.json'),{version,conceptHash,...facts});
-  if(facts.measurements.length<comparisonLimits.minimum)throw new Error(`Research could verify only ${facts.measurements.length} comparable objects after bounded source recovery; at least two are needed. Opened ${state.pages.length} pages in ${state.attemptedPages.length} attempts; ${state.httpRequests}/${researchLimits.httpRequests} HTTP requests. See research-measurements.json, research-web.json and research-recovery.json for missing evidence. No measurements were invented.`);
+  if(facts.measurements.length<comparisonLimits.minimum)throw new UnworkableTopicError(`Research could verify only ${facts.measurements.length} comparable objects after bounded source recovery; at least two are needed. Opened ${state.pages.length} pages in ${state.attemptedPages.length} attempts; ${state.httpRequests}/${researchLimits.httpRequests} HTTP requests. See research-measurements.json, research-web.json and research-recovery.json for missing evidence. No measurements were invented.`);
   requireComparisonCount(Math.min(facts.measurements.length,comparisonLimits.maximum));
   const notes=JSON.stringify({measurementBasis:concept.measurementBasis,measurements:facts.measurements,excluded:plan.excluded,gaps:facts.gaps,sourcePolicy:'Opened public pages; Wikipedia is a secondary source, not primary verification. Values sorted and converted by local code. Curated comparison, no record claim unless separately verified.'});
   const research=researchSchema.parse({topic:options.topic,model:config.researchModel,notes,sources:state.pages.map(({text,...p})=>p),searched: true,toolExecutions:state.httpRequests});

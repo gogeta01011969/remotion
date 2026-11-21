@@ -1,7 +1,9 @@
+import {UnworkableTopicError} from '../src/pipeline/generation-errors';
+import {runAutomationWorkflow} from '../src/pipeline/automation-workflow';
 import {existsSync,readFileSync,mkdirSync,appendFileSync} from 'node:fs';
 import path from 'node:path';
 import {parseArgs} from 'node:util';
-import {automationConfigSchema,loadLedger,saveLedger,lockAutomation,reserveTopic,budgetClient,AutomationDeferredError} from '../src/pipeline/topic-automation';
+import {automationConfigSchema,ledgerSchema,loadLedger,saveLedger,lockAutomation,reserveTopic,budgetClient,AutomationDeferredError} from '../src/pipeline/topic-automation';
 import {createAutomationVideo,stageCheckpoint,restoreJobCheckpoint,cleanupJob,confirmArchive} from '../src/pipeline/automation-run';
 import {GroqClient,loadGroqConfig} from '../src/pipeline/groq';
 import {writeJson} from '../src/pipeline/stages';
@@ -25,8 +27,8 @@ async function main(){
         const result=restoreJobCheckpoint(root,job,path.resolve(values.restore));saveLedger(stateFile,ledger);output(result);
         if(result.status==='needs-review'){
           writeJson(resultFile,result);
-          console.log('::warning title=Recovery stopped::Checkpoint missing or unusable. No generation attempted; the next trigger can select another topic.');
-          if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### Comparison job ${job.id}\n\nStatus: needs-review\n\n${job.error}\n`);
+          console.log('::notice title=Checkpoint unavailable::This topic has no usable checkpoint. The workflow controller can select a replacement for automatic jobs.');
+          if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### Checkpoint recovery for ${job.id}\n\nCheckpoint unavailable. The workflow controller determines whether to select another topic; no generation happened in this restore step.\n`);
         }
       }
       if(values.cleanup){cleanupJob(root,job.id,ledger);output({status:'cleaned',id:job.id});}
@@ -44,9 +46,16 @@ async function main(){
     if(!values['select-only']){
       const archiveTarget=process.env.AUTOMATION_ARCHIVE_TARGET==='github'?'github':'local';
       try{
-        const result=await createAutomationVideo({root,stateFile,ledger,job,config,client,groqConfig,archiveTarget,log:line=>console.error(line)});
+        const result=await runAutomationWorkflow({root,stateFile,ledger,job,config,client,groqConfig,archiveTarget,log:line=>console.error(line),usage:client.usage,onJob:current=>{job=current;}});
         savedBackoff='deferredBy' in result&&result.deferredBy==='saved-backoff';
         output(result);
+        if('attempts' in result&&process.env.GITHUB_STEP_SUMMARY){
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\n### Topic attempts in this run\n\n${result.attempts.map(attempt=>`- ${attempt.id}: ${attempt.status} — ${attempt.topic.replace(/[\r\n]/g,' ')}${attempt.reason?` (${attempt.reason.replace(/[\r\n]/g,' ')})`:''}`).join('\n')}\n`);
+        }
+        if(result.status==='no-video'){
+          console.log(`::notice title=No video produced::${result.reason}`);
+          if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\n**No finished video was produced.** ${result.reason}\n`);
+        }
         if(result.status==='retry-later')console.log('::notice title=Generation deferred::A usage limit or saved backoff paused generation. The checkpoint is preserved; no video was delivered. See the job summary for details.');
       }catch(error){
         output({status:job.status,id:job.id,topic:job.topic,error:job.error});
@@ -74,8 +83,19 @@ async function main(){
   }finally{release();}
 }
 main().catch(error=>{
+  if(error instanceof UnworkableTopicError){
+    const result={status:'no-video',reason:'No workable topic proposal could be produced within the bounded selection stage.'};
+    mkdirSync('out/automation',{recursive:true});writeJson('out/automation/result.json',result);console.log(JSON.stringify(result));
+    if(process.env.GITHUB_OUTPUT)appendFileSync(process.env.GITHUB_OUTPUT,'status=no-video\n');
+    if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### No video produced\n\n${result.reason}\n`);
+    console.log('::notice title=No video produced::No workable proposal was available; no video was delivered.');return;
+  }
   const retryAt=error instanceof AutomationDeferredError?error.retryAt:quotaDeferral(error instanceof Error?error.message:String(error));
   if(retryAt){
+    const stateFile=path.resolve('.automation/state.json');
+    if(existsSync(stateFile)&&!/Automation usage budget/i.test(error instanceof Error?error.message:String(error))){
+      const ledger=ledgerSchema.parse(JSON.parse(readFileSync(stateFile,'utf8')));ledger.providerBackoff={retryAt,reason:(error instanceof Error?error.message:String(error)).slice(0,1500)};saveLedger(stateFile,ledger);
+    }
     const result={status:'deferred',retryAt};mkdirSync('out/automation',{recursive:true});writeJson('out/automation/result.json',result);console.log(JSON.stringify(result));
     if(process.env.GITHUB_OUTPUT)appendFileSync(process.env.GITHUB_OUTPUT,`status=deferred\nretry_at=${retryAt}\n`);
     if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### Generation deferred\n\nNo video generated. Retry after: ${retryAt}\n`);

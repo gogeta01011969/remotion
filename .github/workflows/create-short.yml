@@ -116,7 +116,7 @@ jobs:
         run: npm run automate -- --resume "$CURRENT_JOB_ID" --restore .automation/restored
       - name: Research, create assets and render
         id: create
-        if: steps.select.outputs.job_id != '' && steps.recovery.outputs.status != 'needs-review'
+        if: steps.select.outputs.job_id != ''
         continue-on-error: true
         env:
           CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
@@ -124,24 +124,31 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: npm run automate -- --resume "$CURRENT_JOB_ID"
-      - name: Stage checkpoint even after generation failure
-        if: always() && steps.select.outputs.job_id != '' && steps.recovery.outputs.status != 'needs-review'
+      - name: Resolve the final selected job after topic fallback
+        id: active
+        if: always() && steps.select.outputs.job_id != ''
         env:
-          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+          CREATED_JOB_ID: ${{ steps.create.outputs.job_id }}
+          SELECTED_JOB_ID: ${{ steps.select.outputs.job_id }}
+        run: node --import tsx .github/scripts/active-job.ts
+      - name: Stage checkpoint even after generation failure
+        if: always() && steps.active.outputs.job_id != '' && steps.create.outputs.status != 'no-video'
+        env:
+          CURRENT_JOB_ID: ${{ steps.active.outputs.job_id }}
         run: npm run automate -- --resume "$CURRENT_JOB_ID" --package
       - uses: actions/upload-artifact@v7.0.2
-        if: always() && steps.select.outputs.job_id != '' && steps.recovery.outputs.status != 'needs-review'
+        if: always() && steps.active.outputs.job_id != '' && steps.create.outputs.status != 'no-video'
         with:
-          name: checkpoint-${{ steps.select.outputs.job_id }}
+          name: checkpoint-${{ steps.active.outputs.job_id }}
           path: out/automation/checkpoint/
           retention-days: 7
           if-no-files-found: error
       - uses: actions/upload-artifact@v7.0.2
         id: video
-        if: steps.create.outputs.status == 'rendered'
+        if: steps.active.outcome == 'success' && steps.create.outputs.status == 'rendered'
         with:
-          name: short-${{ steps.select.outputs.job_id }}
-          path: out/automation/delivery/${{ steps.select.outputs.job_id }}/
+          name: short-${{ steps.active.outputs.job_id }}
+          path: out/automation/delivery/${{ steps.active.outputs.job_id }}/
           retention-days: 30
           compression-level: 0
           if-no-files-found: error
@@ -149,7 +156,7 @@ jobs:
         id: confirm
         if: steps.video.outputs.artifact-id != ''
         env:
-          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+          CURRENT_JOB_ID: ${{ steps.active.outputs.job_id }}
           VIDEO_ARTIFACT_ID: ${{ steps.video.outputs.artifact-id }}
         run: npm run automate -- --resume "$CURRENT_JOB_ID" --archive-confirmed "$VIDEO_ARTIFACT_ID"
       - name: Prepare YouTube upload and verify the connected channel
@@ -163,7 +170,7 @@ jobs:
           YOUTUBE_PRIVACY_STATUS: ${{ vars.YOUTUBE_PRIVACY_STATUS || 'private' }}
           YOUTUBE_MADE_FOR_KIDS: ${{ vars.YOUTUBE_MADE_FOR_KIDS || 'false' }}
           YOUTUBE_CONTAINS_SYNTHETIC_MEDIA: ${{ vars.YOUTUBE_CONTAINS_SYNTHETIC_MEDIA || 'true' }}
-          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+          CURRENT_JOB_ID: ${{ steps.active.outputs.job_id }}
         run: npm run youtube:upload -- --job "$CURRENT_JOB_ID" --prepare
       - name: Persist upload intent before contacting the upload endpoint
         id: youtube_intent
@@ -182,7 +189,7 @@ jobs:
           YOUTUBE_PRIVACY_STATUS: ${{ vars.YOUTUBE_PRIVACY_STATUS || 'private' }}
           YOUTUBE_MADE_FOR_KIDS: ${{ vars.YOUTUBE_MADE_FOR_KIDS || 'false' }}
           YOUTUBE_CONTAINS_SYNTHETIC_MEDIA: ${{ vars.YOUTUBE_CONTAINS_SYNTHETIC_MEDIA || 'true' }}
-          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+          CURRENT_JOB_ID: ${{ steps.active.outputs.job_id }}
         run: npm run youtube:upload -- --job "$CURRENT_JOB_ID" --send
       - name: Persist final status (including failures)
         id: persist
@@ -196,7 +203,7 @@ jobs:
           (vars.YOUTUBE_UPLOAD_ENABLED != 'true' || steps.youtube.outputs.status == 'uploaded' ||
            steps.youtube_prepare.outputs.status == 'already-uploaded')
         env:
-          CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
+          CURRENT_JOB_ID: ${{ steps.active.outputs.job_id }}
         run: npm run automate -- --resume "$CURRENT_JOB_ID" --cleanup
       - uses: actions/upload-artifact@v7.0.2
         if: always()
@@ -204,10 +211,12 @@ jobs:
           name: automation-result-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             out/automation/result.json
+            out/automation/attempts.json
+            out/automation/topic-candidates-*.json
             .automation/state.json
           include-hidden-files: true
           retention-days: 7
           if-no-files-found: warn
       - name: Surface generation failure
-        if: always() && (steps.create.outcome == 'failure' || steps.recovery.outputs.status == 'needs-review')
+        if: always() && steps.create.outcome == 'failure'
         run: exit 1

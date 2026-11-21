@@ -134,11 +134,10 @@ test('quota deferrals consume attempts and eventually stop instead of looping fo
     assert.equal(second.status,'retry-later');assert.equal(calls,1);assert.equal(run.current.retryAt,retryAt);
     for(let attempt=2;attempt<=config.maxAttemptsPerJob;attempt++){
       run.current.retryAt='2000-01-01T00:00:00.000Z';
-      if(attempt===config.maxAttemptsPerJob)await assert.rejects(()=>createAutomationVideo(run.options,dependencies),/HTTP 429/);
-      else assert.equal((await createAutomationVideo(run.options,dependencies)).status,'retry-later');
+      assert.equal((await createAutomationVideo(run.options,dependencies)).status,'retry-later');
     }
-    assert.equal(run.current.status,'needs-review');assert.equal(run.current.attempts,config.maxAttemptsPerJob);
-    assert.equal(run.current.retryAt,undefined);assert.equal(calls,config.maxAttemptsPerJob);
+    assert.equal(run.current.status,'retry-later');assert.equal(run.current.attempts,config.maxAttemptsPerJob);
+    assert.ok(run.current.retryAt);assert.equal(calls,config.maxAttemptsPerJob);
     await assert.rejects(()=>createAutomationVideo(run.options,dependencies),/attempt limit/);assert.equal(calls,config.maxAttemptsPerJob);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
@@ -243,6 +242,6 @@ test('CLI missing checkpoint stops before provider configuration and persists a 
     assert.equal(run.status,0,run.stderr);assert.match(readFileSync(output,'utf8'),/status=needs-review/);
     assert.equal(JSON.parse(readFileSync(path.join(root,'.automation/state.json'),'utf8')).jobs[0].status,'needs-review');
     assert.equal(JSON.parse(readFileSync(path.join(root,'out/automation/result.json'),'utf8')).status,'needs-review');
-    assert.match(readFileSync(summary,'utf8'),/next trigger can select another topic/);
+    assert.match(readFileSync(summary,'utf8'),/workflow controller determines whether to select another topic/);
   }finally{rmSync(root,{recursive:true,force:true});}
 });

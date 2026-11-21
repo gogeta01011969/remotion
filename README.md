@@ -96,3 +96,5 @@ The implementation follows Remotion's official [parameterized video](https://www
 Optional automatic YouTube uploads: [connect your channel and configure GitHub Actions](automation/YOUTUBE.md). Uploads are disabled until configured and default to private.
 
 Quantity comparison videos use a fixed linear axis, value-proportional bar growth (one-second minimum), 2.5-second settled holds and a four-second overview. They may extend to 90 seconds; physical-size comparisons retain their existing 60-second limit. See [comparison presentation policy](comparisons/README.md#presentation-policy-and-quantity-pacing).
+
+Automatic workflow runs can skip unworkable topics and try up to three candidates within one shared usage budget. Explicit manual topics keep their scope. Provider cooldowns defer work; exhausted candidates report `no-video` without uploading an empty or invented result. See [run-level resilience](automation/README.md#run-level-resilience).

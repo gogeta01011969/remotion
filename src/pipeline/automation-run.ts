@@ -1,3 +1,4 @@
+import {UnworkableTopicError} from './generation-errors';
 import {requireComparisonCount} from '../shorts/comparison-limits';
 import {createHash} from 'node:crypto';
 import {existsSync,readFileSync,mkdirSync,cpSync,rmSync,readdirSync,lstatSync} from 'node:fs';
@@ -52,7 +53,7 @@ export function restoreCheckpoint(root:string,id:string,from:string){
 }
 export function restoreJobCheckpoint(root:string,job:AutomationJob,from:string){
   if(job.status==='complete')return {status:'complete',id:job.id};
-  if(!existsSync(from)&&job.status==='reserved'&&job.attempts===0)return {status:'fresh',id:job.id};
+  if(!existsSync(from)&&['reserved','retry-later'].includes(job.status)&&job.attempts===0)return {status:'fresh',id:job.id};
   try{
     const files=runPaths(root,job.id).flatMap(target=>treeFiles(path.join(from,path.relative(root,target))));
     if(!files.length)throw new Error('Checkpoint is missing or contains no saved job files.');
@@ -127,12 +128,18 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
   }catch(error){
     const secrets=[process.env.GROQCLOUD_API_KEY,process.env.CLOUDFLARE_API_TOKEN,process.env.CLOUDFARE_API_TOKEN,process.env.GITHUB_TOKEN].filter(Boolean) as string[];
     const message=redact(error instanceof Error?error.message:String(error),secrets).slice(-1500);
-    const quotaRetryAt=quotaDeferral(message,Date.now(),config.retryAfterMinutes);
-    if(quotaRetryAt&&job.attempts<config.maxAttemptsPerJob){
+    if(error instanceof UnworkableTopicError){
+      job.status='skipped-unworkable';job.error=message;job.updatedAt=new Date().toISOString();delete job.retryAt;saveLedger(stateFile,ledger);
+      return {status:'skipped-unworkable',id:job.id,reason:message};
+    }
+    const applicationBudget=/Automation usage budget/i.test(message);
+    const quotaRetryAt=applicationBudget?new Date().toISOString():quotaDeferral(message,Date.now(),config.retryAfterMinutes);
+    if(quotaRetryAt){
+      if(!applicationBudget)ledger.providerBackoff={retryAt:quotaRetryAt,reason:message};
       job.status='retry-later';job.error=message;job.updatedAt=new Date().toISOString();job.retryAt=quotaRetryAt;saveLedger(stateFile,ledger);
       return {status:'retry-later',id:job.id,retryAt:job.retryAt,reason:message};
     }
-    const retry=/429|rate.limit|quota|budget|timeout|timed out|network|HTTP 5\d\d/i.test(message)&&job.attempts<config.maxAttemptsPerJob;
-    job.status=retry?'retry-later':'needs-review';job.error=message;job.updatedAt=new Date().toISOString();if(retry)job.retryAt=new Date(Date.now()+config.retryAfterMinutes*60000).toISOString();saveLedger(stateFile,ledger);throw new Error(message);
+    const retry=/timeout|timed out|network|HTTP 5\d\d/i.test(message);
+    job.status=retry?'retry-later':'needs-review';job.error=message;job.updatedAt=new Date().toISOString();if(retry)job.retryAt=new Date(Date.now()+config.retryAfterMinutes*60000).toISOString();saveLedger(stateFile,ledger);if(retry)return {status:'retry-later',id:job.id,retryAt:job.retryAt!,reason:message};throw new Error(message);
   }
 }

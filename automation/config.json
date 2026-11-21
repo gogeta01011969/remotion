@@ -28,5 +28,6 @@
     "comparisons/examples/area.json",
     "comparisons/examples/volume.json",
     "comparisons/examples/zoom.json"
-  ]
+  ],
+  "maxTopicsPerRun": 3
 }

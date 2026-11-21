@@ -388,3 +388,23 @@ rembg's changing default model. See the upstream repositories for model licenses
 Presentation finalization runs on fresh and resumed comparisons before image preparation. Recommendations are advisory; final headlines use evidence-bound hooks and quantity videos can extend to 90 seconds. Optional corrections are recorded in `quality-warnings.json`; numeric, asset-safety and valid-media requirements remain enforced. No additional AI review stage is introduced.
 
 If research yields fewer than two supported objects, one bounded source-repair pass runs before generation fails. Its diagnostic journal is `research-recovery.json`; existing source and provider budgets are unchanged. Generic categories must resolve to documented named examples, and historical construction heights or different-model specifications cannot fill a missing measurement. See [research recovery](../comparisons/README.md#too-little-research-evidence).
+
+
+## Run-level resilience
+
+A topic is an attempt, not the unit of success for the automatic workflow. `maxTopicsPerRun` defaults to three. If bounded research cannot establish two comparable measurements, structured planning cannot produce usable instructions, or the final dataset duplicates a previous video, that automatic topic is recorded as skipped and the controller tries a fresh queued candidate in the same invocation. It does not replay the skipped topic indefinitely. Old automatically selected jobs are recognized by their populated scope/object metadata; new jobs record `selectionMode` explicitly.
+
+All topic attempts share the existing 12-request/65,000-token client; fallback never resets it. The controller starts another fresh attempt only with at least six logical requests and 25,000 accounted tokens remaining. These are work-budget guards, not editorial requirements. A failed topic does not lower the factual or media requirements for its replacement. Explicitly entered topics remain manual: unsupported manual prompts do not silently become a different subject.
+
+Outcomes are explicit:
+
+| Outcome | Meaning |
+| --- | --- |
+| `rendered` | A verified MP4 exists for the final job and can proceed to artifact archival/upload. |
+| `retry-later` / `deferred` | Quota or a transient provider problem paused work; no video is claimed. Provider quota cooldown is shared across triggers and prevents fresh selection calls until it expires. Application invocation budgets reset on the next run. |
+| `no-video` | No workable topic completed within the run's topic/budget bounds; no artifact upload or YouTube upload is attempted. The next trigger can use fresh candidates. |
+| Hard failure | Invalid credentials/configuration, unsafe filesystem operations, broken rendering/media verification, or an unexpected system error requiring investigation. |
+
+`out/automation/attempts.json` and the Actions summary identify every topic tried. GitHub resolves the final job ID after generation, and uses that ID consistently for checkpointing, video artifacts, archival confirmation, YouTube intent/upload and cleanup. A missing automatic checkpoint can be abandoned in favor of a fresh topic. YouTube uploads still require a successfully verified and archived delivery and persisted upload intent.
+
+To test automatic recovery, start a **new** `Create a comparison Short` workflow from `main`, choose `auto`, and leave both `topic` and `resume_job` blank. An explicit resume is supported but is no longer required to move past an unsuitable automatic topic. External provider outages and quotas cannot guarantee a video on every trigger; they are reported honestly rather than passed off as successful deliveries.

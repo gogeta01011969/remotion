@@ -1,3 +1,4 @@
+import {StageValidationError} from './generation-errors';
 import {writeFileSync, renameSync,existsSync,readFileSync} from 'node:fs';
 import path from 'node:path';
 import {z} from 'zod';
@@ -132,5 +133,5 @@ export async function structuredStage<T>(options: {
       if(options.retryValidation?.(failure)===false)throw failure;
     }
   }
-  throw new Error(`${options.stage} failed validation after three attempts: ${error.slice(0, 2500)}`);
+  throw new StageValidationError(`${options.stage} failed validation after three attempts: ${error.slice(0, 2500)}`);
 }
