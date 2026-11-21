@@ -409,10 +409,9 @@
       "createdAt": "2026-11-21T10:22:57.245Z",
       "updatedAt": "2026-11-21T11:13:11.180Z",
       "error": "Research could verify only 1 comparable objects after bounded source recovery; at least two are needed. Opened 5 pages in 20 attempts; 34/48 HTTP requests. See research-measurements.json, research-web.json and research-recovery.json for missing evidence. No measurements were invented."
-    }
-  ],
-  "queue": [
+    },
     {
+      "id": "short-2026-11-21-23271f5a1c1c",
       "topic": "From Mercury to Ceres: the size ladder of solar system worlds",
       "metric": "diameter",
       "scopeKey": "worlds-diameter-orders",
@@ -426,10 +425,17 @@
         "Pluto",
         "Ceres"
       ],
+      "actualEntityKeys": [],
       "whyInteresting": "Viewers instantly recognise Earth’s Moon and then travel outward to the biggest moons and dwarf planets, revealing how a handful of familiar worlds span over two orders of magnitude in diameter, a visual that makes the vastness of our solar system feel tangible.",
       "family": "worlds",
       "angle": "orders-of-magnitude",
-      "depth": "extreme-scale"
+      "depth": "extreme-scale",
+      "selectionMode": "automatic",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-21T11:42:36.632Z",
+      "updatedAt": "2026-11-21T11:42:36.632Z"
     }
-  ]
+  ],
+  "queue": []
 }
