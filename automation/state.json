@@ -333,15 +333,21 @@
         "Statue of Liberty",
         "Eiffel Tower"
       ],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Baobab – Adansonia Grandidieri (Grandmother)",
+        "Statue of Liberty (torch height)",
+        "Coast Redwood – Hyperion",
+        "Burj Khalifa"
+      ],
       "whyInteresting": "Viewers instantly recognise a skyscraper’s silhouette, then discover that a single living tree can rival or exceed those heights, turning a familiar cityscape into a mind‑blowing natural wonder.",
       "family": "trees-plants",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "needs-review",
+      "attempts": 1,
       "createdAt": "2026-11-21T07:24:33.486Z",
-      "updatedAt": "2026-11-21T07:24:33.486Z"
+      "updatedAt": "2026-11-21T07:28:14.862Z",
+      "error": "Generating Baobab – Adansonia Grandidieri (Grandmother) with flux-2-klein-4b\nGenerating Statue of Liberty (torch height) with flux-2-klein-4b\nGenerating Coast Redwood – Hyperion with flux-2-klein-4b\nGenerating Burj Khalifa with flux-2-klein-4b\nNo usable optional editorial plan; using the measured object progression.\nCoast Redwood – Hyperion: foreground reaches an image edge. Check cropping and revise the generation prompt before retrying.\nAsset provider failed: exit 1\n"
     }
   ],
   "queue": []
