@@ -94,3 +94,5 @@ Tests cover invalid inputs, uneven scene weights, single/multiple scenes, varied
 The implementation follows Remotion's official [parameterized video](https://www.remotion.dev/docs/parameterized-rendering), [transitions](https://www.remotion.dev/docs/transitions/transitionseries), and [seeded randomness](https://www.remotion.dev/docs/random) APIs. Check [Remotion's license](https://www.remotion.dev/license) for your intended usage.
 
 Optional automatic YouTube uploads: [connect your channel and configure GitHub Actions](automation/YOUTUBE.md). Uploads are disabled until configured and default to private.
+
+Quantity comparison videos use a fixed linear axis, value-proportional bar growth (one-second minimum), 2.5-second settled holds and a four-second overview. They may extend to 90 seconds; physical-size comparisons retain their existing 60-second limit. See [comparison presentation policy](comparisons/README.md#presentation-policy-and-quantity-pacing).

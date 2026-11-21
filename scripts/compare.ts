@@ -1,3 +1,5 @@
+import {finalizeComparisonPresentation} from '../src/pipeline/comparison-presentation';
+import {comparisonWarningSink} from '../src/pipeline/comparison-warnings';
 import {requireComparisonCount} from '../src/shorts/comparison-limits';
 import {existsSync,readFileSync,mkdirSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
@@ -39,6 +41,7 @@ async function main(){
       console.log(JSON.stringify({status:'ideas-planned',id,ideaPath:path.join(directory,'idea-plan.json'),selected:ideas.concepts.find(c=>c.id===ideas.selectedId),selectionReason:ideas.selectionReason}));return;
     }
     data??=await generateComparisonData({topic:values.topic!,id,directory,root,log:s=>process.stderr.write(s+'\n')});
+    data=finalizeComparisonPresentation(data,comparisonWarningSink(directory,console.error));
     if(values.topic){
       const config=loadGroqConfig(path.join(root,'.env.local'));
       data=await ensureComparisonImages(data,{directory,client:new GroqClient({apiKey:config.apiKey,onRetry:console.error}),model:config.motionModel,log:console.error});

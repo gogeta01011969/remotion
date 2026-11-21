@@ -20,7 +20,7 @@ export const comparisonEpisodeSchema = z.object({
   scenes: z.array(z.object({
     itemId: z.string(), heading: z.string().min(1).max(80),
     beatId: z.string().optional(),
-    durationSeconds: z.number().int().min(3).max(15),
+    durationSeconds: z.number().min(3).max(15),
     cues: z.array(z.string().min(1).max(240)).max(3).default([]),
     spokenCues: z.array(z.string().min(1).max(300)).min(1).max(3).optional(),
     referenceIds: z.array(z.string()).min(1).max(3).optional(),
@@ -56,16 +56,16 @@ export function compileSizeComparison(rawData: unknown, rawEpisode: unknown) {
     }
   });
   const seconds = episode.scenes.reduce((sum, s) => sum + s.durationSeconds, 0);
-  if (seconds < (episode.presentation==='silent'?10:30) || seconds > (episode.presentation==='silent'?60:45)) throw new Error(episode.presentation==='silent'?'Silent comparisons must be 10–60 seconds, based on object count.':'Narrated comparisons must be 30–45 seconds.');
+  if (seconds < (episode.presentation==='silent'?10:30) || seconds > (episode.presentation==='silent'?(isQuantityMetric(data.metric)?comparisonLimits.quantityMaximumSeconds:comparisonLimits.maximumSeconds):45)) throw new Error(episode.presentation==='silent'?`Silent comparisons must be 10–${isQuantityMetric(data.metric)?comparisonLimits.quantityMaximumSeconds:comparisonLimits.maximumSeconds} seconds, based on object count.`:'Narrated comparisons must be 30–45 seconds.');
   const shots=plan.shots.map((shot,i)=>({...shot,reference:shot.role==='overview'?0:Math.min(shot.reference,...(episode.scenes[i].references??[]).map(ref=>data.items.findIndex(item=>item.id===ref.itemId)))}));
   return briefSchema.parse({
     id: episode.id, schemaVersion: 2, genre: 'explainer', language: episode.language, presentation:episode.presentation,
-    topic: data.title, description: episode.description + (data.editorial?`\n\nViewer question: ${data.editorial.viewerQuestion}\n${data.editorial.throughline}\nSelection: ${data.editorial.claim.scope}`:'') + (data.basis?`\n\nMeasurement basis: ${data.basis}${data.asOf?` (as of ${data.asOf})`:''}`:'') + data.items.flatMap(item=>item.visual&&item.visual.kind!=='box'?[`\nVisual: ${item.label}: ${item.visual.attribution}. References: ${item.visual.referenceUrls.join(', ')}`]:[]).join('') + (data.metric==='volume'?'\nVolume illustrations use supplied depth and solid-fraction profiles; projected silhouettes alone do not prove volume.':'') + (data.items.some(item => item.appearance) ? '\n\nVisual credits: Earth map: NASA Blue Marble-derived / WebGL Earth. Moon map: NASA Scientific Visualization Studio, CGI Moon Kit / Ernie Wright / LROC. Mercury, Venus atmosphere, Mars, Jupiter, Neptune, Sun and Earth cloud maps: Solar System Scope (https://www.solarsystemscope.com/textures/), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Maps projected and lit locally; illustrative surfaces, not live imagery.' : ''), captionMode: episode.presentation==='silent'?'sentence':'phrase',
+    topic: data.title, description: episode.description + (data.editorial?`\n\nViewer question: ${data.editorial.viewerQuestion}\n${data.editorial.throughline}\nSelection: ${data.editorial.claim.scope}`:'') + (data.basis?`\n\nMeasurement basis: ${data.basis}${data.asOf?` (as of ${data.asOf})`:''}`:'') + data.items.map(item=>`\n${item.label}: ${item.note||'See the cited measurement source.'}`).join('') + data.items.flatMap(item=>item.visual&&item.visual.kind!=='box'?[`\nVisual: ${item.label}: ${item.visual.attribution}. References: ${item.visual.referenceUrls.join(', ')}`]:[]).join('') + (data.metric==='volume'?'\nVolume illustrations use supplied depth and solid-fraction profiles; projected silhouettes alone do not prove volume.':'') + (data.items.some(item => item.appearance) ? '\n\nVisual credits: Earth map: NASA Blue Marble-derived / WebGL Earth. Moon map: NASA Scientific Visualization Studio, CGI Moon Kit / Ernie Wright / LROC. Mercury, Venus atmosphere, Mars, Jupiter, Neptune, Sun and Earth cloud maps: Solar System Scope (https://www.solarsystemscope.com/textures/), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Maps projected and lit locally; illustrative surfaces, not live imagery.' : ''), captionMode: episode.presentation==='silent'?'sentence':'phrase',
     voice: voiceFor(episode.language), wordsPerMinute: 185, seed: 42,
     accent: data.items[data.items.length - 1].color,
     sources: data.sources.map(({id: _id, ...source}) => source),
     structure: {beats: episode.scenes.map((s, i) => ({name: plan.shots[i].id, durationSeconds: s.durationSeconds}))},
-    actors: [{id: 'sizes', kind: 'size-comparison', data:{...data,environment:plan.background.environment,backgroundReason:plan.background.reason}, shots, headings: [...episode.scenes.map(s => s.heading),'All objects'], state: {x: 500, y: 960, value: plan.shots[0].focus, reference: plan.shots[0].reference}}],
+    actors: [{id: 'sizes', kind: 'size-comparison', data:{...data,environment:plan.background.environment,backgroundReason:plan.background.reason}, ...(episode.presentation==='silent'&&isQuantityMetric(data.metric)?{quantityTiming:data.items.map((_,i)=>({growthSeconds:comparisonObjectTiming(data,i).transitionSeconds}))}:{}), shots, headings: [...episode.scenes.map(s => s.heading),'All objects'], state: {x: 500, y: 960, value: plan.shots[0].focus, reference: plan.shots[0].reference}}],
     scenes: episode.scenes.map((s, i) => {
       const timing=comparisonSceneTiming(s.durationSeconds,comparisonObjectTiming(data,i).transitionSeconds,i===data.items.length-1);
       return {

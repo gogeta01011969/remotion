@@ -115,8 +115,8 @@ test('prompt research produces per-run asset requests and resumes without repeat
   const dependencies={client,research:mockResearch(client),config:{apiKey:'test-key',researchModel:'test-research',motionModel:'test-motion',scriptModel:'test-script'}};
   try{
     const data=await generateComparisonData(options,dependencies);assert.equal(calls.length,3);assert.equal(assetRequests(data).objects.length,8);
-    assert.equal(data.environment,'architecture');assert.equal(data.backgroundReason,ideaFixture().concepts[0].background!.reason);
-    for(const call of calls.slice(1))assert.equal(JSON.parse(call.messages[1].content).selectedConcept.viewerQuestion,data.editorial!.viewerQuestion);
+    assert.equal(data.environment,'architecture');assert.match(data.backgroundReason!,/city silhouette/);
+    assert.equal(data.editorial!.viewerQuestion,data.title);
     assert.equal(JSON.parse(readFileSync(path.join(root,'editorial-plan.json'),'utf8')).payoff.itemId,data.items.at(-1)!.id);
     assert.deepEqual(await generateComparisonData(options,dependencies),data);assert.equal(calls.length,3);
     assert.ok(data.items.every(item=>item.visual?.kind==='cutout'&&!item.visual.generation));

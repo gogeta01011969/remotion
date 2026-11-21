@@ -1,3 +1,4 @@
+import {finalizeComparisonPresentation} from './comparison-presentation';
 import {comparisonWarningSink} from './comparison-warnings';
 import {needsCountry} from '../shorts/comparison-context';
 import {comparisonLimits,requireComparisonCount} from '../shorts/comparison-limits';
@@ -63,7 +64,7 @@ export function runAssetProvider(data:SizeDataset,options:{configFile:string;dir
 export async function generateComparisonData(options:ComparisonRequest,dependencies:ComparisonDependencies={}){
   ensureComparisonRequest(options);
   const datasetPath=path.join(options.directory,'dataset.raw.json');
-  if(existsSync(datasetPath)){const cached=sizeDatasetSchema.parse(JSON.parse(readFileSync(datasetPath,'utf8')));validateMeasuredDataset(cached,options.directory);return cached;}
+  if(existsSync(datasetPath)){const cached=sizeDatasetSchema.parse(JSON.parse(readFileSync(datasetPath,'utf8')));validateMeasuredDataset(cached,options.directory);const finalized=finalizeComparisonPresentation(cached,comparisonWarningSink(options.directory,options.log));writeJson(datasetPath,finalized);return finalized;}
   const config=dependencies.config??loadGroqConfig(path.join(options.root,'.env.local'));
   const client=dependencies.client??new GroqClient({apiKey:config.apiKey,onRetry:options.log});
   const ideas=await planComparisonIdeas(options,{client,config});
@@ -82,7 +83,7 @@ export async function generateComparisonData(options:ComparisonRequest,dependenc
     if(facts.length)requireComparisonCount(Math.min(facts.length,comparisonLimits.maximum));
     if(facts.length&&facts.length<comparisonLimits.targetMinimum)options.log(`Research supports ${facts.length} objects; proceeding below the ${comparisonLimits.targetMinimum}-object target without inventing evidence.`);
     return structuredStage({stage:'motion',artifact:'comparison-data',repairFromDraft:true,maxCompletionTokens:4000,constrained:false,nullableOptionals:true,compactSchema:true,model:config.motionModel,client,schema:comparisonGenerationSchema(metric,research.sources,facts),directory:options.directory,log:options.log,input:JSON.stringify({topic:options.topic,selectedConcept,...(facts.length?{verifiedMeasurements:facts.map(({evidenceId,candidate,value,unit,sourceId,qualifier})=>({evidenceId,candidate,value,unit,sourceId,qualifier}))}:{}),research:{...research,notes:facts.length?JSON.stringify({measurementBasis,excluded:JSON.parse(research.notes).excluded??[],gaps:JSON.parse(research.notes).gaps??[]}):research.notes.normalize('NFKC').replace(/[‐‑–—]/g,'-')},presentation:'silent',expectedSubject:expectedSubject??'infer from research'}),system:comparisonDatasetPrompt,repairInstruction:'Put the measurement definition in top-level basis, never editorial.measurementBasis. Preserve the selected viewer question and scope, use only opened sources and supported visuals, and repair the dataset plus its embedded editorial plan.',retryValidation:failure=>!(failure instanceof ComparisonEvidenceGap),validate:raw=>{
-    const normalized=normalizeComparisonGeneration(bindVerifiedMeasurements(raw,facts),warn);
+    const normalized=normalizeComparisonGeneration(bindVerifiedMeasurements(raw,facts,{skipInvalid:true,warn}),warn);
     if(normalized&&typeof normalized==='object'&&'items' in normalized&&Array.isArray(normalized.items)&&normalized.items.length<comparisonLimits.minimum)requireComparisonCount(normalized.items.length);
     if(normalized&&typeof normalized==='object'&&'items' in normalized&&Array.isArray(normalized.items))for(const item of normalized.items){
       if(item?.visual?.calibration){delete item.visual.calibration;warn('Discarded model-supplied calibration; bounds will be measured from the actual image.');}
@@ -136,6 +137,7 @@ export async function generateComparisonData(options:ComparisonRequest,dependenc
     await repairEvidence(error.urls);
     data=await select();
   }
+  data=finalizeComparisonPresentation(data,comparisonWarningSink(options.directory,options.log));
   writeJson(path.join(options.directory,'editorial-plan.json'),data.editorial);
   writeJson(datasetPath,data);return data;
 }

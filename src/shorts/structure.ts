@@ -1,17 +1,17 @@
 import {comparisonLimits} from './comparison-limits';
 import {z} from 'zod';
 
-const timedStructure = (minimum:number,maximumBeats=8,minimumBeats=4)=>z.object({
+const timedStructure = (minimum:number,maximumBeats=8,minimumBeats=4,maximumSeconds=60)=>z.object({
   endWithQuestion: z.boolean().default(false),
   hook: z.string().min(1).max(180).optional(),
-  beats: z.array(z.object({name: z.string().min(1).max(80), durationSeconds: z.number().int().min(2).max(60)}).strict()).min(minimumBeats).max(maximumBeats),
+  beats: z.array(z.object({name: z.string().min(1).max(80), durationSeconds: z.number().min(2).max(60)}).strict()).min(minimumBeats).max(maximumBeats),
 }).strict().superRefine((structure, ctx) => {
   const duration = structure.beats.reduce((sum, b) => sum + b.durationSeconds, 0);
-  if (duration < minimum || duration > 60) ctx.addIssue({code: 'custom', message: `A timed structure must total ${minimum}–60 seconds.`});
+  if (duration < minimum || duration > maximumSeconds) ctx.addIssue({code: 'custom', message: `A timed structure must total ${minimum}–${maximumSeconds} seconds.`});
   if (new Set(structure.beats.map(b => b.name)).size !== structure.beats.length) ctx.addIssue({code: 'custom', message: 'Beat names must be unique.'});
 });
 export const structureSchema=timedStructure(30);
-export const comparisonStructureSchema=timedStructure(10,comparisonLimits.maximum,comparisonLimits.minimum);
+export const comparisonStructureSchema=timedStructure(10,comparisonLimits.maximum,comparisonLimits.minimum,comparisonLimits.quantityMaximumSeconds);
 export type Structure = z.infer<typeof structureSchema>;
 export const structureDuration = (structure: Structure) => structure.beats.reduce((sum, b) => sum + b.durationSeconds, 0);
 

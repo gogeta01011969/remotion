@@ -34,7 +34,7 @@ test('Cloudflare provider resumes a cached edge-touching asset into a usable man
     const method='rembg-2.0.87/isnet-general-use/CPU/'+createHash('sha256').update(readFileSync('scripts/remove-image-background.py')).digest('hex').slice(0,12);
     const visual={kind:'cutout',src:'tree.png',view:'front',attribution:'Synthetic test asset',referenceUrls:['https://example.com/tree'],generation:{prompt:'Synthetic tall tree for a local framing regression test.'}};
     writeFileSync(path.join(directory,'tree.jpg'),raw);writeFileSync(path.join(directory,'tree.png'),raw);
-    writeFileSync(path.join(directory,'tree.jpg.report.json'),JSON.stringify({model:'flux-2-klein-4b',steps:4,prompt:cloudflareObjectPrompt('Tree','cutout',visual.generation.prompt),width:1024,height:1024,actualNeurons:104.2,elapsedSeconds:1}));
+    writeFileSync(path.join(directory,'tree.jpg.report.json'),JSON.stringify({model:'flux-2-klein-4b',steps:4,prompt:cloudflareObjectPrompt('Tree','cutout',visual.generation.prompt,'front'),width:1024,height:1024,actualNeurons:104.2,elapsedSeconds:1}));
     writeFileSync(path.join(directory,'tree.png.receipt.json'),JSON.stringify({rawHash,method}));
     writeFileSync(path.join(directory,'tree.png.framing-repair.json'),JSON.stringify({rawHash,attempted:true}));
     const request=path.join(directory,'request.json'),manifest=path.join(directory,'asset-manifest.json');

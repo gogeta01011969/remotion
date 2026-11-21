@@ -31,7 +31,7 @@ test('two through fifteen subjects compile at all output frame rates with settle
     const data=dataset(count,extreme),episode=defaultSizeEpisode(data),brief=compileSizeComparison(data,episode);
     for(const fps of [24,30,60]){
       const input=prepareSilentInput(brief,fps),frames=input.scenes.reduce((sum,s)=>sum+s.durationInFrames,0);
-      assert.ok(frames<=60*fps);assert.equal(input.scenes.length,count);
+      assert.ok(frames<=90*fps);assert.equal(input.scenes.length,count);
     }
     for(let i=0;i<count;i++){
       const t=comparisonObjectTiming(data,i);assert.ok(t.readingSeconds>=2&&t.readingSeconds<=3);

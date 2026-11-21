@@ -150,7 +150,7 @@ test('completed legacy datasets resume without being reinterpreted by the new co
     writeFileSync(path.join(root,'request.json'),JSON.stringify({id:options.id,topic:options.topic}));
     writeFileSync(path.join(root,'dataset.raw.json'),JSON.stringify(data));
     const deps={client:{chat:async()=>{throw new Error('No model call should be made');}}};
-    assert.deepEqual(await generateComparisonData(options,deps),data);
+    const resumed=await generateComparisonData(options,deps);assert.deepEqual(resumed.items,data.items);assert.equal(resumed.presentationVersion,2);
     await assert.rejects(()=>planComparisonIdeas(options,deps),/new ID/);
   }finally{rmSync(root,{recursive:true,force:true});}
 });

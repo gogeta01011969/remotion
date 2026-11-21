@@ -1,3 +1,4 @@
+import {quantityFrameTiming} from '../shorts/comparison-timing';
 import {mkdirSync, rmSync, writeFileSync} from 'node:fs';
 import path from 'node:path';
 import {type Brief, shortDuration} from '../shorts/schema';
@@ -13,7 +14,8 @@ export async function buildSilent(brief:Brief,root:string,prepareOnly:boolean) {
   writeFileSync(path.join(assetDir,'video.json'),JSON.stringify(input,null,2)+'\n');
   writeFileSync(path.join(outputDir,'motion-report.json'),JSON.stringify(motionReport(input),null,2)+'\n');
   let from=0;
-  const timing=input.scenes.map(scene=>{const item={title:scene.title,from,duration:scene.durationInFrames/input.fps,presentation:'silent',notes:scene.captions};from+=item.duration;return item;});
+  const quantity=input.actors.find(a=>a.kind==='size-comparison'&&a.quantityTiming);
+  const timing=input.scenes.map((scene,index)=>{const item={title:scene.title,from,duration:scene.durationInFrames/input.fps,presentation:'silent',notes:scene.captions,...(quantity?.kind==='size-comparison'&&quantity.quantityTiming?quantityFrameTiming(quantity.quantityTiming[index].growthSeconds,input.fps,index===input.scenes.length-1):{})};from+=item.duration;return item;});
   writeFileSync(path.join(outputDir,'timing-report.json'),JSON.stringify(timing,null,2)+'\n');
   const srtTime=(frames:number)=>{const ms=Math.round(frames/input.fps*1000);return `${String(Math.floor(ms/3600000)).padStart(2,'0')}:${String(Math.floor(ms/60000)%60).padStart(2,'0')}:${String(Math.floor(ms/1000)%60).padStart(2,'0')},${String(ms%1000).padStart(3,'0')}`;};
   let offset=0,index=0;const subtitles:string[]=[];

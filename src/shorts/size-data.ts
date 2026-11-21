@@ -14,6 +14,7 @@ export const sizeItemSchema = z.object({
   material: z.enum(['plain', 'craters', 'ocean', 'bands', 'glow', 'felt', 'seam', 'panels', 'golf', 'baseball', 'basketball']).default('plain'),
   appearance: z.enum(['earth', 'moon', 'jupiter', 'neptune', 'sun', 'mercury', 'mars', 'venus']).optional(),
   visual: comparisonVisualSchema.optional(),
+  conditionLabel:z.string().trim().min(1).max(40).optional(),
   country: z.string().trim().min(1).max(56).optional(),
   sourceIds: z.array(slug).min(1),
   approximate: z.boolean().default(false),
@@ -24,6 +25,7 @@ export const sizeItemSchema = z.object({
   if (item.range && !(item.range.min <= item.value && item.value <= item.range.max)) ctx.addIssue({code: 'custom', message: 'Representative measurement must lie inside its range.'});
 });
 export const sizeDatasetSchema = z.object({
+  presentationVersion:z.number().int().positive().optional(),
   template: z.literal('size-comparison'), id: slug, title: z.string().min(5).max(100),
   subject: z.enum(comparisonSubjects).default('generic'),
   metric: z.enum(comparisonMetrics),

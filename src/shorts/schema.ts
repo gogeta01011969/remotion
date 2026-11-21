@@ -1,5 +1,6 @@
 import {comparisonLimits} from './comparison-limits';
 import {z} from 'zod';
+import {isQuantityMetric} from './measurements';
 import {comparisonStructureSchema, structureDuration} from './structure';
 import {deliverySchema, captionModeSchema} from './delivery';
 import {languageSchema} from './locale';
@@ -18,7 +19,7 @@ export const stateSchema = z.object({
 }).strict();
 const common = {id: z.string().regex(/^[a-z][a-z0-9-]*$/).max(40), state: stateSchema};
 export const actorSchema = z.discriminatedUnion('kind', [
-  z.object({...common, kind: z.literal('size-comparison'), data: sizeDatasetSchema, headings: z.array(z.string().min(1).max(80)).min(comparisonLimits.minimum).max(comparisonLimits.maximum+1), shots: z.array(sizeShotSchema).min(comparisonLimits.minimum).max(comparisonLimits.maximum+1).optional()}).strict(),
+  z.object({...common, kind: z.literal('size-comparison'), data: sizeDatasetSchema, quantityTiming: z.array(z.object({growthSeconds:z.number().min(1).max(3)}).strict()).min(2).max(15).optional(), headings: z.array(z.string().min(1).max(80)).min(comparisonLimits.minimum).max(comparisonLimits.maximum+1), shots: z.array(sizeShotSchema).min(comparisonLimits.minimum).max(comparisonLimits.maximum+1).optional()}).strict(),
   z.object({...common, kind: z.literal('sacred-symbol'), symbol: z.literal('om'), reference: z.string().min(1).max(60), associations: z.array(z.object({sound: z.enum(['A', 'U', 'M']), cue: z.number().int().min(0).max(4), meaning: z.string().min(1).max(25)}).strict()).length(3), steps: z.array(z.object({mode: z.enum(['reveal', 'resonate', 'states', 'silence', 'reflect']), heading: z.string().min(1).max(45)}).strict()).min(4).max(6)}).strict(),
   z.object({...common, kind: z.literal('symbolic-story'), symbol: z.enum(['moon', 'flame', 'lotus']), guardian: z.enum(['shiva', 'sanctuary', 'none']), steps: z.array(z.object({action: z.enum(['reveal', 'diminish', 'approach', 'protect', 'renew']), heading: z.string().min(1).max(45), cue: z.number().int().min(0).max(2)}).strict()).min(4).max(6)}).strict().describe('Continuous illustrated sacred story. phase progresses from zero to steps.length. Deity art is stylized and symbolic.'),
   z.object({...common, kind: z.literal('comparison'), mode: z.enum(['fall', 'launch', 'force']), metric: z.enum(['height', 'time']).default('height'), gravityRatio: z.number().min(0.15).max(3), referenceLabel: z.string().min(1).max(20), changedLabel: z.string().min(1).max(20), heading: z.string().min(1).max(50), takeaway: z.string().max(70)}).strict().describe('Two-body mechanics comparison. phase is normalized experiment progress 0–1; trajectories and layout are calculated by the renderer.'),
@@ -52,6 +53,8 @@ const shared = {presentation: presentationSchema.default('narrated'), captionMod
 function checkStory(input: {structure?:z.infer<typeof comparisonStructureSchema>;actors: Actor[]; scenes: {motion: z.infer<typeof motionSchema>[]; cues?: string[]; spokenCues?: string[]; delivery?: {rates?: number[]; pausesAfterMs: number[]}; captions?: {from: number; duration: number}[]}[]}, ctx: z.RefinementCtx) {
   if(input.scenes.length>8&&!input.actors.some(a=>a.kind==='size-comparison'))ctx.addIssue({code:'custom',message:'Only comparison videos support more than eight scenes.'});
   if(input.structure&&structureDuration(input.structure)<30&&!input.actors.every(a=>a.kind==='size-comparison'))ctx.addIssue({code:'custom',message:'Only comparison videos may use timed structures shorter than 30 seconds.'});
+  if(input.structure&&structureDuration(input.structure)>60&&!input.actors.every(a=>a.kind==='size-comparison'&&isQuantityMetric(a.data.metric)))ctx.addIssue({code:'custom',message:'Only quantity comparisons may extend to 90 seconds.'});
+  for(const a of input.actors)if(a.kind==='size-comparison'&&a.quantityTiming&&a.quantityTiming.length!==a.data.items.length)ctx.addIssue({code:'custom',message:'Quantity timing must cover all objects.'});
   const ids = input.actors.map(a => a.id);
   if (new Set(ids).size !== ids.length || ids.includes('camera')) ctx.addIssue({code: 'custom', path: ['actors'], message: 'Actor IDs must be unique. camera is reserved.'});
   const neutral = stateSchema.parse({});
@@ -135,8 +138,8 @@ export const shortSchema = z.object({
   if (input.presentation === 'narrated' && input.scenes.some(scene => !scene.captions.length)) ctx.addIssue({code:'custom',message:'Narrated scenes need captions.'});
   const total = input.scenes.reduce((sum, s) => sum + s.durationInFrames, 0);
   if (input.structure) {
-    if (input.scenes.length !== input.structure.beats.length || total !== structureDuration(input.structure) * input.fps) ctx.addIssue({code: 'custom', message: 'Video must exactly match its timed structure.'});
-    input.scenes.forEach((scene, i) => {if (scene.durationInFrames !== (input.structure?.beats[i]?.durationSeconds ?? 0) * input.fps) ctx.addIssue({code: 'custom', message: `Scene ${i + 1} must fit its fixed beat duration.`});});
+    if (input.scenes.length !== input.structure.beats.length || Math.abs(total-structureDuration(input.structure) * input.fps)>1e-6) ctx.addIssue({code: 'custom', message: 'Video must exactly match its timed structure.'});
+    input.scenes.forEach((scene, i) => {if (Math.abs(scene.durationInFrames-(input.structure?.beats[i]?.durationSeconds ?? 0) * input.fps)>1e-6) ctx.addIssue({code: 'custom', message: `Scene ${i + 1} must fit its fixed beat duration.`});});
   } else if (total < input.fps * 30 || total > input.fps * 45) ctx.addIssue({code: 'custom', message: 'Shorts must be 30–45 seconds.'});
   input.scenes.forEach((s, i) => {
     let previousEnd = 0;

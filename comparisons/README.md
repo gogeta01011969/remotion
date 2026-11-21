@@ -1,6 +1,6 @@
 # Size-comparison pipeline
 
-Every run can define new objects. The renderer does not require a hardcoded statue, animal, vehicle or country catalog. Existing ball materials and planet maps remain optional reusable visuals. All subjects share the silent smallest-to-largest presentation: names, measurements, named ratios, contextual backgrounds and deterministic camera motion. Default duration follows object count and scale-dependent arrivals, with 2–3 settled seconds per subject and a four-second final overview, within 60 seconds.
+Every run can define new objects. The renderer does not require a hardcoded statue, animal, vehicle or country catalog. Existing ball materials and planet maps remain optional reusable visuals. All subjects share the silent smallest-to-largest presentation: names, measurements, named ratios, contextual backgrounds and deterministic camera motion. Default duration follows object count and scale-dependent arrivals, with 2–3 settled seconds per subject and a four-second final overview. Physical-size videos stay within 60 seconds; quantity charts may extend to 90 seconds.
 
 ## Run from a topic
 
@@ -238,8 +238,7 @@ bars remain visible and the last subject gets its own detail beat before the ful
 labelled overview. Bar height represents the measurement. Colored names below the bars identify
 subjects alongside consistent-size cutout thumbnails, without repeated focus
 headings or an overview heading.
-Each value appears once at its bar endpoint, and axis units appear once. A shared linear axis reframes as larger values
-arrive, applying the same scale to every visible bar. Tick labels show that scale.
+Each value appears once at its bar endpoint, and axis units appear once. One fixed linear axis covers the final dataset, applying the same scale throughout every reveal. Tick labels show that scale.
 Temperature bars extend above/below zero and never use ratios.
 
 Quantity charts plan real subject cutouts through the same cached Cloudflare
@@ -271,8 +270,7 @@ arrive quickly, while larger scale jumps get more travel time. Integer scene
 budgets retain a settled hold within the requested range. The final overview has
 its own four seconds, after the last subject's full detail window. Total duration
 is the sum of those timings, not a fixed count-to-duration table. Timed silent
-comparisons support 10–60 seconds; other video contracts retain their existing
-limits. Authored episode durations remain explicit overrides.
+physical-size comparisons support 10–60 seconds. Quantity comparisons use proportional growth with a one-second minimum, a 2.5-second settled hold, and up to 90 seconds total. Other video contracts retain their existing limits.
 
 Display names are separate from research identity. Simple animal qualifiers
 such as domestic/house are shortened when unambiguous; species/model distinctions
@@ -294,11 +292,11 @@ evidence is limited. Never pad the comparison or invent an eighth measurement. R
 most six source excerpts, and image briefs in batches of five subjects. Validated
 batches are cached so an interrupted later batch does not repeat earlier calls.
 
-Charts with more than eight visible bars alternate two rows of subject images
+Charts with more than eight visible bars, or names that need wider columns, alternate two rows of subject images
 and names, using subtle leaders for the second row. Units and values stay on the
 chart. Physical comparisons retain their true-scale lineup and smallest/largest
 endpoint summary. Pacing reserves 2–3 settled seconds per object plus a four-second
-overview; if necessary, only arrival travel is shortened to stay within 60 seconds.
+overview. Physical-size travel may be shortened to stay within 60 seconds; quantity charts preserve their growth schedule up to 90 seconds.
 
 The offline `compare:examples` runner continues testing the eight-object target. Historical examples with fewer than eight objects are expanded in
 `out/comparison-examples/` into explicitly synthetic eight-object geometry
@@ -349,3 +347,14 @@ unavailability and unsafe/ambiguous YouTube uploads. These cannot be solved by
 quietly presenting a different measurement or claiming a successful delivery.
 
 Cutout edge contact is an advisory framing signal, not an automatic rejection. The Cloudflare provider can try one wider-margin generation per affected cached image, capped at two extra generations per invocation. It keeps the original usable cutout if repair fails or does not reduce edge contact, persists retry receipts to avoid repeat spending on resume, and writes warnings to `quality-warnings.json`. Empty, undecodable or non-transparent cutouts still fail asset inspection. Bounds checks cannot prove that generated objects are complete or accurate; no padding is added to disguise clipping.
+
+
+## Presentation policy and quantity pacing
+
+The policy in `src/pipeline/comparison-policy.ts` distinguishes recommendations from hard requirements. Targeting 8–15 objects, familiar anchors, surprising pairs, contextual backgrounds, sourced countries and videos under 60 seconds are recommendations. Local code repairs or omits optional presentation metadata and logs `quality-warnings.json`. Unsupported individual selections are omitted; at least two verified compatible objects must remain. Unsafe/unusable assets, invalid dimensions, misleading scales and invalid media remain hard failures after recovery.
+
+Presentation version 2 finalizes headlines from supported object pairs rather than trusting provisional free-form claims. Descriptions and background explanations refer to the surviving selection. Different documented speed conditions are allowed with concise context; detailed source qualifiers remain in the description. Non-count dates are omitted unless a dated ranking was verified. A successful framing check cannot certify image likeness.
+
+Quantity charts use a fixed final linear axis. Each bar grows linearly for `max(1, 3 × abs(value) / maxAbsValue)` seconds, holds for 2.5 seconds, and remains visible as later bars arrive. Names/images fade in over the first 0.2 seconds. The last settled hold is followed by a four-second overview. Zero values retain a visible label/thumbnail; negative bars grow downward. Timing is compiled once and rounded to the output frame rate, with growth/hold/overview frame counts in `timing-report.json`. Quantity duration follows the schedule up to 90 seconds; physical-size comparisons retain their 60-second maximum and existing scale-sensitive travel.
+
+Image plans describe identity and appearance; trusted code supplies cutout or sphere format, framing and annotation rules. Conflicting legacy cutout briefs receive a neutral identity-preserving fallback without extra LLM calls. Cache fingerprints include the appearance-planning version; only changed effective asset prompts regenerate. Saved datasets are re-finalized when resumed; already delivered videos are not rewritten.

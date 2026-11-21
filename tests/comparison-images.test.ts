@@ -20,7 +20,7 @@ test('plain ball plans receive one generated texture per object, preserve measur
     assert.equal(assetRequests(result).objects.length,4);
     for(const item of result.items){assert.equal(item.visual?.kind,'sphere');assert.ok(item.visual?.generation?.prompt.includes(item.label));assert.equal(item.appearance,undefined);}
     const resumed=await ensureComparisonImages(result,{directory:root,model:'test',log:()=>{},client:{chat:async()=>{throw new Error('Do not repeat image planning');}}});
-    assert.equal(resumed,result);
+    assert.deepEqual(resumed,result);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
 test('generated-object schema requires an image while detailed briefs may be deferred',()=>{

@@ -1,4 +1,5 @@
 import {comparisonLimits} from './comparison-limits';
+import {isQuantityMetric} from './measurements';
 import type {SizeDataset} from './size-data';
 
 export const comparisonPacing={minimumReadingSeconds:2,maximumReadingSeconds:3,overviewSeconds:4,overviewTransitionSeconds:1} as const;
@@ -22,6 +23,11 @@ function rawObjectTiming(data:Pick<SizeDataset,'metric'|'items'>,index:number){
 // Reserve reading and overview time first. Trim the largest travel budgets
 // only when needed, preserving scale-sensitive arrivals and all settled holds.
 export function comparisonObjectTiming(data:Pick<SizeDataset,'metric'|'items'>,index:number){
+  if(isQuantityMetric(data.metric)){
+    const maximum=Math.max(...data.items.map(item=>Math.abs(item.value)));
+    const transitionSeconds=Math.max(1,maximum?3*Math.abs(data.items[index].value)/maximum:1);
+    return {transitionSeconds,readingSeconds:2.5,detailSeconds:transitionSeconds+2.5};
+  }
   const raw=data.items.map((_,i)=>rawObjectTiming(data,i));
   const budgets=raw.map(t=>Math.ceil(t.transitionSeconds));
   const travelBudget=comparisonLimits.maximumSeconds-comparisonPacing.overviewSeconds-data.items.length*comparisonPacing.minimumReadingSeconds;
@@ -42,4 +48,10 @@ export function comparisonSceneTiming(seconds:number,transitionSeconds:number,la
   const detailSeconds=seconds-overviewSeconds;
   const arrivalSeconds=Math.min(transitionSeconds,Math.max(.25,detailSeconds-comparisonPacing.minimumReadingSeconds));
   return {arrivalSeconds,detailSeconds,detailArrival:arrivalSeconds/seconds,zoomStart:detailSeconds/seconds,zoomEnd:(detailSeconds+Math.min(comparisonPacing.overviewTransitionSeconds,overviewSeconds*.5))/seconds};
+}
+
+// Frozen in the compiled actor and rounded once to the output frame rate.
+export function quantityFrameTiming(growthSeconds:number,fps:number,last:boolean){
+  const growthFrames=Math.max(fps,Math.round(growthSeconds*fps)),holdFrames=Math.round(2.5*fps),overviewFrames=last?4*fps:0;
+  return {growthFrames,holdFrames,overviewFrames,durationInFrames:growthFrames+holdFrames+overviewFrames};
 }

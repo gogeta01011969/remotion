@@ -23,11 +23,11 @@ test('all new measurements compile through the count-based silent pipeline witho
     assert.ok(plan.scaling.objects.every(o=>o.width===1&&o.height===1));
     assert.deepEqual(plan.shots.slice(0,-1).map(s=>s.visible),data.items.map((_,i)=>data.items.slice(0,i+1).map((_,j)=>j)));
     assert.equal(plan.shots.at(-1)!.visible.length,data.items.length);
-    assert.equal(input.presentation,'silent');assert.equal(shortDuration(input),defaultSizeEpisode(data).scenes.reduce((sum,s)=>sum+s.durationSeconds,0)*input.fps);
+    assert.equal(input.presentation,'silent');assert.ok(Math.abs(shortDuration(input)-defaultSizeEpisode(data).scenes.reduce((sum,s)=>sum+s.durationSeconds,0)*input.fps)<=data.items.length);
     assert.ok(automationConfigSchema.parse({niche:'Comparison test fixture',allowedMetrics:[metric],assetProvider:'unused'}));
   }
 });
-test('vertical bars reveal one subject at a time and keep previous values while reframing',()=>{
+test('vertical bars reveal one subject at a time and keep previous values on a fixed axis',()=>{
   const values=[1,2,4,8];
   const first=sampleQuantityBars(values,'mass',0,60,30);
   assert.deepEqual(first.bars.map(b=>b.visible),[true,false,false,false]);
@@ -36,7 +36,7 @@ test('vertical bars reveal one subject at a time and keep previous values while 
   const second=sampleQuantityBars(values,'mass',1,60,30);
   assert.equal(second.bars[0].value,1);assert.equal(second.bars[1].value,2);
   assert.equal(second.bars[1].height/second.bars[0].height,2);
-  assert.equal(second.domain.max,2);assert.equal(second.zeroY,second.chart.top+second.chart.height);
+  assert.equal(second.domain.max,8);assert.equal(second.zeroY,second.chart.top+second.chart.height);
   const final=sampleQuantityBars(values,'mass',3,60,30,true);
   assert.ok(final.bars.every(b=>b.visible&&b.opacity===1));assert.deepEqual(final.bars.map(b=>b.value),values);
   assert.equal(final.bars[3].height/final.bars[0].height,8);
@@ -126,7 +126,7 @@ test('all eight-to-fifteen subject counts compile and legacy renderer bounds are
   for(let count=2;count<=15;count++){
     const data=quantityFixture('mass','kg',Array.from({length:count},(_,i)=>i+1));
     const input=previewInput(compileSizeComparison(data,defaultSizeEpisode(data)));
-    assert.equal(input.scenes.length,count);assert.equal(shortDuration(input),defaultSizeEpisode(data).scenes.reduce((sum,s)=>sum+s.durationSeconds,0)*input.fps);
+    assert.equal(input.scenes.length,count);assert.ok(Math.abs(shortDuration(input)-defaultSizeEpisode(data).scenes.reduce((sum,s)=>sum+s.durationSeconds,0)*input.fps)<=data.items.length);
     assert.equal(planComparisonStory(data).shots.at(-1)!.visible.length,count);
   }
   assert.throws(()=>quantityFixture('mass','kg',[1]));

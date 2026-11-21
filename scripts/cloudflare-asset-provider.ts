@@ -46,7 +46,7 @@ async function main(){
   for(const item of request.objects){
     const visual=item.visual;if(visual.kind==='box')continue;
     const brief=visual.generation?.prompt;if(!brief)throw new Error(`${item.label}: asset creation requires a generation prompt.`);
-    const prompt=cloudflareObjectPrompt(item.label,visual.kind,brief);
+    const prompt=cloudflareObjectPrompt(item.label,visual.kind,brief,visual.kind==='cutout'?visual.view:undefined);
     const width=1024,height=visual.kind==='sphere'?512:1024;
     const raw=path.join(dir,`${item.id}.jpg`),receipt=raw+'.report.json',target=path.join(dir,`${item.id}.png`);
     const previous=existsSync(raw)&&existsSync(receipt)?JSON.parse(readFileSync(receipt,'utf8')):null;
@@ -98,7 +98,7 @@ async function main(){
         let retryNeurons:number|null=0;
         try{
           console.log(`Retrying ${item.label} framing with a wider empty margin`);
-          const basePrompt=cloudflareObjectPrompt(item.label,'cutout',visual.generation!.prompt);
+          const basePrompt=cloudflareObjectPrompt(item.label,'cutout',visual.generation!.prompt,visual.view);
           const prompt=framingRepairPrompt(basePrompt);
           const result=await generateCloudflareImage({model,prompt,steps,width:1024,height:1024},config,fetch,{onRetry:console.log});
           newNeurons+=result.neurons??0;retryNeurons=result.neurons;

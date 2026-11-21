@@ -124,7 +124,7 @@ Mass, counts, speed, duration, energy, power and temperature are enabled.
 Sequential vertical bars encode values with colored names below the chart and
 real subject thumbnails and no duplicate focus headings. Quantity charts plan
 identification cutouts through the existing cached image provider. Each subject enters individually, earlier bars remain, and the final
-labelled overview includes all subjects. Shared linear axes reframe consistently;
+labelled overview includes all subjects. Quantity axes stay fixed throughout the full video;
 temperature bars can extend below zero. Counts declare fixed/inventory/population scope; changing counts require
 a date. Units are dimension-checked; temperature uses differences, never ratios. Geographic area still needs reliable
 outline acquisition before automatic selection is enabled. Broadening topics
@@ -195,7 +195,7 @@ concepts/research can consider up to 18 candidates to allow exclusions. Research
 22 page attempts, 48 HTTP requests and 21,600 excerpt characters. Extraction is
 batched by six pages; image planning by five objects, with validated batch caches.
 For dense charts, names/images alternate two rows. Scale-sensitive travel is
-shortened only when necessary to preserve settled focus and remain under 60 seconds.
+shortened only for physical-size videos when necessary to remain under 60 seconds. Quantity charts use proportional growth, a minimum one-second arrival, 2.5-second settled holds and up to 90 seconds total.
 Below-target supported comparisons proceed without padding, invented facts or
 additional research solely to reach eight. The 12-request/65,000-token invocation budget remains unchanged.
 
@@ -384,3 +384,5 @@ accuracy or editorial quality. Review initial hosted outputs before scheduling.
 Foreground extraction uses [rembg](https://github.com/danielgatis/rembg) with
 [`isnet-general-use` from DIS](https://github.com/xuebinqin/DIS), explicitly avoiding
 rembg's changing default model. See the upstream repositories for model licenses.
+
+Presentation finalization runs on fresh and resumed comparisons before image preparation. Recommendations are advisory; final headlines use evidence-bound hooks and quantity videos can extend to 90 seconds. Optional corrections are recorded in `quality-warnings.json`; numeric, asset-safety and valid-media requirements remain enforced. No additional AI review stage is introduced.

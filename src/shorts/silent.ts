@@ -1,9 +1,14 @@
 import {shortSchema, type Brief, type ShortInput} from './schema';
+import {quantityFrameTiming} from './comparison-timing';
 import {readingFrames} from './presentation';
 
 // Visual time is explicit and independent of any voice or speech service.
 export function prepareSilentInput(brief: Brief, fps = 30): ShortInput {
-  const budgets = brief.structure
+  const quantity=brief.actors.find(a=>a.kind==='size-comparison'&&a.quantityTiming);
+  const schedule=quantity?.kind==='size-comparison'?quantity.quantityTiming:undefined;
+  const budgets = schedule
+    ? schedule.map((t,i)=>quantityFrameTiming(t.growthSeconds,fps,i===schedule.length-1).durationInFrames)
+    : brief.structure
     ? brief.structure.beats.map(beat => beat.durationSeconds * fps)
     : brief.scenes.map(scene => Math.max(5 * fps, Math.round(1.8 * fps) + scene.cues.reduce((sum,text) => sum + readingFrames(text,fps),0)));
   const total = budgets.reduce((a,b)=>a+b,0);
@@ -12,7 +17,7 @@ export function prepareSilentInput(brief: Brief, fps = 30): ShortInput {
     budgets.forEach((_,i)=>{budgets[i] += Math.floor(extra/budgets.length)+(i<extra%budgets.length?1:0);});
   }
   return shortSchema.parse({
-    presentation:'silent', captionMode:'sentence', language:brief.language, structure:brief.structure, genre:brief.genre,
+    presentation:'silent', captionMode:'sentence', language:brief.language, structure:brief.structure?{...brief.structure,beats:brief.structure.beats.map((beat,i)=>({...beat,durationSeconds:budgets[i]/fps}))}:undefined, genre:brief.genre,
     schemaVersion:2, topic:brief.topic, seed:brief.seed, accent:brief.accent, actors:brief.actors, fps,
     scenes:brief.scenes.map((scene,index)=>{
       const durationInFrames=budgets[index], gap=Math.round(.25*fps);

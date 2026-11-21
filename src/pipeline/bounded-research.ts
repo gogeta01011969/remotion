@@ -232,7 +232,7 @@ export function verifiedMeasurements(directory:string):VerifiedMeasurement[]{
   return record.measurements.map(f=>({...f,evidenceId:`fact-${hash(JSON.stringify([f.candidate,f.sourceId,f.quote,f.value,f.unit])).slice(0,12)}`}));
 }
 const identity=(value:string)=>value.normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().replace(/[^a-z0-9]/g,'');
-export function bindVerifiedMeasurements(raw:unknown,facts:VerifiedMeasurement[]){
+export function bindVerifiedMeasurements(raw:unknown,facts:VerifiedMeasurement[],options:{skipInvalid?:boolean;warn?:(message:string)=>void}={}){
   if(!facts.length||!raw||typeof raw!=='object'||Array.isArray(raw))return raw;
   const data={...raw} as Record<string,unknown>;if(!Array.isArray(data.items))return raw;
   const used=new Set<string>(),errors:string[]=[];
@@ -240,13 +240,17 @@ export function bindVerifiedMeasurements(raw:unknown,facts:VerifiedMeasurement[]
     if(!item||typeof item!=='object'||Array.isArray(item))return item;
     const matches='evidenceId' in item?facts.filter(f=>f.evidenceId===item.evidenceId):facts.filter(f=>[item.id,item.label].some(name=>typeof name==='string'&&identity(name)===identity(f.candidate)));
     const fact=matches.length===1?matches[0]:undefined;
-    if(!fact){errors.push(`${item.label??item.id}: no verified measurement. Select only from verifiedMeasurements; omit unsupported candidates and update editorial roles/omissions.`);return item;}
-    if(used.has(fact.evidenceId)){errors.push(`Repeated verified candidate: ${fact.candidate}.`);return item;}used.add(fact.evidenceId);
-    if(typeof item.label!=='string'||!identity(item.label)||!identity(fact.candidate).includes(identity(item.label))){errors.push(`Label ${item.label} does not identify the selected verified candidate ${fact.candidate}.`);return item;}
-    if(data.unit!==fact.unit){errors.push(`${fact.candidate}: retain the verified unit ${fact.unit}, not ${data.unit}.`);return item;}
+    if(!fact){errors.push(`${item.label??item.id}: no verified measurement. Select only from verifiedMeasurements; omit unsupported candidates and update editorial roles/omissions.`);return options.skipInvalid?null:item;}
+    if(used.has(fact.evidenceId)){errors.push(`Repeated verified candidate: ${fact.candidate}.`);return options.skipInvalid?null:item;}used.add(fact.evidenceId);
+    if(typeof item.label!=='string'||!identity(item.label)||!identity(fact.candidate).includes(identity(item.label))){errors.push(`Label ${item.label} does not identify the selected verified candidate ${fact.candidate}.`);return options.skipInvalid?null:item;}
+    if(data.unit!==fact.unit){errors.push(`${fact.candidate}: retain the verified unit ${fact.unit}, not ${data.unit}.`);return options.skipInvalid?null:item;}
     const {evidenceId,range,...presentation}=item;
     return {...presentation,value:fact.value,sourceIds:[fact.sourceId],note:fact.qualifier,approximate:Boolean(item.approximate||range||/\b(about|approximate|approximately|estimated?|range)\b/i.test(fact.quote+' '+fact.qualifier))};
   });
-  if(errors.length)throw new Error(errors.join('\n'));
+  if(errors.length){
+    if(!options.skipInvalid)throw new Error(errors.join('\n'));
+    data.items=Array.isArray(data.items)?data.items.filter(Boolean):[];
+    for(const message of errors)options.warn?.(`Omitted unsupported dataset selection: ${message}`);
+  }
   return data;
 }

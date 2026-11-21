@@ -6,22 +6,28 @@ import {ComparisonObject} from './ComparisonObject';
 import {fitText,fitLabelText,useTextMetrics} from './text-metrics';
 import {comparisonDisplayNames,comparisonMeasurementLabel} from './comparison-copy';
 import {quantityTemplate} from './measurements';
-import {comparisonObjectTiming,comparisonSceneTiming} from './comparison-timing';
+import {comparisonObjectTiming,comparisonSceneTiming,quantityFrameTiming} from './comparison-timing';
+import {chartNameLayout,denseQuantityLabels,labelColor} from './quantity-labels';
 import {sampleQuantityBars,quantityLabelLayout} from './quantity-bars';
 import type {SizeTextTiming} from './size-text-motion';
 const compact=(n:number)=>Math.abs(n)>=1e15?`${formatSize(n/1e15)}Q`:Math.abs(n)>=1e12?`${formatSize(n/1e12)}T`:Math.abs(n)>=1e9?`${formatSize(n/1e9)}B`:Math.abs(n)>=1e6?`${formatSize(n/1e6)}M`:Math.abs(n)>=1e3?`${formatSize(n/1e3)}K`:formatSize(n);
 
 export const QuantityComparison=({actor,state,textTiming}:{actor:Extract<Actor,{kind:'size-comparison'}>;state:ActorState;textTiming?:SizeTextTiming})=>{
   const frame=useCurrentFrame(),{fps}=useVideoConfig(),{data}=actor;
-  const active=Math.max(0,Math.min(data.items.length-1,Math.round(state.value))),overview=state.shot>=data.items.length;
+  const active=Math.max(0,Math.min(data.items.length-1,Math.round(state.value)));
+  const frozen=actor.quantityTiming?.[active];
+  const frames=frozen?quantityFrameTiming(frozen.growthSeconds,fps,active===data.items.length-1):undefined;
+  const localFrame=textTiming?.localFrame??frame;
+  const overview=frames?frames.overviewFrames>0&&localFrame>=frames.growthFrames+frames.holdFrames:state.shot>=data.items.length;
   const objectTiming=comparisonObjectTiming(data,active);
   const timing=comparisonSceneTiming((textTiming?.durationInFrames??fps*objectTiming.detailSeconds)/fps,objectTiming.transitionSeconds,active===data.items.length-1&&!overview);
-  const sample=sampleQuantityBars(data.items.map(i=>i.value),data.metric,active,textTiming?.localFrame??frame,fps,overview,timing.arrivalSeconds);
+  const sample=sampleQuantityBars(data.items.map(i=>i.value),data.metric,active,textTiming?.localFrame??frame,fps,overview,frames?frames.growthFrames/fps:timing.arrivalSeconds);
   const names=useMemo(()=>comparisonDisplayNames(data),[data.items,data.subject]),measure=useTextMetrics('Arial, Helvetica, sans-serif');
   const count=overview?data.items.length:active+1;
-  const nameSizes=useMemo(()=>names.map((name,i)=>{const label=quantityLabelLayout(count,i,0);return fitLabelText(name,label.fontSize,label.width,66,650,measure);}),[names,count,measure]);
+  const dense=useMemo(()=>denseQuantityLabels(names,count,measure),[names,count,measure]);
+  const nameLayouts=useMemo(()=>names.map((name,i)=>{const label=quantityLabelLayout(count,i,0,undefined,dense);return chartNameLayout(name,label.width,label.fontSize,measure);}),[names,count,measure,dense]);
   const valueText=(value:number)=>compact(data.metric==='count'?Math.round(value):value);
-  return <div data-quantity-template={quantityTemplate(data.metric)} style={{width:900,height:data.items.length>8?1190:1000,position:'relative',color:'#F3F7FA'}}>
+  return <div data-quantity-template={quantityTemplate(data.metric)} style={{width:900,height:1190,position:'relative',color:'#F3F7FA'}}>
     <div style={{fontSize:Math.min(40,Math.max(28,1400/data.title.length)),fontWeight:750,lineHeight:1.14,maxWidth:860}}>{data.title}</div>
     <div style={{position:'absolute',top:175,left:sample.chart.left,fontSize:20,color:'#A9C1CF'}}>{comparisonMeasurementLabel(data)}</div>
     {[0,.25,.5,.75,1].map(t=>{
@@ -33,7 +39,7 @@ export const QuantityComparison=({actor,state,textTiming}:{actor:Extract<Actor,{
       const bar=sample.bars[i];if(!bar.visible)return null;
       const visual=item.visual,aspect=visual?.kind==='cutout'&&visual.calibration?visual.calibration.bounds.width/visual.calibration.bounds.height:1;
       const slot=sample.chart.width/(overview?data.items.length:active+1);
-      const label=quantityLabelLayout(overview?data.items.length:active+1,i,bar.x,sample.chart);
+      const label=quantityLabelLayout(overview?data.items.length:active+1,i,bar.x,sample.chart,dense);
       const statistic=`${item.approximate?'≈ ':''}${valueText(bar.value)}`;
       const statisticSize=label.dense?fitText(statistic,25,slot*.9,700,measure):Math.min(25,slot*.23);
       const size=label.size,width=aspect>=1?size:size*aspect,height=aspect>=1?size/aspect:size;
@@ -42,7 +48,8 @@ export const QuantityComparison=({actor,state,textTiming}:{actor:Extract<Actor,{
         <div style={{position:'absolute',left:bar.x-slot/2,top:item.value<0?bar.endY+12:bar.endY-32,width:slot,textAlign:'center',fontSize:statisticSize,fontWeight:700,fontVariantNumeric:'tabular-nums'}}>{statistic}</div>
         {label.dense&&label.row===1?<div style={{position:'absolute',left:bar.x,top:sample.chart.top+sample.chart.height+10,width:1,height:label.imageTop-sample.chart.top-sample.chart.height-20,background:`${item.color}35`}}/>:null}
         {visual&&visual.kind!=='box'?<svg data-chart-subject={item.id} style={{position:'absolute',left:bar.x-size/2,top:label.imageTop,overflow:'visible'}} width={size} height={size} viewBox={`${-size/2} ${-size/2} ${size} ${size}`}><ComparisonObject item={item} width={width} height={height} turn={frame/fps*.045}/></svg>:null}
-        <div style={{position:'absolute',left:bar.x-label.width/2,top:label.nameTop,width:label.width,textAlign:'center',fontSize:nameSizes[i],height:66,fontFamily:'Arial, Helvetica, sans-serif',lineHeight:1.18,fontWeight:650,color:item.color,overflowWrap:'anywhere'}}>{names[i]}</div>
+        <div style={{position:'absolute',left:bar.x-label.width/2,top:label.nameTop,width:label.width,textAlign:'center',fontSize:nameLayouts[i].fontSize,height:66,fontFamily:'Arial, Helvetica, sans-serif',lineHeight:1.18,fontWeight:650,color:labelColor(item.color),whiteSpace:'pre-line',wordBreak:'normal',overflowWrap:'normal'}}>{nameLayouts[i].lines.join('\n')}</div>
+        {item.conditionLabel?<div style={{position:'absolute',left:bar.x-label.width/2,top:label.nameTop+52,width:label.width,textAlign:'center',fontSize:14,lineHeight:1.2,color:'#D8E4ED',height:36}}>{item.conditionLabel}</div>:null}
       </div>;
     })}
 

@@ -35,13 +35,15 @@ export function comparisonGenerationSchema(metric:SizeDataset['metric'],sources:
 export function normalizeComparisonGeneration(raw:unknown,log?:(line:string)=>void){
   if(!raw||typeof raw!=='object'||Array.isArray(raw))return raw;
   const data={...raw} as Record<string,unknown>;
+  // A model cannot mark its own copy as locally finalized.
+  delete data.presentationVersion;
   let e=data.editorial;
   if(data.template!=='size-comparison'){data.template='size-comparison';log?.('Using the supported comparison template.');}
   if(typeof data.title!=='string'||data.title.length<5||data.title.length>100){data.title='Object comparison';log?.('Using a neutral title because the optional title was missing or unusable.');}
   if(data.environment!==undefined&&data.environment!=='auto'&&!(sizeEnvironments as readonly string[]).includes(String(data.environment))){delete data.environment;delete data.backgroundReason;log?.('Inferring a supported local background.');}
   if(Array.isArray(data.items))data.items=data.items.map((raw,i)=>{
     if(!raw||typeof raw!=='object'||Array.isArray(raw))return raw;
-    const item={...raw};
+    const item={...raw};delete item.conditionLabel;
     if(!sizeItemSchema.shape.material.safeParse(item.material).success){delete item.material;log?.(`Using the default material for object ${i+1}.`);}
     if(item.appearance!==undefined&&!sizeItemSchema.shape.appearance.safeParse(item.appearance).success){delete item.appearance;log?.(`The asset planner will provide the real appearance for object ${i+1}.`);}
     if(item.visual&&item.appearance)delete item.appearance;
@@ -92,6 +94,7 @@ export function normalizeComparisonGeneration(raw:unknown,log?:(line:string)=>vo
   if(typeof data.context==='string')data.context=data.context.slice(0,100);
   if(typeof data.title==='string'&&(typeof data.context!=='string'||!data.context.trim()))data.context=data.title.slice(0,100);
   if(Array.isArray(data.items)&&data.items.every(i=>i&&typeof i==='object'&&typeof i.value==='number'&&Number.isFinite(i.value)))data.items=[...data.items].sort((a,b)=>a.value-b.value);
+  if(Array.isArray(data.items)&&data.items.length>comparisonLimits.maximum){data.items=data.items.slice(0,comparisonLimits.maximum-1).concat(data.items.slice(-1));log?.('Selected a supported fifteen-object subset within the template capacity.');}
   if(!e||typeof e!=='object'||Array.isArray(e)){delete data.editorial;log?.('No usable optional editorial plan; using the measured object progression.');return data;}
   let editorial={...e} as Record<string,unknown>;
   if('objectRoles' in e){
