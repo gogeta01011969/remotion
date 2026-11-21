@@ -364,15 +364,25 @@
         "Golden eagle (stoop)",
         "Shinkansen bullet train"
       ],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Sailfish",
+        "Cheetah",
+        "Golden eagle (stoop)",
+        "Shinkansen bullet train",
+        "Eurostar train",
+        "Bugatti Chiron"
+      ],
       "whyInteresting": "The mix of marine, aerial, and land speeds shows that a fish can out‑pace a sports car and a bird can rival a high‑speed train, delivering the “wow” moment when natural athletes unexpectedly sit beside engineered speed records.",
       "family": "speed-comparisons",
       "angle": "unexpected-neighbors",
       "depth": "specialist",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "createdAt": "2026-11-21T07:59:38.538Z",
-      "updatedAt": "2026-11-21T07:59:38.538Z"
+      "updatedAt": "2026-11-21T08:05:07.732Z",
+      "videoSha256": "aad128551c5dda3d1e8d3cf4ffd37ebde294f2709c4acdb42bbea1ba14d20955",
+      "artifactName": "short-short-2026-11-21-10c4c7db9515",
+      "artifactId": "14697814582"
     }
   ],
   "queue": [
