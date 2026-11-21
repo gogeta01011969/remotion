@@ -348,7 +348,71 @@
       "createdAt": "2026-11-21T07:24:33.486Z",
       "updatedAt": "2026-11-21T07:28:14.862Z",
       "error": "Generating Baobab – Adansonia Grandidieri (Grandmother) with flux-2-klein-4b\nGenerating Statue of Liberty (torch height) with flux-2-klein-4b\nGenerating Coast Redwood – Hyperion with flux-2-klein-4b\nGenerating Burj Khalifa with flux-2-klein-4b\nNo usable optional editorial plan; using the measured object progression.\nCoast Redwood – Hyperion: foreground reaches an image edge. Check cropping and revise the generation prompt before retrying.\nAsset provider failed: exit 1\n"
+    },
+    {
+      "id": "short-2026-11-21-10c4c7db9515",
+      "topic": "Speed surprise: animal bursts vs. human‑made racers",
+      "metric": "speed",
+      "scopeKey": "speed-unexpected-neighbors",
+      "entityKeys": [
+        "Sailfish",
+        "Peregrine falcon (diving)",
+        "Cheetah",
+        "Bugatti Chiron",
+        "Eurostar train",
+        "SpaceX Falcon 9 (max velocity)",
+        "Golden eagle (stoop)",
+        "Shinkansen bullet train"
+      ],
+      "actualEntityKeys": [],
+      "whyInteresting": "The mix of marine, aerial, and land speeds shows that a fish can out‑pace a sports car and a bird can rival a high‑speed train, delivering the “wow” moment when natural athletes unexpectedly sit beside engineered speed records.",
+      "family": "speed-comparisons",
+      "angle": "unexpected-neighbors",
+      "depth": "specialist",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-21T07:59:38.538Z",
+      "updatedAt": "2026-11-21T07:59:38.538Z"
     }
   ],
-  "queue": []
+  "queue": [
+    {
+      "topic": "How tall everyday things stack up: from a coffee mug to a skyscraper",
+      "metric": "height",
+      "scopeKey": "everyday-height-familiar-extreme",
+      "entityKeys": [
+        "Coffee mug",
+        "Kitchen sink",
+        "Refrigerator",
+        "Washing machine",
+        "Compact car",
+        "Moving van",
+        "Two‑story house",
+        "Burj Khalifa"
+      ],
+      "whyInteresting": "People instantly picture a mug or a fridge; layering those familiar heights against a house and the world’s tallest tower creates a clear, relatable sense of scale that fits perfectly into a 30‑second visual countdown.",
+      "family": "everyday-objects",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible"
+    },
+    {
+      "topic": "From Mercury to Ceres: the size ladder of solar system worlds",
+      "metric": "diameter",
+      "scopeKey": "worlds-diameter-orders",
+      "entityKeys": [
+        "Mercury",
+        "Ganymede",
+        "Moon",
+        "Titan",
+        "Callisto",
+        "Europa",
+        "Pluto",
+        "Ceres"
+      ],
+      "whyInteresting": "Viewers instantly recognise Earth’s Moon and then travel outward to the biggest moons and dwarf planets, revealing how a handful of familiar worlds span over two orders of magnitude in diameter, a visual that makes the vastness of our solar system feel tangible.",
+      "family": "worlds",
+      "angle": "orders-of-magnitude",
+      "depth": "extreme-scale"
+    }
+  ]
 }
