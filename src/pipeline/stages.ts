@@ -74,6 +74,7 @@ export async function structuredStage<T>(options: {
   }
   // Timed structures use title-specific unions; prefer JSON mode and local validation
   // after repeated constrained-decoder failures across hosted models.
+  let textOutput=false;
   let strictOutput = options.constrained ?? (options.stage === 'script' && !timedStructure && !silent);
   for (let attempt = 1; attempt <= 3; attempt++) {
     options.log(`${label}: request ${attempt}/3 (${options.model})`);
@@ -91,7 +92,7 @@ export async function structuredStage<T>(options: {
       stageLabel:label,
       model: options.model, reasoning_effort: options.model.startsWith('qwen/') ? 'none' : options.reasoningEffort ?? (options.stage === 'script' && !options.model.endsWith('-20b') ? 'medium' : 'low'), temperature: 0.25, max_completion_tokens: options.maxCompletionTokens ?? (options.stage === 'script' ? 2800 : 3500),
       // Prefer constrained output for narration; local validation is authoritative.
-      response_format: strictOutput
+      response_format: textOutput?undefined:strictOutput
         ? {type: 'json_schema', json_schema: {name: 'short_script', strict: true, schema: strictSchema(jsonSchema)}}
         : {type: 'json_object'},
       messages: [
@@ -108,6 +109,11 @@ export async function structuredStage<T>(options: {
         options.log(`${label}: provider rejected constrained JSON; retrying with locally validated JSON mode.`);
         writeJson(path.join(options.directory, `${label}-provider-validation-${attempt}.json`), {error: message});
         strictOutput = false; continue;
+      }
+      if(!strictOutput&&!textOutput&&/HTTP 400:.*Failed to (?:generate|validate) JSON/i.test(message)&&attempt<3){
+        options.log(`${label}: provider rejected JSON mode; retrying without provider formatting, retaining local JSON/schema validation.`);
+        writeJson(path.join(options.directory, `${label}-provider-validation-${attempt}.json`), {error:message});
+        textOutput=true;continue;
       }
       throw failure;
     }

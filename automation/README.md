@@ -386,3 +386,5 @@ Foreground extraction uses [rembg](https://github.com/danielgatis/rembg) with
 rembg's changing default model. See the upstream repositories for model licenses.
 
 Presentation finalization runs on fresh and resumed comparisons before image preparation. Recommendations are advisory; final headlines use evidence-bound hooks and quantity videos can extend to 90 seconds. Optional corrections are recorded in `quality-warnings.json`; numeric, asset-safety and valid-media requirements remain enforced. No additional AI review stage is introduced.
+
+If research yields fewer than two supported objects, one bounded source-repair pass runs before generation fails. Its diagnostic journal is `research-recovery.json`; existing source and provider budgets are unchanged. Generic categories must resolve to documented named examples, and historical construction heights or different-model specifications cannot fill a missing measurement. See [research recovery](../comparisons/README.md#too-little-research-evidence).

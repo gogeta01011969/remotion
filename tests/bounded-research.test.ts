@@ -4,7 +4,7 @@ import {mkdtempSync,readFileSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {boundedComparisonResearch,researchLimits,validateResearchFacts,validateMeasuredDataset,verifiedMeasurements,bindVerifiedMeasurements} from '../src/pipeline/bounded-research';
-import {pageText,blockedPage,publicAddress,publicUrl} from '../src/pipeline/research-web';
+import {pageText,blockedPage,publicAddress,publicUrl,evidenceExcerpt,relevantSearchPage} from '../src/pipeline/research-web';
 import {automationConfigSchema,budgetClient} from '../src/pipeline/topic-automation';
 import {ideaFixture} from './helpers/comparison-editorial';
 import type {ChatRequest} from '../src/pipeline/groq';
@@ -320,11 +320,12 @@ test('too little supported evidence stops clearly after saving diagnostics inste
   run.facts.measurements[0].sourceValue=999;
   run.facts.measurements[1].quote='An invented quotation that does not occur in the opened source.';
   run.facts.measurements[2].sourceValue=999;
+  const chat=run.deps.client.chat;run.deps.client.chat=async request=>JSON.parse(request.messages[1].content).missing?{usage:{total_tokens:100},choices:[{message:{content:'{\"targets\":[]}'}}]}:chat(request);
   try{
-    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/2–15 verified objects; found 1/);
+    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/only 1 comparable objects after bounded source recovery/);
     assert.equal(run.counts().modelCalls,2);
     const saved=JSON.parse(readFileSync(path.join(run.root,'research-measurements.json'),'utf8'));assert.equal(saved.measurements.length,1);assert.equal(saved.gaps.length,3);
-    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/found 1/);assert.equal(run.counts().modelCalls,2);
+    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/only 1 comparable objects/);assert.equal(run.counts().modelCalls,2);
   }finally{rmSync(run.root,{recursive:true,force:true});}
 });
 
@@ -337,5 +338,109 @@ test('two verified objects from one opened source are sufficient for a valid com
     const result=await boundedComparisonResearch(run.options,run.deps,run.concept);
     assert.equal(result.sources.length,1);assert.equal(verifiedMeasurements(run.root).length,2);
     assert.equal(run.counts().modelCalls,2);
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('a source with unrelated dimensions does not prevent bounded recovery from trying alternative evidence',async()=>{
+  const run=setup();let calls=0,stopRecovery=true;
+  run.deps.client.chat=async request=>{
+    calls++;const input=JSON.parse(request.messages[1].content);
+    if(input.missing)return {usage:{total_tokens:100},choices:[{message:{content:'{"targets":[]}'}}]};
+    if(input.concept)return {usage:{total_tokens:100},choices:[{message:{content:JSON.stringify(run.plan)}}]};
+    if(input.sources.some((p:{url:string})=>p.url.includes('/wiki/'))&&stopRecovery)throw new Error('Synthetic interruption before recovery extraction');
+    const measurements=input.sources.flatMap((p:{text:string;id:string})=>values.flatMap((_,i)=>p.text.includes(quote(i))?[{...run.facts.measurements[i],sourceId:p.id}]:[]));
+    return {usage:{total_tokens:100},choices:[{message:{content:JSON.stringify({measurements,gaps:[]})}}]};
+  };
+  run.deps.webFetch=async url=>{
+    if(url.includes('/search/page?')){
+      const i=Number(new URL(url).searchParams.get('q')?.match(/Reference (\d)/)?.[1]);
+      return {status:200,headers:{'content-type':'application/json'},body:JSON.stringify({pages:[{key:`Reference_${i}`,title:`Reference ${i}`}]})};
+    }
+    const wiki=url.includes('/wiki/'),i=Number(url.match(/(?:Reference_|\/)(\d)$/)?.[1]);
+    return {status:200,headers:{'content-type':'text/html'},body:`<p>${wiki||i===0?quote(i):`Reference ${i} has a width of ${values[i]} metres.`}</p><p>${'Measurement context for synthetic test objects. '.repeat(6)}</p>`};
+  };
+  try{
+    await assert.rejects(()=>boundedComparisonResearch(run.options,run.deps,run.concept),/Synthetic interruption/);
+    const state=JSON.parse(readFileSync(path.join(run.root,'research-web.json'),'utf8'));
+    assert.ok(state.attemptedPages.length<=researchLimits.pages);assert.ok(state.httpRequests<=researchLimits.httpRequests);
+    stopRecovery=false;const before=calls;
+    const result=await boundedComparisonResearch(run.options,run.deps,run.concept);
+    assert.ok(result.sources.length>=4);assert.equal(verifiedMeasurements(run.root).length,4);assert.equal(calls,before+1);
+    const journal=JSON.parse(readFileSync(path.join(run.root,'research-recovery.json'),'utf8'));assert.equal(journal.before,1);assert.equal(journal.after,4);assert.equal(journal.status,'complete');
+    const after=calls;await boundedComparisonResearch(run.options,run.deps,run.concept);assert.equal(calls,after);
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('generic categories can resolve to named documented examples without allowing unrelated replacements',async()=>{
+  const run=setup();run.concept.candidates=['Coffee mug','Compact car'];
+  const targets=[{candidate:'Maker A model 7',categoryCandidate:'coffee mug',query:'Maker A model 7',urls:['https://example.com/mug']},{candidate:'Model B',categoryCandidate:'compact car',query:'Model B',urls:['https://example.com/car']}];
+  const quotes=['Maker A coffee mug has an overall height of ten centimetres.','Model B compact car has an overall height of 150 cm.'];
+  run.deps.client.chat=async request=>{
+    const input=JSON.parse(request.messages[1].content);
+    return {usage:{total_tokens:100},choices:[{message:{content:JSON.stringify(input.concept?{targets,excluded:[]}:{measurements:targets.map((target,i)=>({candidate:input.targets[i],sourceId:`s${i+1}`,quote:quotes[i],sourceValue:[10,150][i],sourceUnit:'cm',conversion:'direct',qualifier:'Overall height of this exact documented example'})),gaps:[]})}}]};
+  };
+  run.deps.webFetch=async url=>url.includes('/search/page?')?{status:200,headers:{'content-type':'application/json'},body:'{"pages":[]}'}:{status:200,headers:{'content-type':'text/html'},body:`<p>${quotes[url.endsWith('/mug')?0:1]}</p>`};
+  try{
+    await boundedComparisonResearch(run.options,run.deps,run.concept);
+    assert.deepEqual(verifiedMeasurements(run.root).map(f=>f.candidate),['Maker A model 7 — Coffee mug','Model B — Compact car']);
+    assert.deepEqual(verifiedMeasurements(run.root).map(f=>f.value),[.1,1.5]);
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('completed-height comparisons reject unfinished milestones and favor overall-height evidence',()=>{
+  const run=setup();
+  try{
+    const historical='The tower height is over 636 m and its final height will not be given until construction is completed.';
+    const page={id:'s1',title:'Tower specifications',url:'https://example.com/tower',text:historical};
+    const fact={candidate:run.concept.candidates[0],sourceId:'s1',quote:historical,sourceValue:636,sourceUnit:'m',conversion:'direct',qualifier:'Construction-stage height'};
+    assert.throws(()=>validateResearchFacts({measurements:[fact],gaps:[]},[page],run.concept,run.concept.candidates),/construction milestone/);
+    const completed='The completed tower has a total height of 829 metres, measured from the base to the top.';
+    const longPage=Array.from({length:30},(_,i)=>`Tower construction floor ${i} used ${500+i} metres of cable.`).join('\n')+'\n'+completed;
+    assert.ok(evidenceExcerpt(longPage,'Tower height',200).includes(completed));
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('provider JSON-mode rejection falls back once while retaining local JSON and schema checks',async()=>{
+  const directory=mkdtempSync(path.join(tmpdir(),'research-json-recovery-'));let calls=0;
+  try{
+    const schema=z.object({targets:z.array(z.string())});
+    const result=await structuredStage({stage:'motion',artifact:'repair-plan',model:'test',constrained:false,schema,system:'Return JSON.',input:'{}',directory,log:()=>{},validate:raw=>schema.parse(raw),client:{chat:async request=>{
+      calls++;if(calls===1){assert.equal(request.response_format?.type,'json_object');throw new Error('GroqCloud HTTP 400: Failed to generate JSON.');}
+      assert.equal(request.response_format,undefined);return {choices:[{message:{content:'{"targets":["Documented example"]}'}}]};
+    }}});
+    assert.equal(calls,2);assert.deepEqual(result.targets,['Documented example']);
+  }finally{rmSync(directory,{recursive:true,force:true});}
+});
+
+test('dimension rows outrank unrelated model history and nearby model variants cannot supply the requested value',()=>{
+  const run=setup();
+  try{
+    const text=Array.from({length:30},(_,i)=>`Maker E210 won ${i} awards in its history and the engine uses ${i+1} litres.`).join('\n')+'\nHeight1,450–1,455 mm (57.1–57.3 in)';
+    assert.ok(evidenceExcerpt(text,'Maker E210 height',180).includes('Height1,450'));
+    assert.equal(relevantSearchPage('Maker E210',{key:'Maker_GR',title:'Maker GR'}),false);
+    const fact={candidate:'Maker E210 compact car',sourceId:'s1',quote:'Height1,450–1,455 mm (57.1–57.3 in)',sourceValue:1455,sourceUnit:'mm',conversion:'direct',qualifier:'Upper endpoint'};
+    assert.throws(()=>validateResearchFacts({measurements:[fact],gaps:[]},[{id:'s1',url:'https://example.com/maker-gr',title:'Maker GR',text:fact.quote}],run.concept,[fact.candidate]),/requested model identifier/);
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('one interrupted source read retries once and remains inside the same HTTP budget',async()=>{
+  const run=setup(),fetcher=run.deps.webFetch;let interrupted=false;
+  run.deps.webFetch=async url=>{if(url==='https://example.com/0'&&!interrupted){interrupted=true;throw new Error('Synthetic source timeout');}return fetcher(url);};
+  try{
+    await boundedComparisonResearch(run.options,run.deps,run.concept);
+    const state=JSON.parse(readFileSync(path.join(run.root,'research-web.json'),'utf8'));
+    assert.equal(state.httpRequests,9);assert.equal(verifiedMeasurements(run.root).length,4);
+  }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('a detached height header stays with its configuration rows in a compact excerpt',()=>{
+  const table='Width\n1,745 mm (Japan)\nHeight\n1,420 mm (SE/XSE Apex)\n1,435–1,455 mm (international)\n1,460 mm (Japan/TREK)\nKerb weight\n1,290 kg';
+  const article=Array.from({length:20},()=> 'Maker E210 has a long engine history with many 2-litre versions.').join('\n')+'\n'+table;
+  const excerpt=evidenceExcerpt(article,'Maker E210 height',300);
+  assert.match(excerpt,/Height 1,420 mm.*1,435–1,455 mm.*1,460 mm/);
+  const run=setup();try{
+    const quote='Height 1,420 mm (SE/XSE Apex) 1,435–1,455 mm (international)';
+    const fact={candidate:'Maker E210',sourceId:'s1',quote,sourceValue:1455,sourceUnit:'mm',conversion:'direct',qualifier:'International range upper endpoint'};
+    assert.equal(validateResearchFacts({measurements:[fact],gaps:[]},[{id:'s1',url:'https://example.com/e210',title:'Maker E210',text:excerpt}],run.concept,[fact.candidate]).measurements[0].value,1.455);
   }finally{rmSync(run.root,{recursive:true,force:true});}
 });

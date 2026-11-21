@@ -52,10 +52,22 @@ export function evidenceExcerpt(text:string,query:string,max=1800){
   const words=query.toLowerCase().match(/[a-z]{4,}/g)??[];
   // Rank sentences rather than dropping long descriptive paragraphs, which often
   // contain the actual body mass or specification among unrelated details.
-  const lines=text.split(/\n|(?<=[.!?])\s+(?=[A-Z])/).filter(s=>s.length>3&&s.length<2500);
+  const rawLines=text.split(/\n|(?<=[.!?])\s+(?=[A-Z])/).filter(s=>s.length>3&&s.length<2500);
+  const lines:string[]=[];
+  for(let i=0;i<rawLines.length;i++){
+    let line=rawLines[i];
+    // Infoboxes often place a dimension header on one line and configurations
+    // on following list rows. Keep that contiguous context with the numbers.
+    if(/^(?:height|length|width|wingspan|capacity|volume)\s*:?$/i.test(line)){
+      let j=i+1;
+      while(j<rawLines.length&&j<=i+4&&/\d/.test(rawLines[j])&&/(?:mm|cm|met(?:re|er)|inch|feet|\bft\b|\bin\b|lit(?:re|er))/i.test(rawLines[j])&&line.length+rawLines[j].length+1<max){line+=' '+rawLines[j];j++;}
+      i=j-1;
+    }
+    lines.push(line);
+  }
   const metric=query.trim().split(/\s+/).at(-1)??'';
-  const metricTerms:Record<string,RegExp>={mass:/\d.*(?:kg|grams?|tonnes?|kilograms?|\blb\b)/i,count:/population|\d.*(?:individuals|million|billion|people|keys|cards|faces)/i,speed:/\d.*(?:km\/h|m\/s|mph|per hour|per second)/i,duration:/lifespan|longevity|\d.*(?:years?|hours?|days?)/i,energy:/\d.*(?:joules?|kWh|\bWh\b|\bMJ\b)/i,power:/\d.*(?:watts?|\bkW\b|\bMW\b)/i,temperature:/\d.*(?:Celsius|Fahrenheit|kelvin|°[CF])/i};
-  const ranked=lines.map((line,index)=>({line,index,score:(metricTerms[metric]?.test(line)?30:0)+(/\d/.test(line)?3:0)+(/diameter|circumference|wingspan|height|length|capacity|population|count|mass|weight|weigh|speed|lifespan|duration|energy|power|temperature|watt|joule|million|billion|years|metres?|meters?|centimet|millimet|\b(?:mm|cm|km|litres?|liters?|feet|ft|inches)\b/i.test(line)?6:0)+words.filter(w=>line.toLowerCase().includes(w)).length})).sort((a,b)=>b.score-a.score||a.index-b.index);
+  const metricTerms:Record<string,RegExp>={height:/\bheight\b.*\d|\d.*\b(?:high|tall|height)\b/i,length:/\blength\b.*\d|\d.*\b(?:long|length)\b/i,width:/\b(?:width|beam)\b.*\d|\d.*\b(?:wide|width|beam)\b/i,wingspan:/\b(?:wingspan|wing span)\b.*\d|\d.*\b(?:wingspan|wing span)\b/i,diameter:/\b(?:diameter|circumference)\b.*\d|\d.*\b(?:diameter|circumference)\b/i,volume:/\b(?:volume|capacity)\b.*\d|\d.*\b(?:volume|capacity|litres?|liters?)\b/i,mass:/\d.*(?:kg|grams?|tonnes?|kilograms?|\blb\b)/i,count:/population|\d.*(?:individuals|million|billion|people|keys|cards|faces)/i,speed:/\d.*(?:km\/h|m\/s|mph|per hour|per second)/i,duration:/lifespan|longevity|\d.*(?:years?|hours?|days?)/i,energy:/\d.*(?:joules?|kWh|\bWh\b|\bMJ\b)/i,power:/\d.*(?:watts?|\bkW\b|\bMW\b)/i,temperature:/\d.*(?:Celsius|Fahrenheit|kelvin|°[CF])/i};
+  const ranked=lines.map((line,index)=>({line,index,score:(metricTerms[metric]?.test(line)?30:0)+(/^(?:height|length|width|wingspan|capacity|volume)\s*[:\d]/i.test(line)?40:0)+(/\b(?:total|overall|architectural|completed)\s+(?:height|length|width|wingspan)\b/i.test(line)?25:0)-(/\b(?:construction|delivery height|final height.*will|floor|platform)\b/i.test(line)?25:0)-(/^(?:↑|\d+ \d+|Retrieved|Archived)\s/i.test(line)?15:0)+(/\d/.test(line)?3:0)+(/diameter|circumference|wingspan|height|length|capacity|population|count|mass|weight|weigh|speed|lifespan|duration|energy|power|temperature|watt|joule|million|billion|years|metres?|meters?|centimet|millimet|\b(?:mm|cm|km|litres?|liters?|feet|ft|inches)\b/i.test(line)?6:0)+words.filter(w=>line.toLowerCase().includes(w)).length})).sort((a,b)=>b.score-a.score||a.index-b.index);
   let selected='';
   for(const entry of ranked){if(selected.length+entry.line.length+1<=max)selected+=entry.line+'\n';}
   return selected.trim()||text.slice(0,max);
@@ -69,6 +81,8 @@ export function relevantSearchPage(query:string,page:{key:string;title?:string;d
   if(/^(list of|category |template )/.test(title)&&!q.startsWith('list of'))return false;
   const media=/\b(song|album|film|television|episode|fictional|character|novel|band)\b/;
   if(media.test(normalize(page.description??''))&&!media.test(q))return false;
+  const identifiers=q.split(' ').filter(w=>w.length>=3&&/\d/.test(w));
+  if(identifiers.some(code=>!title.split(' ').includes(code)))return false;
   const words=q.split(' ').filter(w=>w.length>2&&!['the','and','for','with'].includes(w));
   return words.length===0||words.some(w=>title.split(' ').includes(w));
 }

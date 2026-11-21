@@ -358,3 +358,14 @@ Presentation version 2 finalizes headlines from supported object pairs rather th
 Quantity charts use a fixed final linear axis. Each bar grows linearly for `max(1, 3 × abs(value) / maxAbsValue)` seconds, holds for 2.5 seconds, and remains visible as later bars arrive. Names/images fade in over the first 0.2 seconds. The last settled hold is followed by a four-second overview. Zero values retain a visible label/thumbnail; negative bars grow downward. Timing is compiled once and rounded to the output frame rate, with growth/hold/overview frame counts in `timing-report.json`. Quantity duration follows the schedule up to 90 seconds; physical-size comparisons retain their 60-second maximum and existing scale-sensitive travel.
 
 Image plans describe identity and appearance; trusted code supplies cutout or sphere format, framing and annotation rules. Conflicting legacy cutout briefs receive a neutral identity-preserving fallback without extra LLM calls. Cache fingerprints include the appearance-planning version; only changed effective asset prompts regenerate. Saved datasets are re-finalized when resumed; already delivered videos are not rewritten.
+
+
+## Too little research evidence
+
+Two verified, compatible objects are the minimum for a comparison; the 8–15 target remains advisory. Generic categories have no universal dimension. Research may resolve them to named documented examples, recording the original `categoryCandidate` and preserving a precise model identity. Explicitly named objects keep their identity.
+
+When initial extraction supports fewer than two objects, one bounded source-repair pass proposes at most four focused targets. It can try up to six new page attempts and two discovery queries, refresh relevant existing excerpts, and extract new evidence in cached batches. All reads—including a single retry for interrupted requests—share the original 18-search, 22-page-attempt, 48-HTTP-request and 21,600-character limits. It never invents a measurement or starts an unbounded browsing loop. Saved repair proposals and extraction batches are reused on resume.
+
+Dimension-table rows and overall dimensions take priority over unrelated history in excerpts. Finished-height comparisons reject construction milestones; named model codes must be established by their source. Unsupported records remain gaps. If fewer than two usable objects remain after recovery, generation stops with an evidence-specific explanation and preserves `research-measurements.json`, `research-web.json` and `research-recovery.json` in the checkpoint. This is a correctness failure, not an editorial preference.
+
+Groq JSON-format rejection can fall back within the existing three-attempt stage bound to ordinary text output, while retaining local JSON parsing and schema/evidence checks. Authentication, quota and unrelated provider errors retain their existing handling.
