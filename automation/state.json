@@ -317,10 +317,9 @@
       "createdAt": "2026-11-20T16:45:31.928Z",
       "updatedAt": "2026-11-20T16:47:02.614Z",
       "error": "motion failed validation after three attempts: Measurement for Blue Whale describes a juvenile, not the requested adult basis.\nMeasurement for Airbus A380 needs an exact quote from an opened source and an eligible candidate."
-    }
-  ],
-  "queue": [
+    },
     {
+      "id": "short-2026-11-21-781f1bd1e719",
       "topic": "How tall is the tallest redwood compared to iconic skyscrapers and monuments",
       "metric": "height",
       "scopeKey": "tallest-redwood-vs-skyscraper",
@@ -334,10 +333,16 @@
         "Statue of Liberty",
         "Eiffel Tower"
       ],
+      "actualEntityKeys": [],
       "whyInteresting": "Viewers instantly recognise a skyscraper’s silhouette, then discover that a single living tree can rival or exceed those heights, turning a familiar cityscape into a mind‑blowing natural wonder.",
       "family": "trees-plants",
       "angle": "familiar-to-extreme",
-      "depth": "accessible"
+      "depth": "accessible",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-21T07:24:33.486Z",
+      "updatedAt": "2026-11-21T07:24:33.486Z"
     }
-  ]
+  ],
+  "queue": []
 }
