@@ -404,10 +404,11 @@
       "family": "everyday-objects",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "needs-review",
+      "attempts": 1,
       "createdAt": "2026-11-21T10:22:57.245Z",
-      "updatedAt": "2026-11-21T10:22:57.245Z"
+      "updatedAt": "2026-11-21T10:23:32.787Z",
+      "error": "Comparisons support 2–15 verified objects; found 1. Aim for 8–15, but never pad with unsupported objects."
     }
   ],
   "queue": [
