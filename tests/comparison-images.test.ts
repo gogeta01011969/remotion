@@ -34,10 +34,27 @@ test('Cloudflare briefs enforce surface-map format and real-object identity with
   assert.ok(prompt.includes('No isolated circular ball'));assert.ok(prompt.length<=2000);
   assert.ok(cloudflareObjectPrompt('Tower','cutout','Accurate complete tower').includes('No cropping'));
 });
-test('source planning errors cannot silently fall back to plain materials',async()=>{
+test('optional image-detail quota failures keep the verified objects and require real Cloudflare assets',async()=>{
   const root=mkdtempSync(path.join(tmpdir(),'required-image-no-fallback-'));
   try{
-    await assert.rejects(()=>ensureComparisonImages(balls(),{directory:root,model:'test',log:()=>{},client:{chat:async()=>{throw new Error('HTTP 429 quota');}}}),/429/);
-    assert.equal(assetRequests(balls()).objects.length,0);
+    let requests=0;
+    const data=await ensureComparisonImages(balls(),{directory:root,model:'test',log:()=>{},client:{chat:async()=>{requests++;throw new Error('HTTP 429 quota');}}});
+    assert.equal(requests,1);assert.equal(assetRequests(data).objects.length,4);assert.ok(data.items.every(item=>item.visual?.kind==='sphere'&&item.visual.generation));
+    assert.deepEqual(data.items.map(i=>i.value),balls().items.map(i=>i.value));
+  }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+test('ordered image appearance plans need no echoed IDs and malformed optional briefs receive identity defaults',async()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'ordered-appearance-plans-'));let calls=0;
+  try{
+    const result=await ensureComparisonImages(balls(),{directory:root,model:'test',log:()=>{},client:{chat:async()=>{calls++;return {choices:[{message:{content:JSON.stringify({images:[{prompt:'Authentic table tennis surface with its conventional plain white matte material.'},{prompt:null},{prompt:'Authentic soccer ball surface with its conventional panels and material.'}]})}}]};}}});
+    assert.equal(calls,1);assert.equal(result.items.length,4);assert.ok(result.items.every(item=>item.visual?.kind==='sphere'&&item.visual.generation?.prompt));const baseball=result.items[1].visual;assert.ok(baseball?.kind==='sphere'&&baseball.generation?.prompt.includes('Baseball'));
+  }finally{rmSync(root,{recursive:true,force:true});}
+});
+test('unparseable optional image planning uses one request and still produces real-asset requests',async()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'broken-appearance-json-'));let calls=0;
+  try{
+    const result=await ensureComparisonImages(balls(),{directory:root,model:'test',log:()=>{},client:{chat:async()=>{calls++;return {choices:[{message:{content:'not JSON'}}]};}}});
+    assert.equal(calls,1);assert.equal(assetRequests(result).objects.length,4);
   }finally{rmSync(root,{recursive:true,force:true});}
 });

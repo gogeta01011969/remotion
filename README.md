@@ -98,3 +98,5 @@ Optional automatic YouTube uploads: [connect your channel and configure GitHub A
 Quantity comparison videos use a fixed linear axis, value-proportional bar growth (one-second minimum), 2.5-second settled holds and a four-second overview. They may extend to 90 seconds; physical-size comparisons retain their existing 60-second limit. See [comparison presentation policy](comparisons/README.md#presentation-policy-and-quantity-pacing).
 
 Automatic workflow runs can skip unworkable topics and try up to three candidates within one shared usage budget. Explicit manual topics keep their scope. Provider cooldowns defer work; exhausted candidates report `no-video` without uploading an empty or invented result. See [run-level resilience](automation/README.md#run-level-resilience).
+
+Verified comparison measurements now become render inputs through deterministic local assembly, with zero comparison-data model calls. Optional image-detail planning falls back to identity-based Cloudflare prompts when unavailable; unsupported facts and invalid final media still cannot be published.

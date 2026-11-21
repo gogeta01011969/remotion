@@ -37,7 +37,7 @@ export async function runAutomationWorkflow(options:AutomationRunOptions&{usage:
     if(!automaticallySelected(current))return noVideo('The requested topic could not produce a supported comparison. Its scope was preserved; no substitute topic or video was published.');
     if(index+1>=options.config.maxTopicsPerRun)return noVideo('No workable topic completed within this run’s topic limit. The next trigger can select fresh candidates.');
     const usage=options.usage();
-    if(usage.limits.stageRequests-usage.stageRequests<6||usage.limits.reportedTokens-usage.accountedTokens<25000)return noVideo('Insufficient remaining shared budget for another complete topic-to-video attempt. Skipped topics will not block the next trigger.');
+    if(usage.limits.stageRequests-usage.stageRequests<4||usage.limits.reportedTokens-usage.accountedTokens<25000)return noVideo('Insufficient remaining shared budget for another complete topic-to-video attempt. Skipped topics will not block the next trigger.');
     options.log(`Skipping unworkable/duplicate topic ${current.id}; selecting another topic within the same shared budget.`);
     try{
       current=await (dependencies.reserve??reserveTopic)({ledger:options.ledger,config:options.config,root:options.root,directory,client:options.client,model:options.groqConfig.scriptModel,log:options.log,freshOnly:true});

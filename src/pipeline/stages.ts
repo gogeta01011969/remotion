@@ -16,7 +16,7 @@ export function completionRecord(completion: Completion) {
 }
 const omitNulls=(value:unknown):unknown=>Array.isArray(value)?value.map(omitNulls):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([,item])=>item!==null).map(([key,item])=>[key,omitNulls(item)])):value;
 export async function structuredStage<T>(options: {
-  stage: 'script' | 'motion'; maxCompletionTokens?:number; artifact?: string; repairInstruction?:string; constrained?:boolean; compactSchema?:boolean; nullableOptionals?:boolean; model: string; reasoningEffort?: 'low' | 'medium'; client: Pick<GroqClient, 'chat'>; schema: z.ZodType; system: string; input: string;
+  stage: 'script' | 'motion'; maxAttempts?:1|2|3; maxCompletionTokens?:number; artifact?: string; repairInstruction?:string; constrained?:boolean; compactSchema?:boolean; nullableOptionals?:boolean; model: string; reasoningEffort?: 'low' | 'medium'; client: Pick<GroqClient, 'chat'>; schema: z.ZodType; system: string; input: string;
   validate: (raw: unknown) => T; directory: string; log: (line: string) => void;
   retryValidation?:(error:unknown)=>boolean;
   repairFromDraft?:boolean;
@@ -77,8 +77,9 @@ export async function structuredStage<T>(options: {
   // after repeated constrained-decoder failures across hosted models.
   let textOutput=false;
   let strictOutput = options.constrained ?? (options.stage === 'script' && !timedStructure && !silent);
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    options.log(`${label}: request ${attempt}/3 (${options.model})`);
+  const maxAttempts=options.maxAttempts??3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    options.log(`${label}: request ${attempt}/${maxAttempts} (${options.model})`);
     let draftFeedback = '';
     if (previous && options.stage === 'script') {
       try {
@@ -106,12 +107,12 @@ export async function structuredStage<T>(options: {
       // Some Groq models reject a constrained decoder result before returning it.
       // Retry with JSON mode; the same local schema and semantic checks still apply.
       const message = failure instanceof Error ? failure.message : '';
-      if (strictOutput && /HTTP 400:.*(Failed to (?:generate|validate) JSON|does not match the expected schema)/i.test(message) && attempt < 3) {
+      if (strictOutput && /HTTP 400:.*(Failed to (?:generate|validate) JSON|does not match the expected schema)/i.test(message) && attempt < maxAttempts) {
         options.log(`${label}: provider rejected constrained JSON; retrying with locally validated JSON mode.`);
         writeJson(path.join(options.directory, `${label}-provider-validation-${attempt}.json`), {error: message});
         strictOutput = false; continue;
       }
-      if(!strictOutput&&!textOutput&&/HTTP 400:.*Failed to (?:generate|validate) JSON/i.test(message)&&attempt<3){
+      if(!strictOutput&&!textOutput&&/HTTP 400:.*Failed to (?:generate|validate) JSON/i.test(message)&&attempt<maxAttempts){
         options.log(`${label}: provider rejected JSON mode; retrying without provider formatting, retaining local JSON/schema validation.`);
         writeJson(path.join(options.directory, `${label}-provider-validation-${attempt}.json`), {error:message});
         textOutput=true;continue;
@@ -128,10 +129,10 @@ export async function structuredStage<T>(options: {
       // Repeated item errors must not hide other corrections at the end of a
       // long Zod report. Full diagnostics are still saved for inspection.
       repairError=failure instanceof z.ZodError?[...new Map(failure.issues.map(issue=>[issue.message,`${issue.path.join('.')}: ${issue.message}`])).values()].join('\n'):error;
-      options.log(`${label}: validation failed; ${attempt < 3 ? 'requesting correction' : 'attempt limit reached'}.`);
+      options.log(`${label}: validation failed; ${attempt < maxAttempts ? 'requesting correction' : 'attempt limit reached'}.`);
       writeJson(path.join(options.directory, `${label}-validation-${attempt}.json`), {error});
       if(options.retryValidation?.(failure)===false)throw failure;
     }
   }
-  throw new StageValidationError(`${options.stage} failed validation after three attempts: ${error.slice(0, 2500)}`);
+  throw new StageValidationError(`${options.stage} failed validation after ${maxAttempts===3?'three attempts':`${maxAttempts} attempt${maxAttempts===1?'':'s'}`}: ${error.slice(0, 2500)}`);
 }

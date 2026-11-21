@@ -82,8 +82,9 @@ test('seven saved verified measurements proceed to selection without repeating r
         return {choices:[{message:{content:JSON.stringify({...data,editorial:{...editorial,objectRoles},items:data.items.map((item,i)=>({id:item.id,label:item.label,color:item.color,evidenceId:facts[i].evidenceId}))})}}]};
       }},
     });
-    assert.equal(researchCalls,0);assert.equal(requests,1);assert.equal(result.items.length,7);
+    assert.equal(researchCalls,0);assert.equal(requests,0);assert.equal(result.items.length,7);
     assert.deepEqual(result.items.map(i=>i.value),data.items.map(i=>i.value));
-    assert.equal(prepareSilentInput(compileSizeComparison(result,defaultSizeEpisode(result))).scenes.length,7);
+    assert.equal(defaultSizeEpisode(result).scenes.length,7);
+    assert.ok(result.items.every(item=>item.visual?.kind==='cutout'&&!item.visual.calibration));
   }finally{rmSync(directory,{recursive:true,force:true});}
 });

@@ -38,7 +38,7 @@ export function finalizeComparisonPresentation(raw:SizeDataset,warn:(message:str
   const title=headline.length<=100?headline:neutral;
   if(data.title!==title)warn('Replaced the provisional headline with an evidence-bound comparison hook.');
   data.title=title;
-  for(const item of data.items)item.conditionLabel=comparisonCondition(item.note,data.metric);
+  for(const item of data.items)item.conditionLabel=data.metric==='count'&&item.asOf?`${item.asOf} estimate`:comparisonCondition(item.note,data.metric);
   if(data.metric==='speed'){
     data.basis='Documented speed figures under the conditions identified per object; service, diving, record and limited speeds are distinct conditions, not one identical test.';
     if(data.items.some(i=>!i.conditionLabel))warn('Some speed conditions have no concise supported label; their original source qualifiers remain in the description.');

@@ -1,3 +1,4 @@
+import {assembleVerifiedComparison} from './comparison-assembly';
 import {finalizeComparisonPresentation} from './comparison-presentation';
 import {comparisonWarningSink} from './comparison-warnings';
 import {needsCountry} from '../shorts/comparison-context';
@@ -74,6 +75,14 @@ export async function generateComparisonData(options:ComparisonRequest,dependenc
   let research:Research=dependencies.research&&existsSync(researchPath)?researchSchema.parse(JSON.parse(readFileSync(researchPath,'utf8'))):await collectResearch();
   writeJson(researchPath,research);
   if(research.topic!==options.topic)throw new Error('Saved research does not match the requested topic.');
+  const verified=verifiedMeasurements(options.directory);
+  if(verified.length){
+    const data=finalizeComparisonPresentation(assembleVerifiedComparison({id:options.id,topic:options.topic,concept,research,facts:verified}),comparisonWarningSink(options.directory,options.log));
+    writeJson(path.join(options.directory,'dataset-assembly.json'),{version:1,mode:'local-verified-evidence',researchMeasurements:verified.length,selectedMeasurements:data.items.length,modelRequests:0});
+    writeJson(datasetPath,data);
+    options.log(`Assembled ${data.items.length} objects locally from verified evidence; no comparison-data model request needed.`);
+    return data;
+  }
   const expectedSubject=comparisonSubjectHint(options.topic);
   const {id:conceptId,title,viewerQuestion,strategy,scopeReason,selectionRule,metric,unit,measurementBasis,visualApproach,openingCandidate,payoffCandidate}=concept;
   const selectedConcept={id:conceptId,title,viewerQuestion,strategy,scopeReason,selectionRule,metric,unit,basis:measurementBasis,visualApproach,openingCandidate,payoffCandidate,background:concept.background};

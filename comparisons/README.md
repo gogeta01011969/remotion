@@ -369,3 +369,10 @@ When initial extraction supports fewer than two objects, one bounded source-repa
 Dimension-table rows and overall dimensions take priority over unrelated history in excerpts. Finished-height comparisons reject construction milestones; named model codes must be established by their source. Unsupported records remain gaps. If fewer than two usable objects remain after recovery, generation stops with an evidence-specific explanation and preserves `research-measurements.json`, `research-web.json` and `research-recovery.json` in the checkpoint. This is a correctness failure, not an editorial preference.
 
 Groq JSON-format rejection can fall back within the existing three-attempt stage bound to ordinary text output, while retaining local JSON parsing and schema/evidence checks. Authentication, quota and unrelated provider errors retain their existing handling.
+
+
+## Verified evidence is the render input
+
+The normal research path assembles the dataset deterministically from `research-measurements.json`, rather than asking a model to reconstruct objects or repeat opaque evidence IDs. This takes zero comparison-data requests and preserves the frozen identities, values, units, source IDs and qualifiers. It sorts supported records, selects at most fifteen across the measured range, and derives a supported neighboring pair for the headline. `dataset-assembly.json` documents the selected count. Unusable older comparison-data drafts are bypassed when valid frozen evidence exists.
+
+Optional appearance planning may improve detail but cannot remove objects or block a valid measured comparison on formatting errors or exhausted Groq quota. Local identity briefs still use Cloudflare for the actual images. Source validation, coherent units/basis, safe usable assets and a valid final MP4 remain hard requirements. Missing dates for changing populations remain an evidence issue; documented year-only dates are preserved without inventing a month/day.

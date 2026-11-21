@@ -66,6 +66,10 @@ async function main(){
         mkdirSync(path.join(root,'out/comparisons',job.id),{recursive:true});
         writeJson(path.join(root,'out/comparisons',job.id,'automation-usage.json'),client.usage());
         summary();
+        const assemblyFile=path.join(root,'out/comparisons',job.id,'dataset-assembly.json');
+        if(process.env.GITHUB_STEP_SUMMARY&&existsSync(assemblyFile)){
+          try{const assembly=JSON.parse(readFileSync(assemblyFile,'utf8'));appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\nDataset assembly: ${assembly.selectedMeasurements} verified objects, built locally with ${assembly.modelRequests} model requests.\n`);}catch{/* Optional diagnostic, not a generation requirement. */}
+        }
         const warningsFile=path.join(root,'out/comparisons',job.id,'quality-warnings.json');
         if(process.env.GITHUB_STEP_SUMMARY&&existsSync(warningsFile)){
           try{const notes=JSON.parse(readFileSync(warningsFile,'utf8'));
@@ -74,7 +78,7 @@ async function main(){
         }
         if(process.env.GITHUB_STEP_SUMMARY){
           const usage=client.usage();
-          appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\nApplication usage: ${usage.stageRequests}/${usage.limits.stageRequests} logical requests; ${usage.reportedTokens}/${usage.limits.reportedTokens} reported tokens.\n\n| Request | Kind | Outcome | Reported tokens | Tool executions |\n| --- | --- | --- | --- | --- |\n${usage.calls.map((call,i)=>`| ${i+1} | ${call.kind} | ${call.status} | ${call.reportedTokens} | ${call.toolExecutions} |`).join('\n')}\n`);
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\nApplication usage: ${usage.stageRequests}/${usage.limits.stageRequests} logical requests; ${usage.reportedTokens}/${usage.limits.reportedTokens} reported tokens.\n\n| Request | Kind | API response | Reported tokens | Tool executions |\n| --- | --- | --- | --- | --- |\n${usage.calls.map((call,i)=>`| ${i+1} | ${call.kind} | ${call.status} | ${call.reportedTokens} | ${call.toolExecutions} |`).join('\n')}\n`);
         }
       }
     }

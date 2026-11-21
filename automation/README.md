@@ -50,7 +50,7 @@ and Groq/Cloudflare usage still depend on your accounts' allowances.
    candidates stay in the queue for later runs.
 3. Check normalized titles, stable scope keys and substantially repeated object
    sets. Save the reservation remotely **before** paid generation work begins.
-4. Use the existing concept → research → editorial selection → data pipeline.
+4. Use the existing concept → research → local verified-data assembly pipeline.
    Check the researched object set against history again before making images.
 5. Require per-run Cloudflare imagery for every depicted real object, including
    familiar sports balls and planets. Missing image briefs are completed before
@@ -229,19 +229,12 @@ When only numeric citation markers were omitted, local matching restores the
 actual contiguous source quotation, including those markers. Changed wording or
 values still fail. Typical-lifespan briefs reject explicit maximum-age records,
 and validation reports all failed candidates together to reduce repair calls.
-Dataset planning receives an explicit list of verified measurements with stable
-identity references. It selects `evidenceId` records; local code fills values,
-source IDs and qualifiers. Unsupported candidates cannot re-enter merely because
-a source page was opened. Older drafts map only by an unambiguous candidate name
-or ID, and failures report the unsupported object by name. Cached datasets still
-undergo the evidence-value check. Quantity-dataset generation may defer
-thumbnail briefs to the image-planning stage. Display labels simplify names
-without changing source identities; measurement headings omit irrelevant dates.
+Verified research measurements now assemble the dataset locally: object IDs, names, values, units, qualifiers, sources, visual descriptors and the measured progression come directly from frozen evidence. The normal bounded-research path makes **zero comparison-data model requests**. It does not ask an LLM to copy evidence IDs or rebuild the selected objects. Old unusable dataset drafts cannot discard supported records; missing measurement files can be restored from cached source batches. The legacy generation adapter remains available for custom research adapters without frozen records.
 
-`research-plan.json`, `research-measurements.json` and `research-receipt.json`
-preserve the source plan, quotations and completed evidence. Failed dataset drafts
-are revalidated/repaired on resume, rather than regenerated blindly. A focused
-repair uses the same remaining HTTP/page budget; it cannot start a new web loop.
+`research-plan.json`, `research-measurements.json` and `research-receipt.json` preserve the source plan, quotations and completed evidence. `dataset-assembly.json` records local assembly and selected-object counts, and the Actions summary reports this explicitly. Display labels simplify names without changing researched identities. Dated counts preserve year-only source precision and may show distinct supported dates per item; unsupported dates are not invented. A clearly quoted radius can be converted to diameter locally, while an unconverted radius cannot silently be treated as a diameter.
+
+Image-detail planning is optional enrichment with at most one request per batch. It returns appearance prompts in object order without echoing IDs; local code attaches the verified identities. Malformed optional output, Groq quota or temporary provider failures fall back to identity-based prompts for the same Cloudflare assets, then avoid further optional planner requests in that invocation. No procedural or missing-image substitute is introduced. Final asset calibration, media verification and upload safeguards remain required.
+
 
 Old agentic `research.json` files without the new receipt are preserved as
 `research.legacy.json` and re-researched once. Completed legacy videos and supplied
@@ -394,7 +387,7 @@ If research yields fewer than two supported objects, one bounded source-repair p
 
 A topic is an attempt, not the unit of success for the automatic workflow. `maxTopicsPerRun` defaults to three. If bounded research cannot establish two comparable measurements, structured planning cannot produce usable instructions, or the final dataset duplicates a previous video, that automatic topic is recorded as skipped and the controller tries a fresh queued candidate in the same invocation. It does not replay the skipped topic indefinitely. Old automatically selected jobs are recognized by their populated scope/object metadata; new jobs record `selectionMode` explicitly.
 
-All topic attempts share the existing 12-request/65,000-token client; fallback never resets it. The controller starts another fresh attempt only with at least six logical requests and 25,000 accounted tokens remaining. These are work-budget guards, not editorial requirements. A failed topic does not lower the factual or media requirements for its replacement. Explicitly entered topics remain manual: unsupported manual prompts do not silently become a different subject.
+All topic attempts share the existing 12-request/65,000-token client; fallback never resets it. The controller starts another fresh attempt only with at least four logical requests and 25,000 accounted tokens remaining. These are work-budget guards, not editorial requirements. A failed topic does not lower the factual or media requirements for its replacement. Explicitly entered topics remain manual: unsupported manual prompts do not silently become a different subject.
 
 Outcomes are explicit:
 

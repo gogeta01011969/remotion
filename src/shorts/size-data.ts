@@ -7,6 +7,7 @@ import {comparisonVisualSchema} from './comparison-visual';
 import {comparisonEditorialSchema,editorialSelectionIssues} from './comparison-editorial';
 import {sizeEnvironments} from './size-environment';
 
+export const measurementDate=z.union([z.iso.date(),z.string().regex(/^(?:19|20)\d{2}$/)]);
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(60);
 export const sizeItemSchema = z.object({
   id: slug, label: z.string().trim().min(1).max(80), displayLabel:z.string().trim().min(1).max(24).optional(), value: z.number().finite().min(-1e30).max(1e30),
@@ -14,6 +15,7 @@ export const sizeItemSchema = z.object({
   material: z.enum(['plain', 'craters', 'ocean', 'bands', 'glow', 'felt', 'seam', 'panels', 'golf', 'baseball', 'basketball']).default('plain'),
   appearance: z.enum(['earth', 'moon', 'jupiter', 'neptune', 'sun', 'mercury', 'mars', 'venus']).optional(),
   visual: comparisonVisualSchema.optional(),
+  asOf:measurementDate.optional(),
   conditionLabel:z.string().trim().min(1).max(40).optional(),
   country: z.string().trim().min(1).max(56).optional(),
   sourceIds: z.array(slug).min(1),
@@ -34,7 +36,7 @@ export const sizeDatasetSchema = z.object({
   // Accepted for existing datasets; speed now uses bars rather than a race.
   raceDistanceM:z.number().positive().max(1000000).default(100),
   basis: z.string().min(1).max(500).optional(),
-  asOf: z.iso.date().optional(),
+  asOf: measurementDate.optional(),
   environment: z.enum(['auto',...sizeEnvironments]).default('auto'),
   backgroundReason:z.string().trim().min(1).max(400).optional(),
   displayUnits:z.enum(['fixed','adaptive']).default('fixed'),
@@ -47,7 +49,7 @@ export const sizeDatasetSchema = z.object({
   const issue=(message:string)=>ctx.addIssue({code:'custom',message});
   const linear=['nm','um','mm','cm','m','km','AU','ly'];
   if(!metricUnitCompatible(data.metric,data.unit))issue('Metric and unit must describe the same dimension.');
-  if(data.metric==='count'&&(!data.countBasis||data.countBasis!=='fixed'&&!data.asOf))issue('Counts need countBasis; populations and inventories also need an asOf date.');
+  if(data.metric==='count'&&(!data.countBasis||data.countBasis!=='fixed'&&!data.asOf&&!data.items.every(item=>item.asOf)))issue('Counts need countBasis; populations and inventories also need an asOf date.');
   for(const item of data.items){
     if(data.metric==='temperature'){try{convertMeasurement(item.value,data.unit,'K');if(item.range){convertMeasurement(item.range.min,data.unit,'K');convertMeasurement(item.range.max,data.unit,'K');}}catch{issue('Temperature cannot be below absolute zero.');}}
     else if(item.value<0||!['count','speed','duration','energy','power'].includes(data.metric)&&item.value===0)issue('This measurement requires nonnegative or positive values.');
