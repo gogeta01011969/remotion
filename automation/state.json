@@ -431,10 +431,11 @@
       "angle": "orders-of-magnitude",
       "depth": "extreme-scale",
       "selectionMode": "automatic",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "skipped-unworkable",
+      "attempts": 1,
       "createdAt": "2026-11-21T11:42:36.632Z",
-      "updatedAt": "2026-11-21T11:42:36.632Z"
+      "updatedAt": "2026-11-21T11:45:10.355Z",
+      "error": "motion failed validation after three attempts: Comparisons support 2–15 verified objects; found 0. Aim for 8–15, but never pad with unsupported objects."
     }
   ],
   "queue": []
