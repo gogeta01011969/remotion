@@ -347,3 +347,5 @@ objects, incompatible dimensions, unsupported measurements/source IDs, misleadin
 ranking claims, unsafe or unusable assets, failed MP4 verification, provider
 unavailability and unsafe/ambiguous YouTube uploads. These cannot be solved by
 quietly presenting a different measurement or claiming a successful delivery.
+
+Cutout edge contact is an advisory framing signal, not an automatic rejection. The Cloudflare provider can try one wider-margin generation per affected cached image, capped at two extra generations per invocation. It keeps the original usable cutout if repair fails or does not reduce edge contact, persists retry receipts to avoid repeat spending on resume, and writes warnings to `quality-warnings.json`. Empty, undecodable or non-transparent cutouts still fail asset inspection. Bounds checks cannot prove that generated objects are complete or accurate; no padding is added to disguise clipping.
