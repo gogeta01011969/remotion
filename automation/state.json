@@ -383,10 +383,9 @@
       "videoSha256": "aad128551c5dda3d1e8d3cf4ffd37ebde294f2709c4acdb42bbea1ba14d20955",
       "artifactName": "short-short-2026-11-21-10c4c7db9515",
       "artifactId": "14697814582"
-    }
-  ],
-  "queue": [
+    },
     {
+      "id": "short-2026-11-21-b8209517a1e5",
       "topic": "How tall everyday things stack up: from a coffee mug to a skyscraper",
       "metric": "height",
       "scopeKey": "everyday-height-familiar-extreme",
@@ -400,11 +399,18 @@
         "Two‑story house",
         "Burj Khalifa"
       ],
+      "actualEntityKeys": [],
       "whyInteresting": "People instantly picture a mug or a fridge; layering those familiar heights against a house and the world’s tallest tower creates a clear, relatable sense of scale that fits perfectly into a 30‑second visual countdown.",
       "family": "everyday-objects",
       "angle": "familiar-to-extreme",
-      "depth": "accessible"
-    },
+      "depth": "accessible",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-21T10:22:57.245Z",
+      "updatedAt": "2026-11-21T10:22:57.245Z"
+    }
+  ],
+  "queue": [
     {
       "topic": "From Mercury to Ceres: the size ladder of solar system worlds",
       "metric": "diameter",
