@@ -465,19 +465,26 @@
       "videoSha256": "7668d4efe9b91180e9f96fd05aa87e38e0a2b3ddfc6d0b01e0453e66b1a57417",
       "artifactName": "short-short-2026-11-23-b21b0225639c",
       "artifactId": "14864972281"
-    }
-  ],
-  "queue": [
+    },
     {
+      "id": "short-2026-11-23-d9b2ac8d5cad",
       "topic": "Largest everyday storage containers by volume",
       "metric": "volume",
       "scopeKey": "topic-d9b2ac8d5cad5116",
       "entityKeys": [],
+      "actualEntityKeys": [],
       "whyInteresting": "Compares familiar storage items—from a kitchen trash bin to a 40‑foot shipping container—illustrating how much space we actually use and how massive industrial containers truly are.",
       "family": "storage-capacity",
       "angle": "familiar-to-extreme",
-      "depth": "accessible"
-    },
+      "depth": "accessible",
+      "selectionMode": "automatic",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-23T21:59:12.091Z",
+      "updatedAt": "2026-11-23T21:59:12.091Z"
+    }
+  ],
+  "queue": [
     {
       "topic": "Fastest land vehicles by top speed",
       "metric": "speed",
