@@ -38,10 +38,32 @@ jobs:
       actions: read
     env:
       AUTOMATION_ARCHIVE_TARGET: github
+      # Variables take precedence; accept existing repository secrets too.
+      YOUTUBE_UPLOAD_ENABLED: ${{ vars.YOUTUBE_UPLOAD_ENABLED || secrets.YOUTUBE_UPLOAD_ENABLED || 'false' }}
       BACKGROUND_REMOVAL_PYTHON: python
       OMP_NUM_THREADS: '2'
       RENDER_CONCURRENCY: '2'
     steps:
+      - name: Report YouTube upload configuration
+        env:
+          UPLOAD_SETTING_SOURCE: ${{ vars.YOUTUBE_UPLOAD_ENABLED != '' && 'Actions variable' || secrets.YOUTUBE_UPLOAD_ENABLED != '' && 'Actions secret' || 'default (not configured)' }}
+        run: |
+          case "$YOUTUBE_UPLOAD_ENABLED" in
+            true)
+              echo "YouTube upload is enabled. Channel connection will be checked before generation."
+              echo "### YouTube upload configuration" >> "$GITHUB_STEP_SUMMARY"
+              echo "Uploads: enabled ($UPLOAD_SETTING_SOURCE)." >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            false)
+              echo "::notice title=YouTube uploads disabled::This run will create a video artifact only. Set the repository variable or secret YOUTUBE_UPLOAD_ENABLED to true to upload. Variables take precedence over secrets."
+              echo "### YouTube upload configuration" >> "$GITHUB_STEP_SUMMARY"
+              echo "Uploads: disabled ($UPLOAD_SETTING_SOURCE). No YouTube upload will be attempted. Set YOUTUBE_UPLOAD_ENABLED to true in Actions repository Variables or Secrets; variables take precedence." >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            *)
+              echo "::error::YOUTUBE_UPLOAD_ENABLED must be true or false without surrounding quotes or whitespace. Check Actions repository Variables and Secrets; variables take precedence."
+              exit 1
+              ;;
+          esac
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
@@ -67,12 +89,12 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: node --import tsx .github/scripts/check-config.ts
       - name: Check YouTube connection before spending generation credits
-        if: vars.YOUTUBE_UPLOAD_ENABLED == 'true'
+        if: env.YOUTUBE_UPLOAD_ENABLED == 'true'
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-          YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID }}
+          YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID || secrets.YOUTUBE_CHANNEL_ID }}
           YOUTUBE_PRIVACY_STATUS: ${{ vars.YOUTUBE_PRIVACY_STATUS || 'private' }}
         run: npm run youtube:check
       - name: Restore durable topic ledger
@@ -161,12 +183,12 @@ jobs:
         run: npm run automate -- --resume "$CURRENT_JOB_ID" --archive-confirmed "$VIDEO_ARTIFACT_ID"
       - name: Prepare YouTube upload and verify the connected channel
         id: youtube_prepare
-        if: steps.confirm.outcome == 'success' && vars.YOUTUBE_UPLOAD_ENABLED == 'true'
+        if: steps.confirm.outcome == 'success' && env.YOUTUBE_UPLOAD_ENABLED == 'true'
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-          YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID }}
+          YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID || secrets.YOUTUBE_CHANNEL_ID }}
           YOUTUBE_PRIVACY_STATUS: ${{ vars.YOUTUBE_PRIVACY_STATUS || 'private' }}
           YOUTUBE_MADE_FOR_KIDS: ${{ vars.YOUTUBE_MADE_FOR_KIDS || 'false' }}
           YOUTUBE_CONTAINS_SYNTHETIC_MEDIA: ${{ vars.YOUTUBE_CONTAINS_SYNTHETIC_MEDIA || 'true' }}
@@ -185,7 +207,7 @@ jobs:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-          YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID }}
+          YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID || secrets.YOUTUBE_CHANNEL_ID }}
           YOUTUBE_PRIVACY_STATUS: ${{ vars.YOUTUBE_PRIVACY_STATUS || 'private' }}
           YOUTUBE_MADE_FOR_KIDS: ${{ vars.YOUTUBE_MADE_FOR_KIDS || 'false' }}
           YOUTUBE_CONTAINS_SYNTHETIC_MEDIA: ${{ vars.YOUTUBE_CONTAINS_SYNTHETIC_MEDIA || 'true' }}
@@ -200,7 +222,7 @@ jobs:
       - name: Clean archived job intermediates
         if: >-
           always() && steps.confirm.outcome == 'success' && steps.persist.outcome == 'success' &&
-          (vars.YOUTUBE_UPLOAD_ENABLED != 'true' || steps.youtube.outputs.status == 'uploaded' ||
+          (env.YOUTUBE_UPLOAD_ENABLED != 'true' || steps.youtube.outputs.status == 'uploaded' ||
            steps.youtube_prepare.outputs.status == 'already-uploaded')
         env:
           CURRENT_JOB_ID: ${{ steps.active.outputs.job_id }}

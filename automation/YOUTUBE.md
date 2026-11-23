@@ -89,6 +89,10 @@ Add **repository variables**:
 | `YOUTUBE_MADE_FOR_KIDS` | `false` for the intended general-audience comparisons; change if your actual content is directed at children |
 | `YOUTUBE_CONTAINS_SYNTHETIC_MEDIA` | `true`, because this pipeline uses realistic generated imagery |
 
+`YOUTUBE_UPLOAD_ENABLED` and `YOUTUBE_CHANNEL_ID` may also be repository secrets, for compatibility with setups that stored all YouTube settings under Secrets. When the same name exists in both places, the Actions variable takes precedence. Environment-scoped values require a job bound to that environment; this workflow uses repository-level settings. Uploads remain disabled if no enable flag is configured.
+
+Every run reports **YouTube upload configuration** at the start and in its summary, including whether uploads are enabled and whether the enable flag came from Variables, Secrets or the default. Disabled uploads produce a notice rather than silently appearing to upload. Invalid enable values stop before generation. OAuth credentials remain secrets; their values are never printed.
+
 The existing Groq/Cloudflare secrets remain required. The scheduled trigger still
 uses the existing `AUTOMATION_ENABLED=true` variable; upload enablement alone does
 not turn on scheduling.
@@ -106,7 +110,7 @@ On **Actions → Create a comparison Short → Run workflow**:
 The workflow will:
 
 1. Check that OAuth connects to the configured channel, before generation costs.
-2. Select/research the topic, generate images and render/verify the Short.
+2. Plan the topic and approximate comparison values, generate images and render/verify the Short.
 3. Keep the existing final-video artifact as a fallback.
 4. Prepare the title, description, sources, credits and explicit audience/privacy
    settings, then persist the upload intent to the durable ledger.
