@@ -1,0 +1,30 @@
+[
+  {
+    "title": "House mouse",
+    "from": 0,
+    "duration": 3,
+    "presentation": "silent",
+    "notes": []
+  },
+  {
+    "title": "Domestic cat",
+    "from": 3,
+    "duration": 5,
+    "presentation": "silent",
+    "notes": []
+  },
+  {
+    "title": "Horse",
+    "from": 8,
+    "duration": 3,
+    "presentation": "silent",
+    "notes": []
+  },
+  {
+    "title": "Asian elephant",
+    "from": 11,
+    "duration": 8,
+    "presentation": "silent",
+    "notes": []
+  }
+]

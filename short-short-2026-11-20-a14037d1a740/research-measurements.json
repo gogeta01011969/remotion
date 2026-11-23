@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "conceptHash": "7c49c50084642c5baea7cf8c7b0cc24dca99068513e3936781a1cc378ecdb1fa",
+  "measurements": [
+    {
+      "candidate": "House mouse",
+      "sourceId": "s1",
+      "quote": "In protected environments, however, they often live two to three years.",
+      "sourceValue": 2,
+      "sourceUnit": "year",
+      "conversion": "direct",
+      "qualifier": "range endpoint",
+      "value": 2,
+      "unit": "year"
+    },
+    {
+      "candidate": "Domestic cat",
+      "sourceId": "s3",
+      "quote": "In the early 1980s, it was about 7 years,[179]: 33 [180] rising to 9.4 years in 1995[179]: 33 and an average of about 13 years as of 2014 and 2023.",
+      "sourceValue": 13,
+      "sourceUnit": "year",
+      "conversion": "direct",
+      "qualifier": "average as of 2023",
+      "value": 13,
+      "unit": "year"
+    },
+    {
+      "candidate": "Horse",
+      "sourceId": "s4",
+      "quote": "Depending on breed, management and environment, the modern domestic horse has a life expectancy of 25 to 30 years.",
+      "sourceValue": 25,
+      "sourceUnit": "year",
+      "conversion": "direct",
+      "qualifier": "range endpoint",
+      "value": 25,
+      "unit": "year"
+    },
+    {
+      "candidate": "Asian elephant",
+      "sourceId": "s5",
+      "quote": "Wild Asian elephants live to be about 60 years old.",
+      "sourceValue": 60,
+      "sourceUnit": "year",
+      "conversion": "direct",
+      "qualifier": "typical wild lifespan",
+      "value": 60,
+      "unit": "year"
+    }
+  ],
+  "gaps": [
+    "Domestic rabbit"
+  ]
+}

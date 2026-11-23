@@ -1,0 +1,1036 @@
+{
+  "presentation": "silent",
+  "captionMode": "sentence",
+  "language": "en",
+  "structure": {
+    "endWithQuestion": false,
+    "beats": [
+      {
+        "name": "sailfish",
+        "durationSeconds": 3
+      },
+      {
+        "name": "cheetah",
+        "durationSeconds": 3
+      },
+      {
+        "name": "golden-eagle",
+        "durationSeconds": 4
+      },
+      {
+        "name": "shinkansen",
+        "durationSeconds": 3
+      },
+      {
+        "name": "eurostar",
+        "durationSeconds": 3
+      },
+      {
+        "name": "bugatti-chiron",
+        "durationSeconds": 7
+      }
+    ]
+  },
+  "genre": "explainer",
+  "schemaVersion": 2,
+  "topic": "Speed Surprise: When a Fish Beats a Supercar",
+  "seed": 42,
+  "accent": "#DC143C",
+  "actors": [
+    {
+      "id": "sizes",
+      "state": {
+        "x": 500,
+        "y": 960,
+        "scale": 1,
+        "rotation": 0,
+        "opacity": 1,
+        "phase": 0,
+        "amplitude": 1,
+        "value": 0,
+        "reference": 0,
+        "shot": 0
+      },
+      "kind": "size-comparison",
+      "data": {
+        "template": "size-comparison",
+        "id": "speed-surprise-animal-vs-machine",
+        "title": "Speed Surprise: When a Fish Beats a Supercar",
+        "subject": "generic",
+        "metric": "speed",
+        "unit": "km/h",
+        "countBasis": "fixed",
+        "raceDistanceM": 1,
+        "basis": "Maximum burst speed for animals; certified top speed for vehicles and rockets.",
+        "asOf": "2023-01-01",
+        "environment": "sky",
+        "backgroundReason": "A unified sky backdrop lets birds, rockets and a stylized silhouette of a fish appear together without visual clutter.",
+        "displayUnits": "adaptive",
+        "scaleReference": true,
+        "context": "Comparing top speeds of select animals and human‑made racers.",
+        "editorial": {
+          "conceptId": "unexpected-neighbors-speed",
+          "strategy": "unexpected-neighbors",
+          "viewerQuestion": "Can a marine predator or a diving bird actually outrun some of the world’s fastest cars and trains?",
+          "throughline": "All candidates come directly from the user’s brief; each has a clear, comparable top‑speed figure.",
+          "selectionRule": "Select the eight listed subjects, ordering them to highlight the surprising adjacency of animal and machine speeds.",
+          "opening": {
+            "itemId": "sailfish",
+            "reason": "Smallest verified speed (55 km/h) starts the ladder."
+          },
+          "familiarAnchor": {
+            "itemId": "cheetah",
+            "reason": "Well‑known fast land animal (104 km/h) bridges nature to tech."
+          },
+          "surprisingPair": {
+            "smallerId": "golden-eagle",
+            "largerId": "shinkansen",
+            "reason": "Bird dive matches bullet‑train speed (320 km/h)."
+          },
+          "payoff": {
+            "itemId": "bugatti-chiron",
+            "reason": "Fastest verified speed (420 km/h) caps the comparison."
+          },
+          "items": [
+            {
+              "itemId": "sailfish",
+              "role": "anchor",
+              "reason": "Opens the ladder with the lowest speed."
+            },
+            {
+              "itemId": "cheetah",
+              "role": "bridge",
+              "reason": "Connects animal speeds to vehicle speeds."
+            },
+            {
+              "itemId": "golden-eagle",
+              "role": "contrast",
+              "reason": "Shows a bird reaching vehicle speeds."
+            },
+            {
+              "itemId": "shinkansen",
+              "role": "bridge",
+              "reason": "Human‑made transport matching bird dive."
+            },
+            {
+              "itemId": "eurostar",
+              "role": "bridge",
+              "reason": "Slightly faster train adds progression."
+            },
+            {
+              "itemId": "bugatti-chiron",
+              "role": "payoff",
+              "reason": "Highest verified speed caps the ladder."
+            }
+          ],
+          "omittedCandidates": [
+            {
+              "label": "SpaceX Falcon 9 (max velocity)",
+              "reason": "No exact speed figure supplied in evidence."
+            },
+            {
+              "label": "Peregrine falcon (diving)",
+              "reason": "Missing precise quoted speed in opened source."
+            }
+          ],
+          "conceptAdjustments": [
+            {
+              "role": "payoff",
+              "originalCandidate": "SpaceX Falcon 9 (max velocity)",
+              "replacementItemId": "bugatti-chiron",
+              "reason": "Quoted measurements put Bugatti Chiron (420 km/h) at the largest end of this curated selection; this records the researched endpoint/display-label change."
+            }
+          ],
+          "questionRevision": {
+            "originalQuestion": "Can a marine predator or a diving bird actually outrun some of the world’s fastest cars and trains?",
+            "reason": "Question aligns with available evidence; no revision needed."
+          },
+          "claim": {
+            "kind": "curated",
+            "scope": "All selected items are supported by verified measurements.",
+            "sourceIds": [
+              "s1",
+              "s2",
+              "s3",
+              "s5",
+              "s6",
+              "s8"
+            ]
+          }
+        },
+        "items": [
+          {
+            "id": "sailfish",
+            "label": "Sailfish",
+            "displayLabel": "Sailfish",
+            "value": 55,
+            "color": "#1E90FF",
+            "material": "plain",
+            "visual": {
+              "kind": "cutout",
+              "src": "comparisons/short-2026-11-21-10c4c7db9515/sailfish-ce732c50efd8842b.png",
+              "view": "side",
+              "attribution": "AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.",
+              "referenceUrls": [
+                "https://en.wikipedia.org/wiki/Sailfish"
+              ],
+              "generation": {
+                "prompt": "Create a seamless 2:1 equirectangular texture that fills the entire frame, depicting a single adult sailfish rendered in true natural colors. The fish’s metallic blue‑green back fades to silvery white on the belly, with a distinct dark lateral stripe. Its iconic dorsal fin is a bright, translucent sail‑shaped membrane edged in deep navy, and the elongated bill is stark white with subtle gray shading. Scale pattern is fine and regular, no background, no caption, orthographic view, dimensions annotated for total length from snout tip to tail tip (≈3.5 m)."
+              },
+              "calibration": {
+                "pixelWidth": 1024,
+                "pixelHeight": 1024,
+                "bounds": {
+                  "x": 26,
+                  "y": 219,
+                  "width": 975,
+                  "height": 580
+                },
+                "coverage": 0.29925907664595536,
+                "sha256": "ce732c50efd8842b76dfd308058c4adfe9fbd3f1b9b93ff37702452f8c789322"
+              }
+            },
+            "sourceIds": [
+              "s1"
+            ],
+            "approximate": true,
+            "note": "maximum reported speed range endpoint"
+          },
+          {
+            "id": "cheetah",
+            "label": "Cheetah",
+            "displayLabel": "Cheetah",
+            "value": 104,
+            "color": "#FF8C00",
+            "material": "plain",
+            "visual": {
+              "kind": "cutout",
+              "src": "comparisons/short-2026-11-21-10c4c7db9515/cheetah-96e92390bfc150a8.png",
+              "view": "side",
+              "attribution": "AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.",
+              "referenceUrls": [
+                "https://en.wikipedia.org/wiki/Cheetah"
+              ],
+              "generation": {
+                "prompt": "Generate a seamless 2:1 equirectangular surface showing one adult cheetah at full body scale, rendered in authentic tawny gold coat with black round spots evenly spaced across the flanks, a white underbelly, and black “tear‑line” markings from eyes to mouth. The texture includes the characteristic black facial mask, dark paws, and a thin black tail tip. No background, no text; orthographic side‑view orientation with a ruler indicating total body length from nose to tail tip (≈1.5 m)."
+              },
+              "calibration": {
+                "pixelWidth": 1024,
+                "pixelHeight": 1024,
+                "bounds": {
+                  "x": 22,
+                  "y": 199,
+                  "width": 961,
+                  "height": 708
+                },
+                "coverage": 0.4498169556544518,
+                "sha256": "96e92390bfc150a8b53ed719eef59572e835817c7bf0e0665b3afd67c4fc8b0a"
+              }
+            },
+            "sourceIds": [
+              "s2"
+            ],
+            "approximate": false,
+            "note": "maximum reported speed"
+          },
+          {
+            "id": "golden-eagle",
+            "label": "Golden eagle (stoop)",
+            "displayLabel": "Golden eagle",
+            "value": 320,
+            "color": "#8B4513",
+            "material": "plain",
+            "visual": {
+              "kind": "cutout",
+              "src": "comparisons/short-2026-11-21-10c4c7db9515/golden-eagle-1cda96515fcf0a43.png",
+              "view": "front",
+              "attribution": "AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.",
+              "referenceUrls": [
+                "https://en.wikipedia.org/wiki/Golden_eagle"
+              ],
+              "generation": {
+                "prompt": "Produce a seamless 2:1 equirectangular map of a golden eagle in its natural plumage, filling the frame. The bird’s head and neck are dark brown, transitioning to a golden‑bronze chest, with striking white tail and under‑wing patches. The wings display a gradient of dark brown to lighter amber on the primary feathers, and the talons are glossy black. Render a single isolated bird, orthographic side view, with a scale bar marking wingspan from tip to tip when fully extended (≈2.3 m)."
+              },
+              "calibration": {
+                "pixelWidth": 1024,
+                "pixelHeight": 1024,
+                "bounds": {
+                  "x": 62,
+                  "y": 144,
+                  "width": 925,
+                  "height": 852
+                },
+                "coverage": 0.41362271633727926,
+                "sha256": "1cda96515fcf0a43653a66a957c1cd8cec093909f186cd03367092161a9c2f27"
+              }
+            },
+            "sourceIds": [
+              "s3"
+            ],
+            "approximate": false,
+            "note": "maximum diving speed"
+          },
+          {
+            "id": "shinkansen",
+            "label": "Shinkansen bullet train",
+            "displayLabel": "Shinkansen",
+            "value": 320,
+            "color": "#228B22",
+            "material": "plain",
+            "visual": {
+              "kind": "cutout",
+              "src": "comparisons/short-2026-11-21-10c4c7db9515/shinkansen-2459a702b848aeb5.png",
+              "view": "side",
+              "attribution": "AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.",
+              "referenceUrls": [
+                "https://en.wikipedia.org/wiki/Shinkansen"
+              ],
+              "generation": {
+                "prompt": "Render a seamless 2:1 equirectangular texture of a single Shinkansen bullet train car, depicted in its standard white and blue livery. The nose is a sleek, aerodynamic cone with a blue stripe, windows are dark reflective glass, and the undercarriage shows the characteristic rubber‑mounted bogies. No scenery, no text; orthographic side view with a measurement line indicating the car’s length from front tip to rear buffer (≈25 m)."
+              },
+              "calibration": {
+                "pixelWidth": 1024,
+                "pixelHeight": 1024,
+                "bounds": {
+                  "x": 20,
+                  "y": 378,
+                  "width": 997,
+                  "height": 270
+                },
+                "coverage": 0.6045472947532864,
+                "sha256": "2459a702b848aeb550d8560c03afe7eb52271520b91e750525021a128b15c2dc"
+              }
+            },
+            "sourceIds": [
+              "s6"
+            ],
+            "approximate": false,
+            "note": "regular commercial maximum speed"
+          },
+          {
+            "id": "eurostar",
+            "label": "Eurostar train",
+            "displayLabel": "Eurostar",
+            "value": 334.7,
+            "color": "#800080",
+            "material": "plain",
+            "visual": {
+              "kind": "cutout",
+              "src": "comparisons/short-2026-11-21-10c4c7db9515/eurostar-e0f32582636ad994.png",
+              "view": "side",
+              "attribution": "AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.",
+              "referenceUrls": [
+                "https://en.wikipedia.org/wiki/Eurostar"
+              ],
+              "generation": {
+                "prompt": "Create a seamless 2:1 equirectangular surface showing one Eurostar high‑speed train unit in its iconic silver‑gray exterior with a blue stripe along the side. The train’s rounded nose, large windows, and pantograph are accurately rendered. No background, no labels; orthographic side view with a dimension line marking the full train length from nose tip to rear end (≈400 m for a 16‑car set)."
+              },
+              "calibration": {
+                "pixelWidth": 1024,
+                "pixelHeight": 1024,
+                "bounds": {
+                  "x": 24,
+                  "y": 388,
+                  "width": 985,
+                  "height": 264
+                },
+                "coverage": 0.5411919734826864,
+                "sha256": "e0f32582636ad99442134683806f2da71073aa1f7680f594a32a51e729c288c2"
+              }
+            },
+            "sourceIds": [
+              "s8"
+            ],
+            "approximate": false,
+            "note": "record speed on 30 July 2003"
+          },
+          {
+            "id": "bugatti-chiron",
+            "label": "Bugatti Chiron",
+            "displayLabel": "Bugatti Chiron",
+            "value": 420,
+            "color": "#DC143C",
+            "material": "plain",
+            "visual": {
+              "kind": "cutout",
+              "src": "comparisons/short-2026-11-21-10c4c7db9515/bugatti-chiron-e3500b343183ec2a.png",
+              "view": "front",
+              "attribution": "AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.",
+              "referenceUrls": [
+                "https://en.wikipedia.org/wiki/Bugatti_Chiron"
+              ],
+              "generation": {
+                "prompt": "Create a seamless flat 2:1 equirectangular texture of a Bugatti Chiron, filling the entire frame. Render the car in orthographic projection, isolated on a neutral gray background, showing the exact exterior geometry: a low, wide carbon‑fiber monocoque with a distinctive C‑shaped front grille, quad circular LED headlights, and the signature horseshoe grille pattern. The body is painted “French Blue” (deep metallic blue) with black carbon‑fiber rear wing, 20‑inch forged alloy wheels in matte black, and the signature Bugatti badge centered on the front. Include accurate proportions: overall length 4.544 m, width 2.038 m, height 1.208 m, wheelbase 2.711 m, and a rear‑mounted 8.0 L quad‑turbo W16 engine visible through a subtle cutaway silhouette. No captions, labels, or surrounding scenery; the texture should be continuous, without seams, suitable for mapping onto a sphere."
+              },
+              "calibration": {
+                "pixelWidth": 1024,
+                "pixelHeight": 1024,
+                "bounds": {
+                  "x": 106,
+                  "y": 206,
+                  "width": 801,
+                  "height": 262
+                },
+                "coverage": 0.7497711754938851,
+                "sha256": "e3500b343183ec2a912dbf4804b1549262bad14c59c22a7bb29b90b3919fd559"
+              }
+            },
+            "sourceIds": [
+              "s5"
+            ],
+            "approximate": false,
+            "note": "electronically limited top speed"
+          }
+        ],
+        "sources": [
+          {
+            "id": "s1",
+            "title": "en.wikipedia.org",
+            "url": "https://en.wikipedia.org/wiki/Sailfish"
+          },
+          {
+            "id": "s2",
+            "title": "en.wikipedia.org",
+            "url": "https://en.wikipedia.org/wiki/Cheetah"
+          },
+          {
+            "id": "s3",
+            "title": "en.wikipedia.org",
+            "url": "https://en.wikipedia.org/wiki/Golden_eagle"
+          },
+          {
+            "id": "s5",
+            "title": "en.wikipedia.org",
+            "url": "https://en.wikipedia.org/wiki/Bugatti_Chiron"
+          },
+          {
+            "id": "s6",
+            "title": "en.wikipedia.org",
+            "url": "https://en.wikipedia.org/wiki/Shinkansen"
+          },
+          {
+            "id": "s8",
+            "title": "en.wikipedia.org",
+            "url": "https://en.wikipedia.org/wiki/Eurostar"
+          }
+        ]
+      },
+      "headings": [
+        "Sailfish",
+        "Cheetah",
+        "Golden eagle (stoop)",
+        "Shinkansen bullet train",
+        "Eurostar train",
+        "Bugatti Chiron",
+        "All objects"
+      ],
+      "shots": [
+        {
+          "id": "sailfish",
+          "role": "detail",
+          "layout": "lineup",
+          "focus": 0,
+          "reference": 0,
+          "visible": [
+            0
+          ],
+          "metric": "ratio"
+        },
+        {
+          "id": "cheetah",
+          "role": "detail",
+          "layout": "lineup",
+          "focus": 1,
+          "reference": 0,
+          "visible": [
+            0,
+            1
+          ],
+          "metric": "ratio"
+        },
+        {
+          "id": "golden-eagle",
+          "role": "detail",
+          "layout": "lineup",
+          "focus": 2,
+          "reference": 1,
+          "visible": [
+            0,
+            1,
+            2
+          ],
+          "metric": "ratio"
+        },
+        {
+          "id": "shinkansen",
+          "role": "detail",
+          "layout": "lineup",
+          "focus": 3,
+          "reference": 2,
+          "visible": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "metric": "ratio"
+        },
+        {
+          "id": "eurostar",
+          "role": "detail",
+          "layout": "lineup",
+          "focus": 4,
+          "reference": 3,
+          "visible": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "metric": "ratio"
+        },
+        {
+          "id": "bugatti-chiron",
+          "role": "detail",
+          "layout": "lineup",
+          "focus": 5,
+          "reference": 4,
+          "visible": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "metric": "ratio"
+        },
+        {
+          "id": "quantity-overview",
+          "role": "overview",
+          "layout": "lineup",
+          "focus": 5,
+          "reference": 0,
+          "visible": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "metric": "ratio"
+        }
+      ]
+    }
+  ],
+  "fps": 30,
+  "scenes": [
+    {
+      "title": "Sailfish",
+      "motion": [
+        {
+          "actor": "sizes",
+          "property": "scale",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0.96,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "progress": 0.26666666666666666
+              },
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 0,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 0,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "shot",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 0,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "reference",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 0,
+              "easing": "hold"
+            }
+          ]
+        }
+      ],
+      "durationInFrames": 90,
+      "captions": []
+    },
+    {
+      "title": "Cheetah",
+      "motion": [
+        {
+          "actor": "sizes",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "progress": 0.2966666666666667
+              },
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "shot",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "reference",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 0,
+              "easing": "hold"
+            }
+          ]
+        }
+      ],
+      "durationInFrames": 90,
+      "captions": []
+    },
+    {
+      "title": "Golden eagle (stoop)",
+      "motion": [
+        {
+          "actor": "sizes",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "progress": 0.3425
+              },
+              "value": 2,
+              "easing": "smooth"
+            },
+            {
+              "at": "end",
+              "value": 2,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 2,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 2,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "shot",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 2,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 2,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "reference",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "hold"
+            }
+          ]
+        }
+      ],
+      "durationInFrames": 120,
+      "captions": []
+    },
+    {
+      "title": "Shinkansen bullet train",
+      "motion": [
+        {
+          "actor": "sizes",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 2,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "progress": 0.08333333333333333
+              },
+              "value": 3,
+              "easing": "smooth"
+            },
+            {
+              "at": "end",
+              "value": 3,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 3,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 3,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "shot",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 3,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 3,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "reference",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 2,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 2,
+              "easing": "hold"
+            }
+          ]
+        }
+      ],
+      "durationInFrames": 90,
+      "captions": []
+    },
+    {
+      "title": "Eurostar train",
+      "motion": [
+        {
+          "actor": "sizes",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 3,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "progress": 0.09666666666666666
+              },
+              "value": 4,
+              "easing": "smooth"
+            },
+            {
+              "at": "end",
+              "value": 4,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 4,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 4,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "shot",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 4,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 4,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "reference",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 3,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 3,
+              "easing": "hold"
+            }
+          ]
+        }
+      ],
+      "durationInFrames": 90,
+      "captions": []
+    },
+    {
+      "title": "Bugatti Chiron",
+      "motion": [
+        {
+          "actor": "sizes",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 4,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "progress": 0.06857142857142857
+              },
+              "value": 5,
+              "easing": "smooth"
+            },
+            {
+              "at": {
+                "progress": 0.42857142857142855
+              },
+              "value": 5,
+              "easing": "hold"
+            },
+            {
+              "at": {
+                "progress": 0.5714285714285714
+              },
+              "value": 6,
+              "easing": "smooth"
+            },
+            {
+              "at": "end",
+              "value": 6,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 5,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 5,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "shot",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 5,
+              "easing": "hold"
+            },
+            {
+              "at": {
+                "progress": 0.42857142857142855
+              },
+              "value": 6,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 6,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "reference",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 4,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 4,
+              "easing": "hold"
+            }
+          ]
+        }
+      ],
+      "durationInFrames": 210,
+      "captions": []
+    }
+  ]
+}

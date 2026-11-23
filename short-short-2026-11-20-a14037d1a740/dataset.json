@@ -1,0 +1,175 @@
+{
+  "template": "size-comparison",
+  "id": "lifespan-hidden-differences",
+  "title": "Surprising Lifespan Gaps Among Common Mammals",
+  "subject": "animals",
+  "metric": "duration",
+  "unit": "year",
+  "raceDistanceM": 100,
+  "basis": "average lifespan per species based on standard pet care or wildlife data, expressed in years",
+  "asOf": "2023-12-31",
+  "environment": "nature",
+  "backgroundReason": "A natural setting underscores the biological context of lifespan comparisons.",
+  "displayUnits": "fixed",
+  "scaleReference": false,
+  "context": "Comparing typical lifespans of everyday mammals reveals a hidden‑difference pattern.",
+  "editorial": {
+    "conceptId": "lifespan-hidden-differences",
+    "strategy": "hidden-differences",
+    "viewerQuestion": "Which everyday animal lives the longest, and how big is the gap between them?",
+    "throughline": "From a tiny mouse that barely outlives a season to a majestic elephant that can see six generations, everyday mammals span a surprising range of lifespans.",
+    "selectionRule": "Use documented average lifespans; exclude outliers and extreme cases.",
+    "opening": {
+      "itemId": "house-mouse",
+      "reason": "The mouse’s short 2‑year span makes a clear, relatable entry point."
+    },
+    "familiarAnchor": {
+      "itemId": "house-mouse",
+      "reason": "Viewers instantly recognize a house mouse as a common, short‑lived pet."
+    },
+    "surprisingPair": {
+      "smallerId": "domestic-cat",
+      "largerId": "horse",
+      "reason": "The jump from a cat’s 13 years to a horse’s 25 years surprises many who expect a smoother increase."
+    },
+    "payoff": {
+      "itemId": "asian-elephant",
+      "reason": "The elephant’s 60‑year lifespan delivers the dramatic payoff of the longest‑living everyday animal."
+    },
+    "items": [
+      {
+        "itemId": "house-mouse",
+        "role": "anchor",
+        "reason": "Establishes the low end of the lifespan scale."
+      },
+      {
+        "itemId": "domestic-cat",
+        "role": "bridge",
+        "reason": "Shows a modest increase over the mouse, reinforcing the gradual climb."
+      },
+      {
+        "itemId": "horse",
+        "role": "contrast",
+        "reason": "Marks a clear jump to a larger‑animal lifespan, heightening the gap."
+      },
+      {
+        "itemId": "asian-elephant",
+        "role": "payoff",
+        "reason": "Culminates the ladder with the longest lifespan, delivering the surprise."
+      }
+    ],
+    "omittedCandidates": [
+      {
+        "label": "Domestic rabbit",
+        "reason": "No verified measurement provided in the opened research."
+      }
+    ],
+    "conceptAdjustments": [],
+    "claim": {
+      "kind": "curated",
+      "scope": "Only the four listed mammals with verified measurements are compared, using average lifespans from reputable sources.",
+      "sourceIds": [
+        "s1",
+        "s3",
+        "s4",
+        "s5"
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "house-mouse",
+      "label": "House mouse",
+      "value": 2,
+      "color": "#ff6666",
+      "material": "plain",
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      },
+      "country": "global",
+      "sourceIds": [
+        "s1"
+      ],
+      "approximate": true,
+      "note": "range endpoint"
+    },
+    {
+      "id": "domestic-cat",
+      "label": "Domestic cat",
+      "value": 13,
+      "color": "#66ccff",
+      "material": "plain",
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      },
+      "country": "global",
+      "sourceIds": [
+        "s3"
+      ],
+      "approximate": true,
+      "note": "average as of 2023"
+    },
+    {
+      "id": "horse",
+      "label": "Horse",
+      "value": 25,
+      "color": "#66ff66",
+      "material": "plain",
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      },
+      "country": "global",
+      "sourceIds": [
+        "s4"
+      ],
+      "approximate": true,
+      "note": "range endpoint"
+    },
+    {
+      "id": "asian-elephant",
+      "label": "Asian elephant",
+      "value": 60,
+      "color": "#9966ff",
+      "material": "plain",
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      },
+      "country": "Asia",
+      "sourceIds": [
+        "s5"
+      ],
+      "approximate": true,
+      "note": "typical wild lifespan"
+    }
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "House mouse – Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/House_mouse"
+    },
+    {
+      "id": "s3",
+      "title": "Domestic cat – Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Domestic_cat"
+    },
+    {
+      "id": "s4",
+      "title": "Horse – Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Horse"
+    },
+    {
+      "id": "s5",
+      "title": "Asian elephant – Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Asian_elephant"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "title": "House mouse",
+    "changes": [
+      "sizes.scale"
+    ]
+  },
+  {
+    "title": "Domestic cat",
+    "changes": [
+      "sizes.phase"
+    ]
+  },
+  {
+    "title": "Horse",
+    "changes": [
+      "sizes.phase"
+    ]
+  },
+  {
+    "title": "Asian elephant",
+    "changes": [
+      "sizes.phase",
+      "sizes.shot"
+    ]
+  }
+]

@@ -1,0 +1,88 @@
+{
+  "metric": "duration",
+  "unit": "year",
+  "basis": "average lifespan per species based on standard pet care or wildlife data, expressed in years",
+  "asOf": "2023-12-31",
+  "items": [
+    {
+      "id": "house-mouse",
+      "label": "House mouse",
+      "value": 2,
+      "color": "#ff6666",
+      "material": "plain",
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      },
+      "country": "global",
+      "sourceIds": [
+        "s1"
+      ],
+      "approximate": true,
+      "note": "range endpoint",
+      "ratioToFirst": 1,
+      "ratioToPrevious": "1x"
+    },
+    {
+      "id": "domestic-cat",
+      "label": "Domestic cat",
+      "value": 13,
+      "color": "#66ccff",
+      "material": "plain",
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      },
+      "country": "global",
+      "sourceIds": [
+        "s3"
+      ],
+      "approximate": true,
+      "note": "average as of 2023",
+      "ratioToFirst": 6.5,
+      "ratioToPrevious": "6.5x"
+    },
+    {
+      "id": "horse",
+      "label": "Horse",
+      "value": 25,
+      "color": "#66ff66",
+      "material": "plain",
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      },
+      "country": "global",
+      "sourceIds": [
+        "s4"
+      ],
+      "approximate": true,
+      "note": "range endpoint",
+      "ratioToFirst": 12.5,
+      "ratioToPrevious": "1.92x"
+    },
+    {
+      "id": "asian-elephant",
+      "label": "Asian elephant",
+      "value": 60,
+      "color": "#9966ff",
+      "material": "plain",
+      "visual": {
+        "kind": "box",
+        "widthToHeight": 1,
+        "depthToHeight": 1
+      },
+      "country": "Asia",
+      "sourceIds": [
+        "s5"
+      ],
+      "approximate": true,
+      "note": "typical wild lifespan",
+      "ratioToFirst": 30,
+      "ratioToPrevious": "2.4x"
+    }
+  ]
+}

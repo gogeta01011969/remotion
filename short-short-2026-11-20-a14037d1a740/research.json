@@ -1,0 +1,34 @@
+{
+  "topic": "Compare the typical lifespans of a house mouse, domestic rabbit, domestic cat, horse and Asian elephant, in years.",
+  "model": "openai/gpt-oss-120b",
+  "notes": "{\"measurementBasis\":\"average lifespan per species based on standard pet care or wildlife data, expressed in years\",\"measurements\":[{\"candidate\":\"House mouse\",\"sourceId\":\"s1\",\"quote\":\"In protected environments, however, they often live two to three years.\",\"sourceValue\":2,\"sourceUnit\":\"year\",\"conversion\":\"direct\",\"qualifier\":\"range endpoint\",\"value\":2,\"unit\":\"year\"},{\"candidate\":\"Domestic cat\",\"sourceId\":\"s3\",\"quote\":\"In the early 1980s, it was about 7 years,[179]: 33 [180] rising to 9.4 years in 1995[179]: 33 and an average of about 13 years as of 2014 and 2023.\",\"sourceValue\":13,\"sourceUnit\":\"year\",\"conversion\":\"direct\",\"qualifier\":\"average as of 2023\",\"value\":13,\"unit\":\"year\"},{\"candidate\":\"Horse\",\"sourceId\":\"s4\",\"quote\":\"Depending on breed, management and environment, the modern domestic horse has a life expectancy of 25 to 30 years.\",\"sourceValue\":25,\"sourceUnit\":\"year\",\"conversion\":\"direct\",\"qualifier\":\"range endpoint\",\"value\":25,\"unit\":\"year\"},{\"candidate\":\"Asian elephant\",\"sourceId\":\"s5\",\"quote\":\"Wild Asian elephants live to be about 60 years old.\",\"sourceValue\":60,\"sourceUnit\":\"year\",\"conversion\":\"direct\",\"qualifier\":\"typical wild lifespan\",\"value\":60,\"unit\":\"year\"}],\"excluded\":[],\"gaps\":[\"Domestic rabbit\"],\"sourcePolicy\":\"Opened public pages; Wikipedia is a secondary source, not primary verification. Values sorted and converted by local code. Curated comparison, no record claim unless separately verified.\"}",
+  "sources": [
+    {
+      "id": "s1",
+      "title": "en.wikipedia.org",
+      "url": "https://en.wikipedia.org/wiki/House_mouse"
+    },
+    {
+      "id": "s2",
+      "title": "en.wikipedia.org",
+      "url": "https://en.wikipedia.org/wiki/Domestic_rabbit"
+    },
+    {
+      "id": "s3",
+      "title": "en.wikipedia.org",
+      "url": "https://en.wikipedia.org/wiki/Domestic_cat"
+    },
+    {
+      "id": "s4",
+      "title": "en.wikipedia.org",
+      "url": "https://en.wikipedia.org/wiki/Horse"
+    },
+    {
+      "id": "s5",
+      "title": "en.wikipedia.org",
+      "url": "https://en.wikipedia.org/wiki/Asian_elephant"
+    }
+  ],
+  "searched": true,
+  "toolExecutions": 10
+}

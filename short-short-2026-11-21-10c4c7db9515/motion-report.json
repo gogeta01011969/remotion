@@ -1,0 +1,39 @@
+[
+  {
+    "title": "Sailfish",
+    "changes": [
+      "sizes.scale"
+    ]
+  },
+  {
+    "title": "Cheetah",
+    "changes": [
+      "sizes.phase"
+    ]
+  },
+  {
+    "title": "Golden eagle (stoop)",
+    "changes": [
+      "sizes.phase"
+    ]
+  },
+  {
+    "title": "Shinkansen bullet train",
+    "changes": [
+      "sizes.phase"
+    ]
+  },
+  {
+    "title": "Eurostar train",
+    "changes": [
+      "sizes.phase"
+    ]
+  },
+  {
+    "title": "Bugatti Chiron",
+    "changes": [
+      "sizes.phase",
+      "sizes.shot"
+    ]
+  }
+]

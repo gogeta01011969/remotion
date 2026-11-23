@@ -1,0 +1,40 @@
+{
+  "targets": [
+    {
+      "candidate": "House mouse",
+      "query": "House mouse",
+      "urls": [
+        "https://en.wikipedia.org/wiki/House_mouse"
+      ]
+    },
+    {
+      "candidate": "Domestic rabbit",
+      "query": "Domestic rabbit",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Domestic_rabbit"
+      ]
+    },
+    {
+      "candidate": "Domestic cat",
+      "query": "Domestic cat",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Domestic_cat"
+      ]
+    },
+    {
+      "candidate": "Horse",
+      "query": "Horse",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Horse"
+      ]
+    },
+    {
+      "candidate": "Asian elephant",
+      "query": "Asian elephant",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Asian_elephant"
+      ]
+    }
+  ],
+  "excluded": []
+}

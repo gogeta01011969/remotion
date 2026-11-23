@@ -1,0 +1,25 @@
+Speed Surprise: When a Fish Beats a Supercar
+
+Speed Surprise: When a Fish Beats a Supercar. A silent smallest-to-largest speed comparison. Colored names identify subjects; bar heights encode the measured values. Measurements and applicable visual credits are included below.
+
+Viewer question: Can a marine predator or a diving bird actually outrun some of the world’s fastest cars and trains?
+All candidates come directly from the user’s brief; each has a clear, comparable top‑speed figure.
+Selection: All selected items are supported by verified measurements.
+
+Measurement basis: Maximum burst speed for animals; certified top speed for vehicles and rockets. (as of 2023-01-01)
+Visual: Sailfish: AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.. References: https://en.wikipedia.org/wiki/Sailfish
+Visual: Cheetah: AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.. References: https://en.wikipedia.org/wiki/Cheetah
+Visual: Golden eagle (stoop): AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.. References: https://en.wikipedia.org/wiki/Golden_eagle
+Visual: Shinkansen bullet train: AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.. References: https://en.wikipedia.org/wiki/Shinkansen
+Visual: Eurostar train: AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.. References: https://en.wikipedia.org/wiki/Eurostar
+Visual: Bugatti Chiron: AI-generated with Cloudflare flux-2-klein-4b, 4 steps, text-only. rembg-2.0.87/isnet-general-use/CPU; illustrative, not an exact object scan.. References: https://en.wikipedia.org/wiki/Bugatti_Chiron
+
+Silent visual story. No narration or soundtrack.
+
+Research:
+en.wikipedia.org: https://en.wikipedia.org/wiki/Sailfish
+en.wikipedia.org: https://en.wikipedia.org/wiki/Cheetah
+en.wikipedia.org: https://en.wikipedia.org/wiki/Golden_eagle
+en.wikipedia.org: https://en.wikipedia.org/wiki/Bugatti_Chiron
+en.wikipedia.org: https://en.wikipedia.org/wiki/Shinkansen
+en.wikipedia.org: https://en.wikipedia.org/wiki/Eurostar

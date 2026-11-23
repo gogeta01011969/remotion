@@ -1,0 +1,649 @@
+{
+  "presentation": "silent",
+  "captionMode": "sentence",
+  "language": "en",
+  "structure": {
+    "endWithQuestion": false,
+    "beats": [
+      {
+        "name": "house-mouse",
+        "durationSeconds": 3
+      },
+      {
+        "name": "domestic-cat",
+        "durationSeconds": 5
+      },
+      {
+        "name": "horse",
+        "durationSeconds": 3
+      },
+      {
+        "name": "asian-elephant",
+        "durationSeconds": 8
+      }
+    ]
+  },
+  "genre": "explainer",
+  "schemaVersion": 2,
+  "topic": "Surprising Lifespan Gaps Among Common Mammals",
+  "seed": 42,
+  "accent": "#9966ff",
+  "actors": [
+    {
+      "id": "sizes",
+      "state": {
+        "x": 500,
+        "y": 960,
+        "scale": 1,
+        "rotation": 0,
+        "opacity": 1,
+        "phase": 0,
+        "amplitude": 1,
+        "value": 0,
+        "reference": 0,
+        "shot": 0
+      },
+      "kind": "size-comparison",
+      "data": {
+        "template": "size-comparison",
+        "id": "lifespan-hidden-differences",
+        "title": "Surprising Lifespan Gaps Among Common Mammals",
+        "subject": "animals",
+        "metric": "duration",
+        "unit": "year",
+        "raceDistanceM": 100,
+        "basis": "average lifespan per species based on standard pet care or wildlife data, expressed in years",
+        "asOf": "2023-12-31",
+        "environment": "nature",
+        "backgroundReason": "A natural setting underscores the biological context of lifespan comparisons.",
+        "displayUnits": "fixed",
+        "scaleReference": false,
+        "context": "Comparing typical lifespans of everyday mammals reveals a hidden‑difference pattern.",
+        "editorial": {
+          "conceptId": "lifespan-hidden-differences",
+          "strategy": "hidden-differences",
+          "viewerQuestion": "Which everyday animal lives the longest, and how big is the gap between them?",
+          "throughline": "From a tiny mouse that barely outlives a season to a majestic elephant that can see six generations, everyday mammals span a surprising range of lifespans.",
+          "selectionRule": "Use documented average lifespans; exclude outliers and extreme cases.",
+          "opening": {
+            "itemId": "house-mouse",
+            "reason": "The mouse’s short 2‑year span makes a clear, relatable entry point."
+          },
+          "familiarAnchor": {
+            "itemId": "house-mouse",
+            "reason": "Viewers instantly recognize a house mouse as a common, short‑lived pet."
+          },
+          "surprisingPair": {
+            "smallerId": "domestic-cat",
+            "largerId": "horse",
+            "reason": "The jump from a cat’s 13 years to a horse’s 25 years surprises many who expect a smoother increase."
+          },
+          "payoff": {
+            "itemId": "asian-elephant",
+            "reason": "The elephant’s 60‑year lifespan delivers the dramatic payoff of the longest‑living everyday animal."
+          },
+          "items": [
+            {
+              "itemId": "house-mouse",
+              "role": "anchor",
+              "reason": "Establishes the low end of the lifespan scale."
+            },
+            {
+              "itemId": "domestic-cat",
+              "role": "bridge",
+              "reason": "Shows a modest increase over the mouse, reinforcing the gradual climb."
+            },
+            {
+              "itemId": "horse",
+              "role": "contrast",
+              "reason": "Marks a clear jump to a larger‑animal lifespan, heightening the gap."
+            },
+            {
+              "itemId": "asian-elephant",
+              "role": "payoff",
+              "reason": "Culminates the ladder with the longest lifespan, delivering the surprise."
+            }
+          ],
+          "omittedCandidates": [
+            {
+              "label": "Domestic rabbit",
+              "reason": "No verified measurement provided in the opened research."
+            }
+          ],
+          "conceptAdjustments": [],
+          "claim": {
+            "kind": "curated",
+            "scope": "Only the four listed mammals with verified measurements are compared, using average lifespans from reputable sources.",
+            "sourceIds": [
+              "s1",
+              "s3",
+              "s4",
+              "s5"
+            ]
+          }
+        },
+        "items": [
+          {
+            "id": "house-mouse",
+            "label": "House mouse",
+            "value": 2,
+            "color": "#ff6666",
+            "material": "plain",
+            "visual": {
+              "kind": "box",
+              "widthToHeight": 1,
+              "depthToHeight": 1
+            },
+            "country": "global",
+            "sourceIds": [
+              "s1"
+            ],
+            "approximate": true,
+            "note": "range endpoint"
+          },
+          {
+            "id": "domestic-cat",
+            "label": "Domestic cat",
+            "value": 13,
+            "color": "#66ccff",
+            "material": "plain",
+            "visual": {
+              "kind": "box",
+              "widthToHeight": 1,
+              "depthToHeight": 1
+            },
+            "country": "global",
+            "sourceIds": [
+              "s3"
+            ],
+            "approximate": true,
+            "note": "average as of 2023"
+          },
+          {
+            "id": "horse",
+            "label": "Horse",
+            "value": 25,
+            "color": "#66ff66",
+            "material": "plain",
+            "visual": {
+              "kind": "box",
+              "widthToHeight": 1,
+              "depthToHeight": 1
+            },
+            "country": "global",
+            "sourceIds": [
+              "s4"
+            ],
+            "approximate": true,
+            "note": "range endpoint"
+          },
+          {
+            "id": "asian-elephant",
+            "label": "Asian elephant",
+            "value": 60,
+            "color": "#9966ff",
+            "material": "plain",
+            "visual": {
+              "kind": "box",
+              "widthToHeight": 1,
+              "depthToHeight": 1
+            },
+            "country": "Asia",
+            "sourceIds": [
+              "s5"
+            ],
+            "approximate": true,
+            "note": "typical wild lifespan"
+          }
+        ],
+        "sources": [
+          {
+            "id": "s1",
+            "title": "House mouse – Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/House_mouse"
+          },
+          {
+            "id": "s3",
+            "title": "Domestic cat – Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/Domestic_cat"
+          },
+          {
+            "id": "s4",
+            "title": "Horse – Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/Horse"
+          },
+          {
+            "id": "s5",
+            "title": "Asian elephant – Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/Asian_elephant"
+          }
+        ]
+      },
+      "headings": [
+        "House mouse",
+        "Domestic cat",
+        "Horse",
+        "Asian elephant",
+        "All objects"
+      ],
+      "shots": [
+        {
+          "id": "house-mouse",
+          "role": "detail",
+          "layout": "lineup",
+          "focus": 0,
+          "reference": 0,
+          "visible": [
+            0
+          ],
+          "metric": "ratio"
+        },
+        {
+          "id": "domestic-cat",
+          "role": "detail",
+          "layout": "lineup",
+          "focus": 1,
+          "reference": 0,
+          "visible": [
+            0,
+            1
+          ],
+          "metric": "ratio"
+        },
+        {
+          "id": "horse",
+          "role": "detail",
+          "layout": "lineup",
+          "focus": 2,
+          "reference": 1,
+          "visible": [
+            0,
+            1,
+            2
+          ],
+          "metric": "ratio"
+        },
+        {
+          "id": "asian-elephant",
+          "role": "detail",
+          "layout": "lineup",
+          "focus": 3,
+          "reference": 2,
+          "visible": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "metric": "ratio"
+        },
+        {
+          "id": "quantity-overview",
+          "role": "overview",
+          "layout": "lineup",
+          "focus": 3,
+          "reference": 0,
+          "visible": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "metric": "ratio"
+        }
+      ]
+    }
+  ],
+  "fps": 30,
+  "scenes": [
+    {
+      "title": "House mouse",
+      "motion": [
+        {
+          "actor": "sizes",
+          "property": "scale",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0.96,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "progress": 0.26666666666666666
+              },
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": "end",
+              "value": 0,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 0,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "shot",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 0,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "reference",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 0,
+              "easing": "hold"
+            }
+          ]
+        }
+      ],
+      "durationInFrames": 90,
+      "captions": []
+    },
+    {
+      "title": "Domestic cat",
+      "motion": [
+        {
+          "actor": "sizes",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "progress": 0.42400000000000004
+              },
+              "value": 1,
+              "easing": "smooth"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "shot",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "reference",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 0,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 0,
+              "easing": "hold"
+            }
+          ]
+        }
+      ],
+      "durationInFrames": 150,
+      "captions": []
+    },
+    {
+      "title": "Horse",
+      "motion": [
+        {
+          "actor": "sizes",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "progress": 0.3
+              },
+              "value": 2,
+              "easing": "smooth"
+            },
+            {
+              "at": "end",
+              "value": 2,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 2,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 2,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "shot",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 2,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 2,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "reference",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 1,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 1,
+              "easing": "hold"
+            }
+          ]
+        }
+      ],
+      "durationInFrames": 90,
+      "captions": []
+    },
+    {
+      "title": "Asian elephant",
+      "motion": [
+        {
+          "actor": "sizes",
+          "property": "phase",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 2,
+              "easing": "linear"
+            },
+            {
+              "at": {
+                "progress": 0.14
+              },
+              "value": 3,
+              "easing": "smooth"
+            },
+            {
+              "at": {
+                "progress": 0.5
+              },
+              "value": 3,
+              "easing": "hold"
+            },
+            {
+              "at": {
+                "progress": 0.625
+              },
+              "value": 4,
+              "easing": "smooth"
+            },
+            {
+              "at": "end",
+              "value": 4,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "value",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 3,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 3,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "shot",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 3,
+              "easing": "hold"
+            },
+            {
+              "at": {
+                "progress": 0.5
+              },
+              "value": 4,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 4,
+              "easing": "hold"
+            }
+          ]
+        },
+        {
+          "actor": "sizes",
+          "property": "reference",
+          "keyframes": [
+            {
+              "at": "start",
+              "value": 2,
+              "easing": "hold"
+            },
+            {
+              "at": "end",
+              "value": 2,
+              "easing": "hold"
+            }
+          ]
+        }
+      ],
+      "durationInFrames": 240,
+      "captions": []
+    }
+  ]
+}

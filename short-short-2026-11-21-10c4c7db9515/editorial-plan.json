@@ -1,0 +1,90 @@
+{
+  "conceptId": "unexpected-neighbors-speed",
+  "strategy": "unexpected-neighbors",
+  "viewerQuestion": "Can a marine predator or a diving bird actually outrun some of the world’s fastest cars and trains?",
+  "throughline": "All candidates come directly from the user’s brief; each has a clear, comparable top‑speed figure.",
+  "selectionRule": "Select the eight listed subjects, ordering them to highlight the surprising adjacency of animal and machine speeds.",
+  "opening": {
+    "itemId": "sailfish",
+    "reason": "Smallest verified speed (55 km/h) starts the ladder."
+  },
+  "familiarAnchor": {
+    "itemId": "cheetah",
+    "reason": "Well‑known fast land animal (104 km/h) bridges nature to tech."
+  },
+  "surprisingPair": {
+    "smallerId": "golden-eagle",
+    "largerId": "shinkansen",
+    "reason": "Bird dive matches bullet‑train speed (320 km/h)."
+  },
+  "payoff": {
+    "itemId": "bugatti-chiron",
+    "reason": "Fastest verified speed (420 km/h) caps the comparison."
+  },
+  "items": [
+    {
+      "itemId": "sailfish",
+      "role": "anchor",
+      "reason": "Opens the ladder with the lowest speed."
+    },
+    {
+      "itemId": "cheetah",
+      "role": "bridge",
+      "reason": "Connects animal speeds to vehicle speeds."
+    },
+    {
+      "itemId": "golden-eagle",
+      "role": "contrast",
+      "reason": "Shows a bird reaching vehicle speeds."
+    },
+    {
+      "itemId": "shinkansen",
+      "role": "bridge",
+      "reason": "Human‑made transport matching bird dive."
+    },
+    {
+      "itemId": "eurostar",
+      "role": "bridge",
+      "reason": "Slightly faster train adds progression."
+    },
+    {
+      "itemId": "bugatti-chiron",
+      "role": "payoff",
+      "reason": "Highest verified speed caps the ladder."
+    }
+  ],
+  "omittedCandidates": [
+    {
+      "label": "SpaceX Falcon 9 (max velocity)",
+      "reason": "No exact speed figure supplied in evidence."
+    },
+    {
+      "label": "Peregrine falcon (diving)",
+      "reason": "Missing precise quoted speed in opened source."
+    }
+  ],
+  "conceptAdjustments": [
+    {
+      "role": "payoff",
+      "originalCandidate": "SpaceX Falcon 9 (max velocity)",
+      "replacementItemId": "bugatti-chiron",
+      "reason": "Quoted measurements put Bugatti Chiron (420 km/h) at the largest end of this curated selection; this records the researched endpoint/display-label change."
+    }
+  ],
+  "questionRevision": {
+    "originalQuestion": "Can a marine predator or a diving bird actually outrun some of the world’s fastest cars and trains?",
+    "reason": "Question aligns with available evidence; no revision needed."
+  },
+  "claim": {
+    "kind": "curated",
+    "scope": "All selected items are supported by verified measurements.",
+    "sourceIds": [
+      "s1",
+      "s2",
+      "s3",
+      "s5",
+      "s6",
+      "s8"
+    ]
+  }
+}

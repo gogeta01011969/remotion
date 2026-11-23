@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "selectedId": "unexpected-neighbors-speed",
+  "selectionReason": "The unexpected‑neighbors angle best showcases a clear, curiosity‑driving question—how do the fastest bursts of nature stack up against iconic human‑made speed machines? It yields a vivid progression from familiar animal sprinters to record‑setting vehicles, fits the mixed‑media visual approach, and stays within 8‑15 concrete candidates while allowing a concise 10‑item lineup.",
+  "concepts": [
+    {
+      "id": "familiar-to-extreme-speed",
+      "title": "From Cheetah to Rocket: How Fast Can Nature and Technology Go?",
+      "viewerQuestion": "How do the world’s fastest animal bursts compare to the top speeds of famous human‑made racers?",
+      "audiencePromise": "You’ll see a surprising animal out‑pace a sports car and a bird rival a high‑speed train.",
+      "strategy": "familiar-to-extreme",
+      "scope": "within-request",
+      "scopeReason": "All proposed objects are explicitly listed in the brief and have well‑documented peak speeds.",
+      "selectionRule": "Include every animal and vehicle from the brief that has a verifiable maximum speed; order from slowest to fastest.",
+      "metric": "speed",
+      "unit": "km/h",
+      "measurementBasis": "Maximum recorded or certified top speed for each subject (e.g., sprint speed for animals, top‑speed rating for vehicles).",
+      "visualApproach": "quantity-bars",
+      "background": {
+        "environment": "sky",
+        "reason": "A sky backdrop unifies birds, falcons, and rockets while allowing a clean vertical bar chart overlay."
+      },
+      "candidates": [
+        "Cheetah",
+        "Sailfish",
+        "Golden eagle (stoop)",
+        "Peregrine falcon (diving)",
+        "Bugatti Chiron",
+        "Eurostar train",
+        "Shinkansen bullet train",
+        "SpaceX Falcon 9 (max velocity)"
+      ],
+      "openingCandidate": "Cheetah",
+      "payoffCandidate": "SpaceX Falcon 9 (max velocity)",
+      "openingIdea": "Start with the iconic land speed champion, the cheetah, shown sprinting across a savanna silhouette.",
+      "payoffIdea": "End with the rocket’s blazing ascent, its bar dwarfing all others, delivering the ultimate speed surprise.",
+      "feasibilityNotes": [
+        "All subjects have publicly available speed figures.",
+        "Quantity‑bars can display each bar sequentially, keeping earlier bars on screen for visual comparison."
+      ]
+    },
+    {
+      "id": "record-ladder-speed",
+      "title": "Speed Ladder: Animal Burst Records vs. Human Speed Machines",
+      "viewerQuestion": "Which speed record holder—animal or machine—holds the top spot when we line them up side by side?",
+      "audiencePromise": "Watch a step‑by‑step ladder where a fish, a bird, a car and a train climb toward a rocket’s record.",
+      "strategy": "record-ladder",
+      "scope": "within-request",
+      "scopeReason": "The brief supplies a clear set of record‑type speeds; no extra subjects needed.",
+      "selectionRule": "Rank subjects by their peak speed and present them in ascending order.",
+      "metric": "speed",
+      "unit": "km/h",
+      "measurementBasis": "Peak speed achieved in a single burst (animals) or certified top speed (vehicles).",
+      "visualApproach": "quantity-bars",
+      "background": {
+        "environment": "transport",
+        "reason": "A transport‑themed backdrop (stylized runway/track) reinforces the speed competition theme."
+      },
+      "candidates": [
+        "Sailfish",
+        "Cheetah",
+        "Golden eagle (stoop)",
+        "Peregrine falcon (diving)",
+        "Bugatti Chiron",
+        "Eurostar train",
+        "Shinkansen bullet train",
+        "SpaceX Falcon 9 (max velocity)"
+      ],
+      "openingCandidate": "Sailfish",
+      "payoffCandidate": "SpaceX Falcon 9 (max velocity)",
+      "openingIdea": "Begin with the sailfish cutting through water, its bar rising quickly.",
+      "payoffIdea": "Finish with the Falcon 9’s bar soaring far above all, highlighting the ultimate human‑made speed.",
+      "feasibilityNotes": [
+        "The ladder format naturally creates tension as each bar slightly exceeds the previous.",
+        "No need for complex background changes; a single transport backdrop suffices."
+      ]
+    },
+    {
+      "id": "unexpected-neighbors-speed",
+      "title": "Speed Surprise: When a Fish Beats a Supercar",
+      "viewerQuestion": "Can a marine predator or a diving bird actually outrun some of the world’s fastest cars and trains?",
+      "audiencePromise": "You’ll be shocked to see a sailfish’s burst speed surpass a Bugatti and a falcon’s dive rival a bullet train.",
+      "strategy": "unexpected-neighbors",
+      "scope": "within-request",
+      "scopeReason": "All candidates come directly from the user’s brief; each has a clear, comparable top‑speed figure.",
+      "selectionRule": "Select the eight listed subjects, ordering them to highlight the surprising adjacency of animal and machine speeds.",
+      "metric": "speed",
+      "unit": "km/h",
+      "measurementBasis": "Maximum burst speed for animals; certified top speed for vehicles and rockets.",
+      "visualApproach": "quantity-bars",
+      "background": {
+        "environment": "sky",
+        "reason": "A unified sky backdrop lets birds, rockets and a stylized silhouette of a fish appear together without visual clutter."
+      },
+      "candidates": [
+        "Sailfish",
+        "Cheetah",
+        "Golden eagle (stoop)",
+        "Peregrine falcon (diving)",
+        "Bugatti Chiron",
+        "Eurostar train",
+        "Shinkansen bullet train",
+        "SpaceX Falcon 9 (max velocity)"
+      ],
+      "openingCandidate": "Sailfish",
+      "payoffCandidate": "SpaceX Falcon 9 (max velocity)",
+      "openingIdea": "Introduce the video with a sleek cutout of a sailfish darting upward, its bar quickly surpassing the first car bar.",
+      "payoffIdea": "Conclude with the Falcon 9’s bar soaring far beyond all, delivering a dramatic payoff that cements the “wow” moment.",
+      "feasibilityNotes": [
+        "Quantity‑bars allow direct visual comparison; each new bar appears while previous ones stay, emphasizing the neighborly surprise.",
+        "Eight items fit comfortably within a 45‑second silent short, keeping pacing brisk."
+      ]
+    }
+  ]
+}
