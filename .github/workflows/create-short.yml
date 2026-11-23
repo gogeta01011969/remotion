@@ -114,7 +114,7 @@ jobs:
         env:
           CURRENT_JOB_ID: ${{ steps.select.outputs.job_id }}
         run: npm run automate -- --resume "$CURRENT_JOB_ID" --restore .automation/restored
-      - name: Research, create assets and render
+      - name: Plan comparison, create images and render
         id: create
         if: steps.select.outputs.job_id != ''
         continue-on-error: true
