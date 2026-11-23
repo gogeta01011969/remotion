@@ -436,7 +436,45 @@
       "createdAt": "2026-11-21T11:42:36.632Z",
       "updatedAt": "2026-11-21T11:45:10.355Z",
       "error": "motion failed validation after three attempts: Comparisons support 2–15 verified objects; found 0. Aim for 8–15, but never pad with unsupported objects."
+    },
+    {
+      "id": "short-2026-11-23-b21b0225639c",
+      "topic": "World's tallest statues compared by height",
+      "metric": "height",
+      "scopeKey": "topic-b21b0225639cdad8",
+      "entityKeys": [],
+      "actualEntityKeys": [],
+      "whyInteresting": "Shows the staggering scale of human monuments, from the Statue of Unity in India to the classic Statue of Liberty, letting viewers instantly grasp how many stories tall each masterpiece is.",
+      "family": "landmarks",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible",
+      "selectionMode": "automatic",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-23T21:37:53.482Z",
+      "updatedAt": "2026-11-23T21:37:53.482Z"
     }
   ],
-  "queue": []
+  "queue": [
+    {
+      "topic": "Largest everyday storage containers by volume",
+      "metric": "volume",
+      "scopeKey": "topic-d9b2ac8d5cad5116",
+      "entityKeys": [],
+      "whyInteresting": "Compares familiar storage items—from a kitchen trash bin to a 40‑foot shipping container—illustrating how much space we actually use and how massive industrial containers truly are.",
+      "family": "storage-capacity",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible"
+    },
+    {
+      "topic": "Fastest land vehicles by top speed",
+      "metric": "speed",
+      "scopeKey": "topic-ce4408372cf6ec50",
+      "entityKeys": [],
+      "whyInteresting": "Pits iconic speed machines—like the Bugatti Chiron, a modern hypercar, against legendary land speed record cars and a high‑speed train—highlighting engineering breakthroughs across eras.",
+      "family": "speed-comparisons",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible"
+    }
+  ]
 }
