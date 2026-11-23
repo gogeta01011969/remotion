@@ -16,7 +16,7 @@ import type {WebFetch} from './research-web';
 import type {VerifiedMeasurement} from './bounded-research';
 import {isQuantityMetric} from '../shorts/measurements';
 
-export type ComparisonRequest={topic:string;id:string;directory:string;root:string;log:(s:string)=>void;topicBrief?:{family?:string;angle?:string;depth?:string;whyInteresting?:string;proposedObjects?:string[]}};
+export type ComparisonRequest={topic:string;id:string;directory:string;root:string;log:(s:string)=>void;topicBrief?:{metric?:SizeDataset['metric'];family?:string;angle?:string;depth?:string;whyInteresting?:string;proposedObjects?:string[]}};
 export type ComparisonDependencies={client?:Pick<GroqClient,'chat'>;config?:ReturnType<typeof loadGroqConfig>;webFetch?:WebFetch;research?:(request:ComparisonRequest,concept:ComparisonConcept,urls:string[])=>Promise<Research>};
 
 // Visual variants/calibration make the full renderer schema unnecessarily

@@ -19,7 +19,7 @@ async function main(){
   const {values}=parseArgs({options:{data:{type:'string'},topic:{type:'string'},id:{type:'string'},episode:{type:'string'},'asset-root':{type:'string'},'asset-manifest':{type:'string'},'asset-provider':{type:'string'},'ideas-only':{type:'boolean'},'plan-only':{type:'boolean'},'prepare-only':{type:'boolean'},help:{type:'boolean'}}});
   if(values.help){console.log('npm run compare -- --data dataset.json [--asset-root directory] [--episode episode.json]\nPrompt: npm run compare -- --topic "Tallest structures" --id structure-run [--asset-provider provider.json]\nOptional: --ideas-only (topic input only; three concepts, no research/images/render), --asset-manifest manifest.json, --plan-only, --prepare-only.\nRepeat the same topic and ID to reuse saved stages.');return;}
   if(Boolean(values.data)===Boolean(values.topic))throw new Error('Provide exactly one of --data dataset.json or --topic.');
-  if(values.topic&&!values.id)throw new Error('Prompt runs require --id so research and assets can be resumed.');
+  if(values.topic&&!values.id)throw new Error('Prompt runs require --id so planning and assets can be resumed.');
   if(values['asset-provider']&&values['asset-manifest'])throw new Error('Use either --asset-provider or --asset-manifest.');
   if(values['plan-only']&&values['prepare-only'])throw new Error('Choose either --plan-only or --prepare-only.');
   if(values['ideas-only']&&(!values.topic||values['plan-only']||values['prepare-only']||values['asset-provider']||values['asset-manifest']||values.episode))throw new Error('--ideas-only requires --topic and cannot be combined with asset, episode or render options.');

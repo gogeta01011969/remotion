@@ -35,11 +35,11 @@ export function finalizeComparisonPresentation(raw:SizeDataset,warn:(message:str
   const measurement=comparisonMeasurementLabel({...data,asOf:undefined});
   const headline=data.metric==='speed'?`Which is faster: ${names[a]} or ${names[b]}?`:`${measurement}: ${names[a]} vs ${names[b]}`;
   const neutral=`${measurement.split(' (')[0]} comparison`;
-  const title=headline.length<=100?headline:neutral;
-  if(data.title!==title)warn('Replaced the provisional headline with an evidence-bound comparison hook.');
+  const title=data.dataQuality==='estimated'&&/^(?:how|what|which|can|could|would|is|are)\b.*\?$/i.test(data.title)?data.title:headline.length<=100?headline:neutral;
+  if(data.title!==title)warn('Replaced the provisional headline with a measurement-based comparison hook.');
   data.title=title;
   for(const item of data.items)item.conditionLabel=data.metric==='count'&&item.asOf?`${item.asOf} estimate`:comparisonCondition(item.note,data.metric);
-  if(data.metric==='speed'){
+  if(data.metric==='speed'&&data.dataQuality!=='estimated'){
     data.basis='Documented speed figures under the conditions identified per object; service, diving, record and limited speeds are distinct conditions, not one identical test.';
     if(data.items.some(i=>!i.conditionLabel))warn('Some speed conditions have no concise supported label; their original source qualifiers remain in the description.');
   }
@@ -48,14 +48,15 @@ export function finalizeComparisonPresentation(raw:SizeDataset,warn:(message:str
   if(data.asOf&&!(data.metric==='count'&&data.countBasis!=='fixed')&&data.editorial?.claim.kind!=='top-n'){
     delete data.asOf;warn('Omitted an irrelevant comparison-wide date.');
   }
-  data.context=`A curated comparison of ${data.items.length} documented objects.`;
+  const estimated=data.dataQuality==='estimated';
+  data.context=estimated?'An illustrative comparison using approximate values.':`A curated comparison of ${data.items.length} documented objects.`;
   const background=resolveSizeBackground({...data,backgroundReason:undefined});
   data.backgroundReason=`${background.reason} The shared setting is illustrative; only the selected objects and their measurements are compared.`.slice(0,400);
   if(data.editorial){
     data.editorial.viewerQuestion=title;
-    data.editorial.throughline=`Compare ${data.items.length} supported objects using ${data.metric} in ${data.unit}.`;
+    data.editorial.throughline=`Compare ${data.items.length} ${estimated?'real objects with approximate values':'supported objects'} using ${data.metric} in ${data.unit}.`;
     data.editorial.selectionRule='Use the supported selected objects in measured order, without implying an exhaustive world ranking.';
-    data.editorial.claim={kind:'curated',scope:'A curated selection of sourced measurements, not a complete ranking.',sourceIds:[...new Set(data.items.flatMap(i=>i.sourceIds))]};
+    data.editorial.claim={kind:'curated',scope:estimated?'Illustrative approximate comparison, not a verified ranking.':'A curated selection of sourced measurements, not a complete ranking.',sourceIds:[...new Set(data.items.flatMap(i=>i.sourceIds))]};
     // The old notes may mention dropped candidates. Selection facts and source
     // qualifiers remain in the research artifacts rather than stale public copy.
     delete data.editorial.questionRevision;

@@ -53,7 +53,7 @@ test('manual topics never silently change scope and shared budgets stop further 
   const f=fixture();let selections=0;
   try{
    if(manual)f.job.selectionMode='manual';
-   const result=await runAutomationWorkflow({...f.options,usage:()=>({...f.options.usage(),stageRequests:9})},{reserve:async()=>{selections++;throw Error('Must not select another topic');},createVideo:options=>createAutomationVideo(options,{generateData:async()=>{throw new UnworkableTopicError('Insufficient evidence');}})});
+   const result=await runAutomationWorkflow({...f.options,usage:()=>({...f.options.usage(),stageRequests:10})},{reserve:async()=>{selections++;throw Error('Must not select another topic');},createVideo:options=>createAutomationVideo(options,{generateData:async()=>{throw new UnworkableTopicError('Insufficient evidence');}})});
    assert.equal(result.status,'no-video');assert.equal(selections,0);assert.equal(result.attempts.length,1);assert.ok('reason' in result&&result.reason?.includes(manual?'scope':'budget'));
   }finally{rmSync(f.root,{recursive:true,force:true});}
  }

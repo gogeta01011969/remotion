@@ -2,7 +2,7 @@ import {z} from 'zod';
 
 export const localAssetPath=z.string().max(240).regex(/^[a-zA-Z0-9][a-zA-Z0-9_./-]*\.(png|webp|jpg|jpeg)$/i).refine(s=>!s.split('/').some(p=>p==='..'||p==='.'),'Use a relative local raster asset path without traversal.');
 export const boundsSchema=z.object({x:z.number().nonnegative(),y:z.number().nonnegative(),width:z.number().positive(),height:z.number().positive()}).strict();
-const provenance={attribution:z.string().min(1).max(1000),referenceUrls:z.array(z.string().url()).min(1).max(8)};
+const provenance={attribution:z.string().min(1).max(1000),referenceUrls:z.array(z.string().url()).max(8)};
 const calibration=z.object({pixelWidth:z.number().int().positive(),pixelHeight:z.number().int().positive(),bounds:boundsSchema,coverage:z.number().positive().max(1),sha256:z.string().regex(/^[a-f0-9]{64}$/)}).strict().superRefine((c,ctx)=>{
   if(c.bounds.x+c.bounds.width>c.pixelWidth||c.bounds.y+c.bounds.height>c.pixelHeight||c.pixelWidth*c.pixelHeight>16777216)ctx.addIssue({code:'custom',message:'Calibration bounds must fit the decoded image.'});
 });

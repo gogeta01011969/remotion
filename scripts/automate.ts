@@ -68,7 +68,7 @@ async function main(){
         summary();
         const assemblyFile=path.join(root,'out/comparisons',job.id,'dataset-assembly.json');
         if(process.env.GITHUB_STEP_SUMMARY&&existsSync(assemblyFile)){
-          try{const assembly=JSON.parse(readFileSync(assemblyFile,'utf8'));appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\nDataset assembly: ${assembly.selectedMeasurements} verified objects, built locally with ${assembly.modelRequests} model requests.\n`);}catch{/* Optional diagnostic, not a generation requirement. */}
+          try{const assembly=JSON.parse(readFileSync(assemblyFile,'utf8'));appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\nDataset assembly: ${assembly.selectedMeasurements} ${assembly.mode==='simple-estimated'?'objects with approximate AI values (no mandatory web research)':'verified objects'}, built locally with ${assembly.modelRequests??0} assembly model requests.\n`);}catch{/* Optional diagnostic, not a generation requirement. */}
         }
         const warningsFile=path.join(root,'out/comparisons',job.id,'quality-warnings.json');
         if(process.env.GITHUB_STEP_SUMMARY&&existsSync(warningsFile)){

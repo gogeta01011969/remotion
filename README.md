@@ -1,10 +1,12 @@
 # Motion Lab
 
-**Silent visual Shorts:** comparison videos now explain themselves through motion, labeled objects, correct dimensional scaling and concise statistics (names, measurements and named ratios only). No narration or soundtrack. Reusable sphere renderers and per-run cutouts handle appearance. All size comparisons use one smallest-to-largest zoom template with measured, animated typography and object-related backgrounds (including space, sports, architecture, nature and geography). New runs aim for 8–15 supported objects, with 2–7 accepted when research yields fewer, with scale-dependent arrivals, 2–3 seconds of settled focus and a final overview within 60 seconds. Dense charts use two rows of subject images and names. Run `npm run compare -- --data comparisons/sports-balls.json`; see [comparison workflow](comparisons/README.md).
+**Current comparison pipeline:** topic → one Groq comparison plan → Cloudflare objects → Remotion MP4 → optional YouTube upload → cleanup. The plan chooses meaningful objects, approximate values, appearance and a related background together. Web research, exact quotations and citation repair are no longer mandatory. Videos display estimates with ≈ and disclose them in the description. Aim for 8–15 recognizable objects; a useful smaller comparison is fine. Existing sourced datasets still work. See [comparison workflow](comparisons/README.md) and [GitHub Actions setup](automation/README.md).
 
-**Per-run comparison objects:** height, length, width, wingspan, area and volume now support run-specific cutouts, calibrated alpha bounds, independent proportions and dimensional scaling. `npm run compare -- --topic "Tallest statues excluding pedestals" --id statues-run` saves researched measurements and per-object asset requests; supply the images or configure a local asset provider for unattended rendering. No fixed object catalog is required. See the [comparison contracts and provider interface](comparisons/README.md).
+```sh
+npm run compare -- --topic "How tall are everyday things beside famous structures?" --id everyday-height
+```
 
-**Shorts concept planning:** new topic runs propose three audience-focused angles before research, choose one, then select purposeful objects around an opening reference, interesting contrasts and final payoff. The editorial selection travels with the dataset into the writing brief. Try `npm run compare -- --topic "Size comparison of different flying objects" --id flying-objects --ideas-only` to inspect provisional concepts without generating images or rendering. Existing curated datasets and completed runs remain supported.
+The same silent templates handle physical sizes and sequential bar charts. Geometry, pacing, text placement, Cloudflare Klein 4B image creation and local background removal are reusable; no AI-generated React runs. The optional `--ideas-only` command is an independent brainstorming preview, not a required planning stage.
 
 **What If Shorts:** run `npm run generate -- --topic "What if gravity were half as strong?"` for GroqCloud research → script → motion plan → local MP4. See [automation setup](AUTOMATION.md) and [the Shorts architecture](SHORTS.md). The original landscape sample below remains available.
 
@@ -99,4 +101,4 @@ Quantity comparison videos use a fixed linear axis, value-proportional bar growt
 
 Automatic workflow runs can skip unworkable topics and try up to three candidates within one shared usage budget. Explicit manual topics keep their scope. Provider cooldowns defer work; exhausted candidates report `no-video` without uploading an empty or invented result. See [run-level resilience](automation/README.md#run-level-resilience).
 
-Verified comparison measurements now become render inputs through deterministic local assembly, with zero comparison-data model calls. Optional image-detail planning falls back to identity-based Cloudflare prompts when unavailable; unsupported facts and invalid final media still cannot be published.
+New topic runs normally need one comparison-plan model request; automatic topic selection adds one request when the queue is empty. Optional metadata is normalized locally. At least two usable objects, compatible units, safe assets and decodable final media remain required. Provider quotas/outages can still defer a run; approximate numbers are not presented as verified facts.

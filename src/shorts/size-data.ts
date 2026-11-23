@@ -18,7 +18,7 @@ export const sizeItemSchema = z.object({
   asOf:measurementDate.optional(),
   conditionLabel:z.string().trim().min(1).max(40).optional(),
   country: z.string().trim().min(1).max(56).optional(),
-  sourceIds: z.array(slug).min(1),
+  sourceIds: z.array(slug),
   approximate: z.boolean().default(false),
   range: z.object({min: z.number().finite(), max: z.number().finite()}).strict().optional(),
   note: z.string().max(160).default(''),
@@ -27,6 +27,7 @@ export const sizeItemSchema = z.object({
   if (item.range && !(item.range.min <= item.value && item.value <= item.range.max)) ctx.addIssue({code: 'custom', message: 'Representative measurement must lie inside its range.'});
 });
 export const sizeDatasetSchema = z.object({
+  dataQuality:z.enum(['sourced','estimated']).optional(),
   presentationVersion:z.number().int().positive().optional(),
   template: z.literal('size-comparison'), id: slug, title: z.string().min(5).max(100),
   subject: z.enum(comparisonSubjects).default('generic'),
@@ -44,12 +45,13 @@ export const sizeDatasetSchema = z.object({
   context: z.string().min(1).max(100),
   editorial:comparisonEditorialSchema.optional(),
   items: z.array(sizeItemSchema).min(comparisonLimits.minimum).max(comparisonLimits.maximum),
-  sources: z.array(z.object({id: slug, title: z.string().min(1), url: z.string().url()}).strict()).min(1),
+  sources: z.array(z.object({id: slug, title: z.string().min(1), url: z.string().url()}).strict()),
 }).strict().superRefine((data, ctx) => {
   const issue=(message:string)=>ctx.addIssue({code:'custom',message});
+  if(data.dataQuality!=='estimated'&&(!data.sources.length||data.items.some(item=>!item.sourceIds.length)))issue('Sourced comparisons need supplied sources for every measurement.');
   const linear=['nm','um','mm','cm','m','km','AU','ly'];
   if(!metricUnitCompatible(data.metric,data.unit))issue('Metric and unit must describe the same dimension.');
-  if(data.metric==='count'&&(!data.countBasis||data.countBasis!=='fixed'&&!data.asOf&&!data.items.every(item=>item.asOf)))issue('Counts need countBasis; populations and inventories also need an asOf date.');
+  if(data.metric==='count'&&(!data.countBasis||data.dataQuality!=='estimated'&&data.countBasis!=='fixed'&&!data.asOf&&!data.items.every(item=>item.asOf)))issue('Counts need countBasis; populations and inventories also need an asOf date.');
   for(const item of data.items){
     if(data.metric==='temperature'){try{convertMeasurement(item.value,data.unit,'K');if(item.range){convertMeasurement(item.range.min,data.unit,'K');convertMeasurement(item.range.max,data.unit,'K');}}catch{issue('Temperature cannot be below absolute zero.');}}
     else if(item.value<0||!['count','speed','duration','energy','power'].includes(data.metric)&&item.value===0)issue('This measurement requires nonnegative or positive values.');

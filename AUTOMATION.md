@@ -8,13 +8,13 @@ New `generate` jobs default to `--presentation silent`. The script stage writes 
 
 Saved jobs without a presentation field retain narrated behavior when resumed. Authored legacy briefs without the field also remain narrated; new silent briefs explicitly contain `presentation: "silent"`. To convert an existing narrated job, create a new adaptation with `--presentation silent`; changing presentation in place on resume is rejected. Sections below describing voice adapters, word budgets, speech delivery and Hindi pronunciation apply to **narrated mode**. Silent scripts instead use at most two short notes per scene, each no longer than 12 words; attribution must be visible on screen.
 
-The comparison workflow uses a separate validated data/visual-story contract; see [silent comparisons](comparisons/README.md). New topic runs use concept proposals → research → editorial item selection → assets → shared zoom template → local render. The selected viewer question, opening reference, contrasts and payoff travel with the dataset into its writing brief. `compare --ideas-only` previews provisional concepts without research, images or rendering. Existing curated datasets continue to work. Editorial choices remain hypotheses until videos are reviewed and audience performance is measured.
+The comparison workflow is simpler: topic → one Groq plan (objects, approximate values, appearance, background) → Cloudflare images → shared Remotion template → MP4. It does not require web research, exact quotes, a separate script or a separate motion-plan request. Values are marked approximate and disclosed in the description. The research/script/motion sections below describe the separate older `generate` story workflow, not the current comparison default. See [silent comparisons](comparisons/README.md).
 
 ## GitHub Actions automation
 
 Linux workflows now cover automatic topic selection, duplicate checks, durable
 history, checkpoint recovery, CPU image cutouts, rendering, artifact archival and
-cleanup. YouTube integration is deferred.
+cleanup. Optional private-by-default YouTube uploads are available after [OAuth setup](automation/YOUTUBE.md).
 
 See [the Linux automation guide](automation/README.md) for repository setup,
 secrets, scheduling, local commands, recovery rules and current limits. The main
@@ -26,8 +26,7 @@ The repository is now connected, and [the first hosted Linux verification](https
 passed dependency setup, tests, CPU foreground extraction, offline rendering and
 artifact upload. Full automatic generation still needs its three Actions secrets
 and a live validation run. A successful render/archive is
-not a YouTube upload. Fresh live research remains subject to validation and API
-quotas; the workflows preserve failures and defer retries rather than claiming
+not a YouTube upload. Fresh generation remains subject to API quotas and basic render checks; the workflows preserve failures and defer retries rather than claiming
 those jobs succeeded.
 
 ## Content profiles

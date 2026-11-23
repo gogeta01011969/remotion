@@ -1,3 +1,4 @@
+import {planSimpleComparison} from './simple-comparison';
 import {assembleVerifiedComparison} from './comparison-assembly';
 import {finalizeComparisonPresentation} from './comparison-presentation';
 import {comparisonWarningSink} from './comparison-warnings';
@@ -63,6 +64,13 @@ export function runAssetProvider(data:SizeDataset,options:{configFile:string;dir
 }
 
 export async function generateComparisonData(options:ComparisonRequest,dependencies:ComparisonDependencies={}){
+  ensureComparisonRequest(options);
+  if(!dependencies.research)return planSimpleComparison(options,dependencies);
+  return generateResearchedComparisonData(options,dependencies);
+}
+
+// Explicit legacy adapter; the automatic pipeline does not call web research.
+export async function generateResearchedComparisonData(options:ComparisonRequest,dependencies:ComparisonDependencies={}){
   ensureComparisonRequest(options);
   const datasetPath=path.join(options.directory,'dataset.raw.json');
   if(existsSync(datasetPath)){const cached=sizeDatasetSchema.parse(JSON.parse(readFileSync(datasetPath,'utf8')));validateMeasuredDataset(cached,options.directory);const finalized=finalizeComparisonPresentation(cached,comparisonWarningSink(options.directory,options.log));writeJson(datasetPath,finalized);return finalized;}

@@ -9,7 +9,7 @@ import {briefSchema,shortSchema,shortDuration} from '../shorts/schema';
 import {redact,type GroqClient,loadGroqConfig} from './groq';
 import {writeJson} from './stages';
 import {actualDuplicate,saveLedger,type AutomationJob,type AutomationConfig,type TopicLedger} from './topic-automation';
-import {sizeDatasetSchema} from '../shorts/size-data';
+import {sizeDatasetSchema,type SizeDataset} from '../shorts/size-data';
 import {quotaDeferral,repairLegacyMillisecondBackoff} from './quota-retry';
 import {ensureComparisonImages} from './comparison-images';
 
@@ -98,10 +98,13 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
   try{
     const rawFile=path.join(dir,'dataset.raw.json');
     if(archiveOnly&&!existsSync(rawFile))throw new Error('Rendered job needs its checkpoint restored before archival; no new API calls were made.');
-    let data=archiveOnly?sizeDatasetSchema.parse(JSON.parse(readFileSync(rawFile,'utf8'))):await (dependencies.generateData??generateComparisonData)({topic:job.topic,id:job.id,directory:dir,root,log:options.log,topicBrief:{family:job.family,angle:job.angle,depth:job.depth,whyInteresting:job.whyInteresting,proposedObjects:job.entityKeys}},{client:options.client,config:options.groqConfig});
+    let data=archiveOnly?sizeDatasetSchema.parse(JSON.parse(readFileSync(rawFile,'utf8'))):await (dependencies.generateData??generateComparisonData)({topic:job.topic,id:job.id,directory:dir,root,log:options.log,topicBrief:{metric:(job.metric??undefined) as SizeDataset['metric']|undefined,family:job.family,angle:job.angle,depth:job.depth,whyInteresting:job.whyInteresting,proposedObjects:job.entityKeys}},{client:options.client,config:options.groqConfig});
     if(!archiveOnly)requireComparisonCount(data.items.length);
     if(!config.allowedMetrics.includes(data.metric as AutomationConfig['allowedMetrics'][number]))throw new Error('This metric needs an asset provider not enabled for unattended runs.');
-    if(job.metric&&job.metric!==data.metric)throw new Error('The researched metric changed from the reserved topic; review the comparison scope.');
+    if(job.metric&&job.metric!==data.metric){
+      if(data.dataQuality!=='estimated')throw new Error('The researched metric changed from the reserved topic; review the comparison scope.');
+      options.log(`Using the planned ${data.metric} comparison instead of the provisional ${job.metric} topic suggestion.`);
+    }
     const duplicate=actualDuplicate(job,data,ledger);
     if(duplicate){job.status='skipped-duplicate';job.error=duplicate;saveLedger(stateFile,ledger);return {status:job.status,id:job.id,reason:duplicate};}
     if(!archiveOnly)data=await (dependencies.planImages??ensureComparisonImages)(data,{directory:dir,client:options.client,model:options.groqConfig.motionModel,log:options.log});
@@ -121,7 +124,7 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
     writeJson(receiptFile,{rawSha:digest(rawFile),sourceSha:fingerprint,videoSha:verified.sha256,files});
     const delivery=path.join(root,'out/automation/delivery',job.id);mkdirSync(delivery,{recursive:true});
     copySafe(path.join(root,'out/shorts',job.id),delivery);copySafe(verified.props,path.join(delivery,'video.json'));
-    for(const name of ['dataset.json','dataset-assembly.json','research.json','research-plan.json','research-web.json','research-recovery.json','research-measurements.json','research-receipt.json','idea-plan.json','editorial-plan.json','background-plan.json','measurements.json','asset-manifest.json','quality-warnings.json'])copySafe(path.join(dir,name),path.join(delivery,name));
+    for(const name of ['dataset.json','comparison-plan.json','dataset-assembly.json','research.json','research-plan.json','research-web.json','research-recovery.json','research-measurements.json','research-receipt.json','idea-plan.json','editorial-plan.json','background-plan.json','measurements.json','asset-manifest.json','quality-warnings.json'])copySafe(path.join(dir,name),path.join(delivery,name));
     writeJson(path.join(delivery,'delivery.json'),{id:job.id,topic:job.topic,videoSha256:verified.sha256,sourceSha:fingerprint});
     job.videoSha256=verified.sha256;job.artifactName=`short-${job.id}`;job.status=options.archiveTarget==='github'?'rendered':'complete';job.updatedAt=new Date().toISOString();saveLedger(stateFile,ledger);
     return {status:job.status,id:job.id,videoPath:path.join(delivery,`${job.id}.mp4`),deliveryPath:delivery};

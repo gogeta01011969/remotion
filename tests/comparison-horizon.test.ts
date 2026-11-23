@@ -36,15 +36,15 @@ test('new ideas are capability-checked and selected by coverage rather than firs
   try{
     const result=await reserveTopic({ledger,config,root,directory:root,now,model:'test',log:()=>{},client:{chat:async request=>{calls++;input=JSON.parse(request.messages[1].content);return {choices:[{message:{content:JSON.stringify({candidates})}}]};}}});
     assert.equal(result.family,'winged-life');assert.equal(result.angle,'unexpected-neighbors');assert.equal(ledger.queue.length,2);assert.equal(calls,1);
-    assert.ok(input.horizon.families.length>5);assert.ok(input.recentHistory.length<=8);
+    assert.ok(input.availableSubjects.length>5);assert.ok(input.recentHistory.length<=12);
     assert.equal(jobSchema.safeParse({...result,family:undefined,angle:undefined,depth:undefined}).success,true);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
-test('a mismatched family and metric must be repaired before topic reservation',async()=>{
+test('optional family mismatches are corrected locally without another model request',async()=>{
   const root=mkdtempSync(path.join(tmpdir(),'horizon-invalid-'));let calls=0;
   try{
     await reserveTopic({ledger:ledgerSchema.parse({version:1,queue:[],jobs:[]}),config,root,directory:root,now,model:'test',log:()=>{},client:{chat:async()=>{calls++;const drafts=structuredClone(candidates);if(calls===1)drafts[0].family='watercraft';return {choices:[{message:{content:JSON.stringify({candidates:drafts})}}]};}}});
-    assert.equal(calls,2);
+    assert.equal(calls,1);
   }finally{rmSync(root,{recursive:true,force:true});}
 });
 test('incompatible catalog configuration stops before spending model requests',async()=>{

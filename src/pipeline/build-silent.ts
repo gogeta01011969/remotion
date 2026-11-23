@@ -21,7 +21,7 @@ export async function buildSilent(brief:Brief,root:string,prepareOnly:boolean) {
   let offset=0,index=0;const subtitles:string[]=[];
   input.scenes.forEach(scene=>{scene.captions.forEach(cue=>subtitles.push(`${++index}\n${srtTime(offset+cue.from)} --> ${srtTime(offset+cue.from+cue.duration)}\n${cue.text}\n`));offset+=scene.durationInFrames;});
   writeFileSync(path.join(outputDir,'captions.srt'),subtitles.join('\n'));
-  writeFileSync(path.join(outputDir,'youtube.txt'),`${brief.topic}\n\n${brief.description}\n\nSilent visual story. No narration or soundtrack.\n\nResearch:\n${brief.sources.map(s=>`${s.title}: ${s.url}`).join('\n')}\n`);
+  writeFileSync(path.join(outputDir,'youtube.txt'),`${brief.topic}\n\n${brief.description}\n\nSilent visual story. No narration or soundtrack.${brief.sources.length?`\n\nReferences:\n${brief.sources.map(s=>`${s.title}: ${s.url}`).join('\n')}`:''}\n`);
   console.log(`Prepared silent visual story: ${shortDuration(input)/input.fps}s; ${subtitles.length} brief notes. No speech service required.`);
   if(prepareOnly)return;
   await renderPrepared({input,root,outputDir,id:brief.id});

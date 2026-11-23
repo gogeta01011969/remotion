@@ -8,26 +8,17 @@ Every run can define new objects. The renderer does not require a hardcoded stat
 npm run compare -- --topic "Tallest statues, excluding pedestals" --id statues-run
 ```
 
-This uses the existing GroqCloud configuration (`GROQCLOUD_API_KEY` in `.env.local`) for **concept selection, research and structured object planning**. It first proposes three Shorts angles and selects one, then searches/opens sources to verify the candidates, measurement definition and visual requirements. Finally it aims for 8–15 purposeful objects (accepting 2–7 when evidence supports fewer) and writes their dataset, editorial plan and per-object visual briefs. It does not ask an LLM to generate executable React.
+This uses `GROQCLOUD_API_KEY` in `.env.local` to make **one compact comparison plan**: an engaging angle, recognizable objects, approximate values in a common unit, appearance briefs and a related background. Klein 4B at four steps creates the real-object images; local background removal and calibration prepare them for the existing Remotion templates. Linux runs select the Linux provider automatically. No generated React code is executed.
 
-The concept stage considers a viewer question, recognizable anchor, meaningful contrasts and largest-object payoff. A broad topic can receive a stronger angle within its scope; explicitly named objects and restrictions remain constraints. Eight items are no longer a target to fill: four to six strong choices can be better. Small differences are allowed when they answer a specific question. These are editorial hypotheses, not measured audience-performance predictions.
+The aim is a meaningful video: familiar anchors, useful variety, interesting contrasts and a final reveal. Target 8–15 objects; a good smaller set is accepted, with a template minimum of two. Typical household objects can use representative measurements without finding an exact named model or opening a source page. Values use ≈ and the description explicitly says they are AI estimates. No URLs, source quotes or evidence IDs are invented.
 
-```sh
-# Review three provisional concepts without research, images or rendering
-npm run compare -- --topic "Size comparison of different flying objects" --id flying-objects --ideas-only
-# Continue the selected concept through research and the normal comparison build
-npm run compare -- --topic "Size comparison of different flying objects" --id flying-objects --asset-provider comparisons/cloudflare-klein.provider.json
-```
+Object appearance is included in that same plan, so the normal path needs no separate script, concept selection, web research, fact extraction or image-planning model request. Local code supplies IDs, colors, image framing/pose, dimensional scaling, pacing and text layout. Physical-size videos retain their zoom progression; quantities use sequential bars.
 
-`idea-plan.json` saves the three proposals, selected ID and selection reason. Candidate records and measurements are unverified at ideation; research can reject or replace candidates. The embedded dataset `editorial` field and `editorial-plan.json` record the opening, familiar anchor, consecutive surprising pair, final payoff, per-item roles/reasons, omitted candidates, sourced claim scope and any research-backed opening/payoff/question corrections. The writing brief and exported description retain this intent. The video remains silent with names/stats only; no extra hook paragraphs are placed on screen.
+Optional metadata is defaulted or omitted locally. Hard checks protect the actual video: at least two usable objects, compatible units, finite numeric values, supported visuals, usable image files and valid final media. These checks do not certify factual accuracy or likeness. Provider quotas and outages can still pause generation.
 
-Local validation checks dimensions, supported views, role coverage/order, actual first/last objects, adjacent comparison references and source IDs. Top-N claims require a date and consistent basis; those checks do not themselves prove a complete ranking. Engagement, actual asset accuracy and factual interpretation still need editorial review. Broad flying-object ideas cannot mix wingspan, rotor diameter and body length; geographic outlines require real geographic assets. Providers must supply suitable per-run assets. Mixed fixed landmarks use subject `structures` and show sourced countries, just like statues/buildings.
+`out/comparisons/<id>/comparison-plan.json` records the selected objects; `dataset.raw.json` caches render inputs; `dataset-assembly.json` reports the mode `simple-estimated`. Repeat the same topic and ID to reuse completed work. Old valid datasets remain reusable; old failed research does not gate a new plan when no dataset exists. Use a new ID to replan a completed video. `--ideas-only` remains a separate optional brainstorming tool, and does not control the normal simple plan.
 
-New runs target 8–15 supported objects, accepting 2–7 when research yields fewer; they do not fail solely for missing eight or pad with invented facts. Unopened-source references can trigger one focused follow-up, keeping source IDs stable. Unsupported candidate measurements are omitted and recorded as gaps; remaining verified candidates continue. Fewer than two supported objects still stops the job before asset creation. Model output is canonicalized into measurement order and compact context text; measured values, units, ranges and sources are not changed to make a story work. Provider-compatible structured output uses nullable optional fields so missing facts need not be invented. Full local schema checks remain authoritative even when a compact request or JSON-mode fallback is used. Groq rate-limit reset intervals are honored; repeat the same topic/ID after a longer quota reset to reuse the saved stages.
-
-Saved stages are reused on the same topic/ID. Existing completed datasets are not reinterpreted or regenerated with a new angle. Use a new ID to apply the new concept process to an older topic. The data-input route continues to accept curated datasets without an editorial field.
-
-A raster creation tool is a separate provider. Without a configured provider or supplied images, the command returns a machine-readable `needs-assets` result. `out/comparisons/statues-run/asset-requests.json` describes the objects, reference URLs, requested views, generation prompts and output directory. Create the requested files in that directory and repeat the same command. Saved research and object planning are reused without another AI request. Files can also be delivered in an asset manifest.
+A raster creation tool is a separate provider. Without a configured provider or supplied images, the command returns a machine-readable `needs-assets` result. `out/comparisons/statues-run/asset-requests.json` describes the objects, reference URLs, requested views, generation prompts and output directory. Create the requested files in that directory and repeat the same command. Saved object planning is reused without another AI request. Files can also be delivered in an asset manifest.
 
 To connect a local asset creator, pass an operator-owned configuration:
 
@@ -123,7 +114,7 @@ Compilation freezes the chosen setting into Studio props. `background-plan.json`
 
 An optional `--episode episode.json` controls durations and references; the episode must follow dataset order. Silent `cues` are empty: only object names, statistics and named ratios appear in the film. `references: [{"at":0,"itemId":"a"},{"at":0.58,"itemId":"b"}]` can change an already-revealed reference. Visual timing is independent of narration. Narrated legacy inputs remain available through explicit episode presentation settings.
 
-`out/comparisons/<id>/` contains status, prepared dataset, episode, story plan, measurement report, visual manifest and compiled brief. Prompt runs additionally save research, raw dataset and asset requests/provider state. `status.json` distinguishes `needs-assets`, `planned`, `prepared`, `rendering`, `complete` and `failed` states. Only a successful renderer exit marks a video complete.
+`out/comparisons/<id>/` contains status, prepared dataset, episode, story plan, measurement report, visual manifest and compiled brief. Prompt runs additionally save the simple comparison plan, raw dataset and asset requests/provider state. `status.json` distinguishes `needs-assets`, `planned`, `prepared`, `rendering`, `complete` and `failed` states. Only a successful renderer exit marks a video complete.
 
 `out/shorts/<id>/<id>.mp4` is the final silent H.264 MP4, with thumbnail, media verification, timing/motion reports and YouTube description containing sources and visual credits. `public/shorts/<id>/video.json` contains Studio props. No narration or soundtrack is generated.
 
@@ -198,15 +189,15 @@ for workflows, secrets, retention and recovery. Geographic area comparisons stil
 require supplied real outlines; automatic selection excludes area until suitable
 source acquisition is connected.
 
-## Bounded research and recovery
+## Legacy research adapter (not the default)
 
-Comparison research now retrieves sources locally with enforced search, page,
+The optional `generateResearchedComparisonData` adapter retrieves sources locally with enforced search, page,
 HTTP, response-size and evidence-text limits. Groq receives compact excerpts
 and cannot start a hidden browsing loop. Measurements require exact source
 quotations; unit conversion and ordering happen in local code. Existing agentic
 research checkpoints are preserved but re-researched before use. See
-[bounded source research](../automation/README.md#bounded-source-research) for
-limits, checkpoint files, secondary-source limitations and recovery behavior.
+[the bounded research module](../src/pipeline/bounded-research.ts) for its
+limits and [the retrieval module](../src/pipeline/research-web.ts) for source checks.
 
 ## Required object images
 
@@ -221,7 +212,7 @@ graphics remain supported. Completed videos are preserved.
 
 ## Comparisons beyond physical size
 
-The same research → editorial → Cloudflare assets → render workflow now supports:
+The same simple plan → Cloudflare assets → render workflow supports:
 
 | Metric | Visual encoding | Example unit |
 | --- | --- | --- |
@@ -284,13 +275,7 @@ roots); signed/zero-based charts use axis distance rather than invalid ratios.
 Pacing is deterministic and requires no additional model calls.
 
 
-New runs aim for 8–15 sourced objects throughout concept generation, dataset
-selection and CLI rendering. Topic selection favors broad, accessible source
-coverage; concepts can propose up to 18 candidates to allow research exclusions.
-Two-to-seven-item comparisons are valid fallback deliveries when supported
-evidence is limited. Never pad the comparison or invent an eighth measurement. Research is extracted in batches of at
-most six source excerpts, and image briefs in batches of five subjects. Validated
-batches are cached so an interrupted later batch does not repeat earlier calls.
+New runs aim for 8–15 meaningful objects, with two-to-seven-item comparisons accepted when they make a better focused video. One plan supplies approximate values and object appearance; no research exclusions or extra calls are needed just to reach eight.
 
 Charts with more than eight visible bars, or names that need wider columns, alternate two rows of subject images
 and names, using subtle leaders for the second row. Units and values stay on the
@@ -304,75 +289,34 @@ fixtures, reusing credited artwork. Their original datasets/measurements remain
 unchanged. These fixtures test rendering, not research or real-world rankings;
 they never enter the automated topic-generation pipeline.
 
-Canonical object names retain up to 80 characters for research, image identity
+Canonical object names retain up to 80 characters for image identity
 and metadata. Optional on-screen `displayLabel` values remain at most 24
 characters and may omit whole words from the original name in their original
 order. Unsupported/overlong generated aliases are discarded locally, leaving
-the canonical identity intact; they do not consume model-repair calls. Full
-canonical names still fail if they do not identify the selected evidence. Chart
+the canonical identity intact; they do not consume model-repair calls. Chart
 labels fit within a fixed-height band so long fallback names do not overlap the
 next row of images.
 
-At the model-generation boundary, only recognized top-level dataset fields are
-retained. Extra planning annotations such as `generationBrief` are ignored and
-their field names logged; the original response remains in the attempt artifact.
-Required fields, nested objects, measurement dimensions, and source/evidence
-binding remain strict. Detailed image briefs belong to the separate image
-planner, so dataset selection accepts lightweight visual descriptors without
-`visual.generation`. Saved-draft recovery checks all three local attempts before
-requesting a new model repair.
+At the model-generation boundary, extra annotations are ignored and optional metadata is normalized. Local code supplies IDs, colors, visual contracts and timing. Image identity is planned in the same request; trusted code supplies framing and output format. Missing country information is omitted. A malformed plan gets at most one correction request.
 
-Research extraction validates records independently. Wrong-age measurements,
-unmatched source quotations, invalid units and malformed individual records
-become candidate gaps, rather than causing the entire valid batch to repeat.
-The pipeline aggregates the verified subset across all source batches and only
-continues when at least two supported objects remain. Saved failed drafts can
-be revalidated locally under this policy. Adult checks retain juvenile context
-unless the selected measurement clause explicitly establishes adulthood, so a
-separate birth-weight sentence does not invalidate an explicit adult figure.
-
-Quality preferences are advisory. Optional editorial metadata, rationale wording,
-concept choice bookkeeping, countries, background notes, colors and other
-presentation details are corrected locally or omitted with a warning. A valid
-comparison may contain two or three verified objects and may be supported by
-one opened source. The normal target remains 8–15 objects. Missing role metadata
-uses the measured smallest-to-largest progression; missing countries are omitted
-rather than guessed. `quality-warnings.json` records these decisions and is
-included in the delivery/checkpoint, with a count in the Actions summary.
-
-Hard stops protect material correctness and execution: fewer than two verified
-objects, incompatible dimensions, unsupported measurements/source IDs, misleading
-ranking claims, unsafe or unusable assets, failed MP4 verification, provider
-unavailability and unsafe/ambiguous YouTube uploads. These cannot be solved by
-quietly presenting a different measurement or claiming a successful delivery.
+Hard stops protect execution and a coherent comparison: fewer than two usable objects, incompatible units, unsupported visual acquisition, unsafe/unusable assets, invalid final media and unsafe/ambiguous uploads. Source quotations are not a default requirement. The explicit legacy research adapter retains its evidence checks; it is not invoked automatically.
 
 Cutout edge contact is an advisory framing signal, not an automatic rejection. The Cloudflare provider can try one wider-margin generation per affected cached image, capped at two extra generations per invocation. It keeps the original usable cutout if repair fails or does not reduce edge contact, persists retry receipts to avoid repeat spending on resume, and writes warnings to `quality-warnings.json`. Empty, undecodable or non-transparent cutouts still fail asset inspection. Bounds checks cannot prove that generated objects are complete or accurate; no padding is added to disguise clipping.
 
 
 ## Presentation policy and quantity pacing
 
-The policy in `src/pipeline/comparison-policy.ts` distinguishes recommendations from hard requirements. Targeting 8–15 objects, familiar anchors, surprising pairs, contextual backgrounds, sourced countries and videos under 60 seconds are recommendations. Local code repairs or omits optional presentation metadata and logs `quality-warnings.json`. Unsupported individual selections are omitted; at least two verified compatible objects must remain. Unsafe/unusable assets, invalid dimensions, misleading scales and invalid media remain hard failures after recovery.
+The policy in `src/pipeline/comparison-policy.ts` distinguishes recommendations from hard requirements. Targeting 8–15 objects, familiar anchors, surprising pairs, contextual backgrounds, known countries and videos under 60 seconds are recommendations. Local code repairs or omits optional presentation metadata. Approximate values are allowed; compatible units, at least two usable objects, safe assets, valid scales and decodable media remain requirements.
 
-Presentation version 2 finalizes headlines from supported object pairs rather than trusting provisional free-form claims. Descriptions and background explanations refer to the surviving selection. Different documented speed conditions are allowed with concise context; detailed source qualifiers remain in the description. Non-count dates are omitted unless a dated ranking was verified. A successful framing check cannot certify image likeness.
+Presentation version 2 finalizes headlines from selected object pairs, or preserves a concise curiosity question for estimated plans. Descriptions and background explanations refer to the surviving selection. Speed conditions can use concise context. Generic publication dates are omitted. A successful framing check cannot certify image likeness.
 
 Quantity charts use a fixed final linear axis. Each bar grows linearly for `max(1, 3 × abs(value) / maxAbsValue)` seconds, holds for 2.5 seconds, and remains visible as later bars arrive. Names/images fade in over the first 0.2 seconds. The last settled hold is followed by a four-second overview. Zero values retain a visible label/thumbnail; negative bars grow downward. Timing is compiled once and rounded to the output frame rate, with growth/hold/overview frame counts in `timing-report.json`. Quantity duration follows the schedule up to 90 seconds; physical-size comparisons retain their 60-second maximum and existing scale-sensitive travel.
 
 Image plans describe identity and appearance; trusted code supplies cutout or sphere format, framing and annotation rules. Conflicting legacy cutout briefs receive a neutral identity-preserving fallback without extra LLM calls. Cache fingerprints include the appearance-planning version; only changed effective asset prompts regenerate. Saved datasets are re-finalized when resumed; already delivered videos are not rewritten.
 
 
-## Too little research evidence
+## Approximate plans and supplied datasets
 
-Two verified, compatible objects are the minimum for a comparison; the 8–15 target remains advisory. Generic categories have no universal dimension. Research may resolve them to named documented examples, recording the original `categoryCandidate` and preserving a precise model identity. Explicitly named objects keep their identity.
+The default plan uses plausible general-knowledge estimates (`dataQuality: "estimated"`), marks each value approximate and does not require sources or dates. Model-suggested curiosity questions can be retained; unsupported ranking claims are replaced with a neutral comparison hook. Optional metadata and image-format instructions are repaired locally.
 
-When initial extraction supports fewer than two objects, one bounded source-repair pass proposes at most four focused targets. It can try up to six new page attempts and two discovery queries, refresh relevant existing excerpts, and extract new evidence in cached batches. All reads—including a single retry for interrupted requests—share the original 18-search, 22-page-attempt, 48-HTTP-request and 21,600-character limits. It never invents a measurement or starts an unbounded browsing loop. Saved repair proposals and extraction batches are reused on resume.
-
-Dimension-table rows and overall dimensions take priority over unrelated history in excerpts. Finished-height comparisons reject construction milestones; named model codes must be established by their source. Unsupported records remain gaps. If fewer than two usable objects remain after recovery, generation stops with an evidence-specific explanation and preserves `research-measurements.json`, `research-web.json` and `research-recovery.json` in the checkpoint. This is a correctness failure, not an editorial preference.
-
-Groq JSON-format rejection can fall back within the existing three-attempt stage bound to ordinary text output, while retaining local JSON parsing and schema/evidence checks. Authentication, quota and unrelated provider errors retain their existing handling.
-
-
-## Verified evidence is the render input
-
-The normal research path assembles the dataset deterministically from `research-measurements.json`, rather than asking a model to reconstruct objects or repeat opaque evidence IDs. This takes zero comparison-data requests and preserves the frozen identities, values, units, source IDs and qualifiers. It sorts supported records, selects at most fifteen across the measured range, and derives a supported neighboring pair for the headline. `dataset-assembly.json` documents the selected count. Unusable older comparison-data drafts are bypassed when valid frozen evidence exists.
-
-Optional appearance planning may improve detail but cannot remove objects or block a valid measured comparison on formatting errors or exhausted Groq quota. Local identity briefs still use Cloudflare for the actual images. Source validation, coherent units/basis, safe usable assets and a valid final MP4 remain hard requirements. Missing dates for changing populations remain an evidence issue; documented year-only dates are preserved without inventing a month/day.
+Supplied datasets without `dataQuality: "estimated"` keep the existing source-reference contract. The legacy researched adapter and its diagnostic files remain available for integrations explicitly choosing verified-source work, but neither the CLI default nor GitHub Actions invokes it. Existing curated examples and completed render receipts are preserved.

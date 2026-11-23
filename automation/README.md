@@ -14,8 +14,8 @@ extraction remain available.
    This needs no API secrets. It typechecks, runs tests, extracts a real foreground
    using CPU inference, renders a fixed wingspan comparison, and uploads artifacts.
 3. Add repository Actions secrets `GROQCLOUD_API_KEY`, `CLOUDFLARE_ACCOUNT_ID`,
-   and `CLOUDFLARE_API_TOKEN`. Comparison research uses plain JSON completions; no
-   server-managed browser tool or extra search API key is needed.
+   and `CLOUDFLARE_API_TOKEN`. Comparison planning uses a compact JSON completion; no
+   browsing or search API is required.
    No `.env.local` file is needed on the runner.
 4. Run **Create a comparison Short → mode: auto** on the default branch.
    Leave `topic` blank for automatic selection, or supply a comparison topic.
@@ -45,13 +45,15 @@ and Groq/Cloudflare usage still depend on your accounts' allowances.
    An unavailable/malformed existing ledger causes failure rather than resetting
    history. The first ledger seeds the six curated comparison examples.
 2. Resume an unfinished eligible job, rank queued topics by recent subject/angle
-   coverage, or ask Groq for three feasible ideas. Candidates include a subject
-   family, angle, depth, measurement scope and proposed objects. Remaining
+   coverage, or ask Groq for three feasible ideas. Candidates contain a topic, measurement and curiosity rationale; local code
+   assigns scheduling metadata. The next stage chooses the actual objects. Remaining
    candidates stay in the queue for later runs.
 3. Check normalized titles, stable scope keys and substantially repeated object
    sets. Save the reservation remotely **before** paid generation work begins.
-4. Use the existing concept → research → local verified-data assembly pipeline.
-   Check the researched object set against history again before making images.
+4. Ask Groq for one simple plan: meaningful objects, approximate values in one
+   unit, appearance briefs and a related background. No mandatory research, source
+   quotes or separate script/motion requests. Check the selected object set against
+   history again before making images. Values are marked approximate and disclosed.
 5. Require per-run Cloudflare imagery for every depicted real object, including
    familiar sports balls and planets. Missing image briefs are completed before
    rendering. Create images with Klein 4B at four steps. Remove
@@ -65,7 +67,7 @@ and Groq/Cloudflare usage still depend on your accounts' allowances.
 Deduplication is a practical heuristic, not a semantic guarantee. Titles are
 normalized, scopes are compared within the same metric, and object sets are
 rejected at ≥75% Jaccard overlap when both contain at least four items. Proposed
-and researched sets are both retained. Failed/rejected topics remain in history,
+and selected sets are both retained. Failed/rejected topics remain in history,
 so automatic selection does not keep choosing them under a new run ID.
 
 Cloudflare object images are mandatory in automated object comparisons. The
@@ -150,10 +152,9 @@ before reservation defer only that workflow invocation.
 
 At the next trigger, a due job can resume within its attempt limit. A job whose
 retry time is still in the future does not block selecting a fresh topic. Repeated
-failures eventually become `needs-review`, and selection moves on. Research or
-fatal validation failures stop immediately; duplicates stop before asset creation.
-Individual unsupported research records are omitted into gaps while the other
-verified measurements continue; the pipeline stops when fewer than two remain.
+failures eventually become `needs-review`, and selection moves on. Unusable plans stop after bounded correction; duplicates stop before asset creation.
+Optional metadata issues are repaired locally. Fewer than two usable objects or
+incompatible measurement units still stop a comparison.
 Failed jobs remain failed, never `complete`. No retry worker or extra schedule is
 introduced: retries wait for a normal scheduled or manual trigger.
 
@@ -170,135 +171,13 @@ Cloudflare image usage is separate; existing asset receipts avoid regenerating
 successful images. Provider quota exhaustion remains a deferral, not a claim that
 an MP4 was produced.
 
-### Bounded source research
+### Simple comparison planning
 
-The controller runs a compact source plan, retrieves pages locally, then asks
-Groq to extract measurements from bounded excerpts. It does **not** call Groq's
-server-managed `browser_search` for comparisons.
+Automatic topic selection normally needs one request when the topic queue is empty; queued or explicit topics skip it. One additional request normally plans the entire video, including object appearance. A malformed plan gets at most one correction request. Local code fills identifiers, palette, visual descriptors, pacing and layout. The existing 12-request/65,000-token run budget remains a guard against retry loops, not a target to spend. Actual provider quotas still apply.
 
-Per job/checkpoint, local code enforces:
+Target 8–15 meaningful objects; a coherent smaller set is accepted (minimum two). Typical representative objects and rounded estimates are allowed. Every new estimate is marked approximate and the video description discloses that no source verification was performed. No mandatory web requests, exact quotes, source repair or evidence-ID selection remain in the default path. The optional legacy researched adapter retains its stricter evidence policy for callers explicitly choosing it.
 
-| Resource | Limit |
-| --- | --- |
-| Wikimedia article-discovery searches | 18 |
-| Source page attempts (including failures) | 22 |
-| Total HTTP requests, including redirects | 48 |
-| Redirects per resource | 2 |
-| Response size / request deadline | 4 MiB / 12 seconds |
-| Evidence per page / all excerpts | Up to 1,800 / 21,600 characters |
-
-Videos target 8–15 subjects throughout topic planning, research, dataset selection
-and rendering; 2–7 verified subjects are a valid fallback. Total duration sums scale-dependent arrivals (about 0.25–5 seconds),
-2–3 seconds of settled focus per subject, and a separate four-second overview.
-There is no fixed total. Topic selection favors broad, sourceable subject pools and proposes 10–15 objects;
-concepts/research can consider up to 18 candidates to allow exclusions. Research uses at most 18 searches,
-22 page attempts, 48 HTTP requests and 21,600 excerpt characters. Extraction is
-batched by six pages; image planning by five objects, with validated batch caches.
-For dense charts, names/images alternate two rows. Scale-sensitive travel is
-shortened only for physical-size videos when necessary to remain under 60 seconds. Quantity charts use proportional growth, a minimum one-second arrival, 2.5-second settled holds and up to 90 seconds total.
-Below-target supported comparisons proceed without padding, invented facts or
-additional research solely to reach eight. The 12-request/65,000-token invocation budget remains unchanged.
-
-The limits live in `src/pipeline/bounded-research.ts`. Wikimedia discovery uses
-its public REST search endpoint. Likely primary URLs and old source URLs are
-untrusted hints until fetched again. Wikipedia can provide secondary evidence;
-it is explicitly identified as such, not described as primary verification.
-Sources that are blocked, empty, unsupported PDFs, or lack measurement text are
-rejected. Only HTTPS endpoints with public DNS/IP addresses are fetched; redirects
-are checked again. Source content is data, never instructions or executable code.
-
-The source plan excludes candidates that contradict the inclusion policy, even
-when an old concept chose one as its payoff. Extracted measurements require an
-exact quotation, its literal numeric value and adjacent unit. Local code converts
-units and circumference to diameter, sorts the values, and rejects datasets whose
-values/source IDs do not match that evidence (0.5% rounding tolerance). Endpoint
-changes are documented from the quote-checked measurements without an extra model
-call purely for audit metadata. These checks do not prove every semantic claim
-or establish a world ranking; ambiguous or missing evidence still needs review.
-
-`research-web.json` persists discovery, attempted pages, excerpts and failures.
-Discovery filters unrelated media/list results. Page retrieval gives every subject
-a first attempt before spending remaining slots on fallback pages, so an ambiguous
-early query cannot consume the entire page budget before later subjects are tried.
-The source gate reports usable-page and attempted-page counts plus rejection
-reasons; it never treats snippets or blocked pages as evidence.
-Counts survive runner restarts; budget deferral does not reset browsing limits.
-Quoted values may be written as digits or simple English number words (for
-example, “two to three years” supports either endpoint, never an inferred 2.5).
-When only numeric citation markers were omitted, local matching restores the
-actual contiguous source quotation, including those markers. Changed wording or
-values still fail. Typical-lifespan briefs reject explicit maximum-age records,
-and validation reports all failed candidates together to reduce repair calls.
-Verified research measurements now assemble the dataset locally: object IDs, names, values, units, qualifiers, sources, visual descriptors and the measured progression come directly from frozen evidence. The normal bounded-research path makes **zero comparison-data model requests**. It does not ask an LLM to copy evidence IDs or rebuild the selected objects. Old unusable dataset drafts cannot discard supported records; missing measurement files can be restored from cached source batches. The legacy generation adapter remains available for custom research adapters without frozen records.
-
-`research-plan.json`, `research-measurements.json` and `research-receipt.json` preserve the source plan, quotations and completed evidence. `dataset-assembly.json` records local assembly and selected-object counts, and the Actions summary reports this explicitly. Display labels simplify names without changing researched identities. Dated counts preserve year-only source precision and may show distinct supported dates per item; unsupported dates are not invented. A clearly quoted radius can be converted to diameter locally, while an unconverted radius cannot silently be treated as a diameter.
-
-Image-detail planning is optional enrichment with at most one request per batch. It returns appearance prompts in object order without echoing IDs; local code attaches the verified identities. Malformed optional output, Groq quota or temporary provider failures fall back to identity-based prompts for the same Cloudflare assets, then avoid further optional planner requests in that invocation. No procedural or missing-image substitute is introduced. Final asset calibration, media verification and upload safeguards remain required.
-
-
-Old agentic `research.json` files without the new receipt are preserved as
-`research.legacy.json` and re-researched once. Completed legacy videos and supplied
-curated datasets remain usable. If bounded source acquisition cannot produce four
-usable measurements, inspect the rejected URLs/gaps; do not repeatedly increase
-the budget or discard checkpoints automatically.
-
-The ledger uses GitHub's expected file SHA to reject concurrent updates. It is
-durable branch data, not an evictable Actions cache. Do not delete it unless you
-intend to discard topic history. Checkpoint artifacts retain raw data, generated
-assets, receipts, logs and intermediate render files for seven days. Model weights
-use an optional Actions cache; a cache miss downloads them again.
-
-An interrupted job can restore only its own generated directories from a checkpoint
-created by the trusted workflow on the default branch. New, unstarted jobs need
-no checkpoint. For attempted jobs, missing/expired/unusable checkpoints stop
-recovery and mark `needs-review`, without rebuilding the missing state or spending
-new API quota. Checkpoint lookup/download failures take the same path. The next
-trigger can select another topic. Incomplete or corrupt stage data discovered
-later also fails through normal validation rather than being reconstructed.
-
-A `rendered` job reuses a matching verified render to retry archival, within the
-same attempt limit. Changed code/assets invalidate receipts; a mismatched rendered
-checkpoint stops for review. Explicit `resume_job` (or local `--resume`) can retry
-a reviewed job with remaining attempts; it does not reset exhausted limits.
-Cancellation state/checkpoint persistence is best-effort; missing progress is
-abandoned. Durable ledger writes still fail closed to preserve topic history.
-
-Short provider throttles are handled inside the running job. Retry durations
-recognize milliseconds, seconds and compound minute/hour durations; `525ms`
-means 0.525 seconds, never 525 minutes. The Groq client retries transient rate
-limits up to six HTTP responses with increasing waits, at most 60 seconds per
-wait and 120 seconds total retry waiting per logical call. Longer waits defer
-the saved job. Network/server failures retain their three-failure bound.
-Cloudflare image generation retries explicit HTTP 429/500/502/503/504 failures
-up to three requests per image, normally after 2 and 4 seconds. Retry-After is
-honoured, with at most 30 seconds per wait and 45 seconds total waiting. Long
-throttles defer to normal job recovery. Permanent errors and uncertain network
-POST outcomes do not trigger immediate duplicate requests. Completed images and
-their prompt/model receipts remain cached; successful receipts record attempts.
-
-Successful token-limit/remaining/reset headers also pace later requests for the
-same model. This reduces self-throttling; other account usage can still cause 429s.
-
-Ledger loading also repairs dates produced by the old milliseconds-as-minutes
-parser. Migration only applies when the stored date matches that exact erroneous
-calculation from the saved error and its timestamp; genuine long waits and
-operator-modified dates are preserved. The next new run persists the correction
-before selection/resume. When a saved backoff still applies, the summary labels
-the previous provider error as historical and explicitly states that no new
-provider request was made.
-
-After code changes are committed and pushed, start a **new** workflow dispatch on
-`main` to test them. Re-running an old Actions run uses its original code revision;
-uncommitted local changes are never visible to GitHub Actions.
-
-Final video artifacts last 30 days; the ledger retains their artifact IDs but
-cannot extend artifact retention. Permanent video storage is not a requirement.
-When YouTube upload is enabled, confirmed upload and persisted outcome are additional gates
-before deleting generated intermediate assets. Keep only lightweight topic,
-status and upload-ID history after cleanup. A
-successful local run instead archives to `out/automation/delivery/<job-id>`.
-Cleanup never removes the ledger or final delivery and is refused before completion.
-See [YouTube setup](YOUTUBE.md) for channel authorization, private testing and public upload configuration; processing polling and publication scheduling remain future work.
+Klein 4B at four steps creates each depicted real object; volume cubes remain local mathematical graphics. Image requests and successful assets are cached. Cutout framing and final media checks still apply. Total duration follows scale-sensitive arrivals for sizes or proportional bar growth for quantities, settled reading time and the overview. No extra narration is required.
 
 ## Local execution
 
@@ -350,44 +229,19 @@ request budgets, checkpoint boundaries, archive retry without regeneration,
 cleanup ordering and GitHub state conflicts. The Python test runs real CPU
 foreground inference. Linux workflow syntax can also be checked with `actionlint`.
 
-Bounded sports research was also tested live with a temporary GPT-OSS 20B model
-override: 6 searches, 7 page attempts, 13 HTTP requests and 5 source-quoted
-measurements used 9,622 reported tokens (including one extraction repair).
-The prior agentic research request reported 403,863 tokens. This is one diagnostic
-case, not a universal per-video cost estimate, and the configured default models
-remain unchanged. Dataset recovery reused the saved research/draft without new
-AI calls. Cloudflare then rejected image generation because its daily free
-allowance was exhausted. A separate renderer verification using those new
-measurements and existing local materials produced a 30-second 1080×1920 H.264
-MP4; it does not establish successful fresh Cloudflare generation or a hosted
-end-to-end run of this revision. Push the revision and start a new workflow run
-after provider quota is available to verify that remaining path.
-
-The first hosted Linux verification passed on November 11, 2026 (Asia/Kolkata):
-[run 42876349482](https://github.com/gogeta01011969/remotion/actions/runs/42876349482),
-commit `bbdeb7f`. Dependency setup, typechecking/tests, real CPU foreground
-extraction, offline video rendering and artifact upload all succeeded.
-The downloadable artifact is `linux-smoke-42876349482-1`.
-
-This offline run does not prove a fresh live Groq topic will pass research/schema validation or fit
-account quotas. Current live runs previously encountered quota/schema failures;
-the controller now records and handles them, but does not guarantee content
-accuracy or editorial quality. Review initial hosted outputs before scheduling.
+The default no longer depends on live source websites. Tests cover the simple plan, optional-field normalization, approximate labeling, no-browsing behavior, source-contract compatibility, unchanged render templates and workflow lifecycle. Provider quotas/outages and generated-image likeness still require monitoring; a successful render is not a factual accuracy certificate.
 
 Foreground extraction uses [rembg](https://github.com/danielgatis/rembg) with
 [`isnet-general-use` from DIS](https://github.com/xuebinqin/DIS), explicitly avoiding
 rembg's changing default model. See the upstream repositories for model licenses.
 
-Presentation finalization runs on fresh and resumed comparisons before image preparation. Recommendations are advisory; final headlines use evidence-bound hooks and quantity videos can extend to 90 seconds. Optional corrections are recorded in `quality-warnings.json`; numeric, asset-safety and valid-media requirements remain enforced. No additional AI review stage is introduced.
-
-If research yields fewer than two supported objects, one bounded source-repair pass runs before generation fails. Its diagnostic journal is `research-recovery.json`; existing source and provider budgets are unchanged. Generic categories must resolve to documented named examples, and historical construction heights or different-model specifications cannot fill a missing measurement. See [research recovery](../comparisons/README.md#too-little-research-evidence).
-
+Presentation finalization runs on fresh and resumed comparisons before image preparation. Recommendations are advisory; headlines use measurement-based hooks or concise curiosity questions and quantity videos can extend to 90 seconds. Optional corrections are recorded in `quality-warnings.json`; numeric, asset-safety and valid-media requirements remain enforced. No additional AI review stage is introduced.
 
 ## Run-level resilience
 
 A topic is an attempt, not the unit of success for the automatic workflow. `maxTopicsPerRun` defaults to three. If bounded research cannot establish two comparable measurements, structured planning cannot produce usable instructions, or the final dataset duplicates a previous video, that automatic topic is recorded as skipped and the controller tries a fresh queued candidate in the same invocation. It does not replay the skipped topic indefinitely. Old automatically selected jobs are recognized by their populated scope/object metadata; new jobs record `selectionMode` explicitly.
 
-All topic attempts share the existing 12-request/65,000-token client; fallback never resets it. The controller starts another fresh attempt only with at least four logical requests and 25,000 accounted tokens remaining. These are work-budget guards, not editorial requirements. A failed topic does not lower the factual or media requirements for its replacement. Explicitly entered topics remain manual: unsupported manual prompts do not silently become a different subject.
+All topic attempts share the existing 12-request/65,000-token client; fallback never resets it. The controller starts another fresh attempt only with at least three logical requests and 16,000 accounted tokens remaining. These are work-budget guards, not editorial requirements. A replacement uses the same approximate-value policy and media checks. Explicitly entered topics remain manual: unsupported manual prompts do not silently become a different subject.
 
 Outcomes are explicit:
 
