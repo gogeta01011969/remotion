@@ -472,16 +472,29 @@
       "metric": "volume",
       "scopeKey": "topic-d9b2ac8d5cad5116",
       "entityKeys": [],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Coffee mug",
+        "Dishwasher interior",
+        "Kitchen trash bin",
+        "Washing‑machine drum",
+        "Bathtub",
+        "Refrigerator freezer compartment",
+        "Garden shed",
+        "20‑foot shipping container",
+        "40‑foot shipping container"
+      ],
       "whyInteresting": "Compares familiar storage items—from a kitchen trash bin to a 40‑foot shipping container—illustrating how much space we actually use and how massive industrial containers truly are.",
       "family": "storage-capacity",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
       "selectionMode": "automatic",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "createdAt": "2026-11-23T21:59:12.091Z",
-      "updatedAt": "2026-11-23T21:59:12.091Z"
+      "updatedAt": "2026-11-23T22:00:13.221Z",
+      "videoSha256": "46b9034c3f526780aeb3a18496c73cb80b0d2b7874764cacc07aa4ff05a84c7a",
+      "artifactName": "short-short-2026-11-23-d9b2ac8d5cad",
+      "artifactId": "14864889734"
     }
   ],
   "queue": [
