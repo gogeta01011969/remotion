@@ -443,16 +443,28 @@
       "metric": "height",
       "scopeKey": "topic-b21b0225639cdad8",
       "entityKeys": [],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Christ the Redeemer",
+        "Motherland Calls",
+        "Great Buddha of Thailand",
+        "Statue of Liberty (with pedestal)",
+        "Laykyun Sekkya Buddha",
+        "Ushiku Daibutsu",
+        "Spring Temple Buddha",
+        "Statue of Unity"
+      ],
       "whyInteresting": "Shows the staggering scale of human monuments, from the Statue of Unity in India to the classic Statue of Liberty, letting viewers instantly grasp how many stories tall each masterpiece is.",
       "family": "landmarks",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
       "selectionMode": "automatic",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "createdAt": "2026-11-23T21:37:53.482Z",
-      "updatedAt": "2026-11-23T21:37:53.482Z"
+      "updatedAt": "2026-11-23T21:41:30.236Z",
+      "videoSha256": "7668d4efe9b91180e9f96fd05aa87e38e0a2b3ddfc6d0b01e0453e66b1a57417",
+      "artifactName": "short-short-2026-11-23-b21b0225639c",
+      "artifactId": "14864972281"
     }
   ],
   "queue": [
