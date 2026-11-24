@@ -503,7 +503,6 @@
       "scopeKey": "topic-ce4408372cf6ec50",
       "entityKeys": [],
       "actualEntityKeys": [
-        "Eurostar high‑speed train (London‑Paris)",
         "TGV POS (Paris‑Lyon)",
         "Shanghai Maglev",
         "Koenigsegg Agera RS",
@@ -519,11 +518,22 @@
       "angle": "familiar-to-extreme",
       "depth": "accessible",
       "selectionMode": "automatic",
-      "status": "needs-review",
-      "attempts": 1,
+      "status": "complete",
+      "attempts": 2,
       "createdAt": "2026-11-24T06:23:55.087Z",
-      "updatedAt": "2026-11-24T06:24:05.385Z",
-      "error": "Generating Eurostar high‑speed train (London‑Paris) with flux-2-klein-4b\nNo usable optional editorial plan; using the measured object progression.\nCloudflare image request failed (HTTP 400): [{\"message\":\"AiError: AiError: Your output has been flagged. Please choose another prompt / input image combination (8f3e19f0-6b9c-4d1d-bd87-0fe52834cdfc)\",\"code\":3030}]\nAsset provider failed: exit 1\n"
+      "updatedAt": "2026-11-24T07:29:18.967Z",
+      "videoSha256": "eee66316ec9a0761ae0df1899d60b30eaa78d74e32122bd77ba04f87bf994f48",
+      "artifactName": "short-short-2026-11-24-ce4408372cf6",
+      "artifactId": "14899685015",
+      "youtube": {
+        "status": "uploading",
+        "intentId": "54ccf218-aa64-47fc-a08d-2047b73ce99b",
+        "channelId": "UC6syYZxbMxbhOSmjj8AXJuA",
+        "videoSha256": "eee66316ec9a0761ae0df1899d60b30eaa78d74e32122bd77ba04f87bf994f48",
+        "metadataSha256": "77402693be74a5c4f75e53900f6ff371753cac77eecedd601bd02cef4c3619fd",
+        "requestedAt": "2026-11-24T07:29:19.573Z",
+        "privacy": "private"
+      }
     }
   ],
   "queue": []
