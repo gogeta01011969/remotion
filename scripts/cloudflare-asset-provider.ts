@@ -7,7 +7,7 @@ import {spawnSync} from 'node:child_process';
 import {parseArgs} from 'node:util';
 import {z} from 'zod';
 import {comparisonVisualSchema} from '../src/shorts/comparison-visual';
-import {generateCloudflareImage,loadCloudflareImageConfig,type CloudflareImageModel} from '../src/pipeline/cloudflare-images';
+import {CloudflareImageRejectedError,generateCloudflareImage,loadCloudflareImageConfig,type CloudflareImageModel} from '../src/pipeline/cloudflare-images';
 import {inspectComparisonImage} from '../src/pipeline/comparison-assets';
 import {cutoutBackend,cutoutMethod,removalCommand} from '../src/pipeline/background-removal';
 import {comparisonWarningSink} from '../src/pipeline/comparison-warnings';
@@ -42,6 +42,12 @@ async function main(){
   };
   const assets:{id:string;src:string;attribution:string}[]=[];
   const pending:{input:string;output:string;rawHash:string}[]=[];
+  const skipped:{id:string;reason:'provider-rejected';code:3030}[]=[];
+  const warn=comparisonWarningSink(path.dirname(path.resolve(positionals[1])),console.log);
+  const skip=(id:string,label:string)=>{
+    skipped.push({id,reason:'provider-rejected',code:3030});
+    warn(`${label}: Cloudflare declined this image (3030); omitting the object and continuing with the remaining comparison. No alternative prompt or model was attempted.`);
+  };
   let newNeurons=0;
   for(const item of request.objects){
     const visual=item.visual;if(visual.kind==='box')continue;
@@ -49,13 +55,25 @@ async function main(){
     const prompt=cloudflareObjectPrompt(item.label,visual.kind,brief,visual.kind==='cutout'?visual.view:undefined);
     const width=1024,height=visual.kind==='sphere'?512:1024;
     const raw=path.join(dir,`${item.id}.jpg`),receipt=raw+'.report.json',target=path.join(dir,`${item.id}.png`);
+    const rejectionFile=path.join(dir,`${item.id}.rejection.json`);
+    const requestHash=createHash('sha256').update(JSON.stringify({model,steps,prompt,width,height})).digest('hex');
+    if(existsSync(rejectionFile)){
+      const rejection=JSON.parse(readFileSync(rejectionFile,'utf8'));
+      if(rejection.requestHash===requestHash&&rejection.code===3030){skip(item.id,item.label);continue;}
+    }
     const previous=existsSync(raw)&&existsSync(receipt)?JSON.parse(readFileSync(receipt,'utf8')):null;
     const cached=previous&&previous.model===model&&previous.steps===steps&&(previous.basePrompt??previous.prompt)===prompt&&previous.width===width&&previous.height===height;
     if(!cached){
       console.log(`Generating ${item.label} with ${model}`);
-      const result=await generateCloudflareImage({model,prompt,steps,width,height},config,fetch,{onRetry:console.log});
-      writeFileSync(raw,result.bytes);writeFileSync(receipt,JSON.stringify({id:item.id,model,steps,prompt,width,height,actualNeurons:result.neurons,attempts:result.attempts,elapsedSeconds:result.elapsedSeconds,referenceImages:0},null,2)+'\n');
-      newNeurons+=result.neurons??0;
+      try{
+        const result=await generateCloudflareImage({model,prompt,steps,width,height},config,fetch,{onRetry:console.log});
+        writeFileSync(raw,result.bytes);writeFileSync(receipt,JSON.stringify({id:item.id,model,steps,prompt,width,height,actualNeurons:result.neurons,attempts:result.attempts,elapsedSeconds:result.elapsedSeconds,referenceImages:0},null,2)+'\n');
+        newNeurons+=result.neurons??0;
+      }catch(error){
+        if(!(error instanceof CloudflareImageRejectedError))throw error;
+        writeFileSync(rejectionFile,JSON.stringify({requestHash,code:3030,reason:'provider-rejected'})+'\n');
+        skip(item.id,item.label);continue;
+      }
     }else console.log(`Reusing ${item.label} generation`);
     const rawHash=createHash('sha256').update(readFileSync(raw)).digest('hex'),cutoutReceipt=target+'.receipt.json';
     const previousCutout=existsSync(cutoutReceipt)?JSON.parse(readFileSync(cutoutReceipt,'utf8')):null;
@@ -76,9 +94,9 @@ async function main(){
     command(invocation.command,invocation.args,600000);
     for(const item of pending)writeFileSync(item.output+'.receipt.json',JSON.stringify({rawHash:item.rawHash,method:cutoutVersion},null,2)+'\n');
   }
-  const warn=comparisonWarningSink(path.dirname(path.resolve(positionals[1])),console.log);
   let framingRetries=0;
   for(const item of request.objects){
+    if(skipped.some(entry=>entry.id===item.id))continue;
     const visual=item.visual;if(visual.kind==='box')continue;
     const target=path.join(dir,`${item.id}.png`);
     const calibration=inspectComparisonImage(target,visual.kind==='cutout');
@@ -129,10 +147,10 @@ async function main(){
     }
     assets.push({id:item.id,src:path.basename(target),attribution:`AI-generated with Cloudflare ${model}, ${steps} steps, text-only. ${visual.kind==='sphere'?'Local static texture':method}; illustrative, not an exact object scan.`});
   }
-  writeFileSync(positionals[1],JSON.stringify({assets},null,2)+'\n');
+  writeFileSync(positionals[1],JSON.stringify({assets,...(skipped.length?{skipped}:{})},null,2)+'\n');
   const receipts=request.objects.map(item=>{const file=path.join(dir,`${item.id}.jpg.report.json`);return existsSync(file)?JSON.parse(readFileSync(file,'utf8')):null;}).filter(Boolean);
   const discardedRetryNeurons=request.objects.reduce((sum,item)=>{const file=path.join(dir,`${item.id}.png.framing-repair.json`);try{return sum+(JSON.parse(readFileSync(file,'utf8')).discardedNeurons??0);}catch{return sum;}},0);
-  writeFileSync(path.join(dir,'generation-summary.json'),JSON.stringify({model,steps,referenceImages:0,objects:receipts.length,newNeuronsThisInvocation:newNeurons,framingRetries,discardedRetryNeurons,totalReportedNeurons:discardedRetryNeurons+receipts.reduce((sum,r)=>sum+(r.actualNeurons??0),0),items:receipts.map(r=>({id:r.id,neurons:r.actualNeurons,seconds:r.elapsedSeconds}))},null,2)+'\n');
+  writeFileSync(path.join(dir,'generation-summary.json'),JSON.stringify({model,steps,referenceImages:0,objects:assets.length,skipped,newNeuronsThisInvocation:newNeurons,framingRetries,discardedRetryNeurons,totalReportedNeurons:discardedRetryNeurons+receipts.reduce((sum,r)=>sum+(r.actualNeurons??0),0),items:receipts.map(r=>({id:r.id,neurons:r.actualNeurons,seconds:r.elapsedSeconds}))},null,2)+'\n');
   console.log(`Prepared ${assets.length} assets; ${newNeurons.toFixed(2)} newly reported Neurons this invocation.`);
 }
 main().catch(error=>{console.error(error instanceof Error?error.message:'Asset generation failed.');process.exitCode=1;});

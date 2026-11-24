@@ -3,6 +3,8 @@ import {loadEnvFile} from 'node:process';
 import {redact} from './groq';
 import {retryAfterMs} from './rate-limit';
 
+export class CloudflareImageRejectedError extends Error {readonly code=3030;}
+
 export type CloudflareImageModel='flux-1-schnell'|'flux-2-dev'|'flux-2-klein-4b';
 export function loadCloudflareImageConfig(filename='.env.local'){
   if(existsSync(filename))loadEnvFile(filename);
@@ -47,6 +49,7 @@ export async function generateCloudflareImage(options:{model:CloudflareImageMode
     try{json=JSON.parse(text);}catch{json={errors:[{message:'Non-JSON provider response'}]};}
     if(response.ok&&json.success!==false)break;
     const message=redact(`Cloudflare image request failed (HTTP ${response.status}): ${JSON.stringify(json.errors??[])}`,[config.accountId,config.apiToken]).slice(0,1200);
+    if(response.status===400&&Array.isArray(json.errors)&&json.errors.some((error:{code?:number})=>error.code===3030))throw new CloudflareImageRejectedError(message);
     const delay=retryAfterMs(response.headers.get('retry-after'))??2000*2**(attempt-1);
     const transient=[429,500,502,503,504].includes(response.status);
     if(!transient||attempt>=3||delay>30000||waited+delay>45000){

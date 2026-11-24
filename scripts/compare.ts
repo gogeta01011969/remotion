@@ -48,9 +48,19 @@ async function main(){
       writeJson(path.join(directory,'dataset.raw.json'),data);
     }
     requireComparisonCount(data.items.length);
+    const plannedItems=data.items;
     const requests=assetRequests(data);writeJson(path.join(directory,'asset-requests.json'),{...requests,outputDirectory:assetRoot});
     if(values['asset-manifest'])data=applyAssetManifest(data,read(values['asset-manifest']));
     else if(values['asset-provider']||values.topic)data=runAssetProvider(data,{configFile:path.resolve(values['asset-provider']??(process.platform==='linux'?'comparisons/cloudflare-linux.provider.json':'comparisons/cloudflare-klein.provider.json')),directory,assetRoot,root});
+    if(data.items.length!==plannedItems.length){
+      const omitted=plannedItems.filter(item=>!data!.items.some(kept=>kept.id===item.id)).map(item=>({id:item.id,name:item.label,reason:'provider-rejected'}));
+      writeJson(path.join(directory,'asset-selection.json'),{plannedObjects:plannedItems.length,renderedObjects:data.items.length,omitted});
+      const assemblyFile=path.join(directory,'dataset-assembly.json');
+      if(existsSync(assemblyFile)){
+        const assembly=read(assemblyFile);
+        writeJson(assemblyFile,{...assembly,plannedMeasurements:assembly.plannedMeasurements??assembly.selectedMeasurements,selectedMeasurements:data.items.length,omittedAssets:omitted});
+      }
+    }
     const missing=data.items.filter(item=>{
       const visual=item.visual;if(!visual||visual.kind==='box')return false;
       const src=visual.kind==='cutout'?visual.src:visual.texture;

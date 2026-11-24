@@ -1,3 +1,4 @@
+import {UnworkableTopicError} from './generation-errors';
 import {planSimpleComparison} from './simple-comparison';
 import {assembleVerifiedComparison} from './comparison-assembly';
 import {finalizeComparisonPresentation} from './comparison-presentation';
@@ -20,7 +21,7 @@ import {planComparisonIdeas,ensureComparisonRequest,validateConceptSelection,com
 import {comparisonDatasetPrompt} from './comparison-prompts';
 import {resolveSizeBackground} from '../shorts/size-environment';
 
-const assetManifestSchema=z.object({assets:z.array(z.object({id:z.string(),src:localAssetPath,attribution:z.string().min(1).optional()}).strict())}).strict();
+const assetManifestSchema=z.object({assets:z.array(z.object({id:z.string(),src:localAssetPath,attribution:z.string().min(1).optional()}).strict()),skipped:z.array(z.object({id:z.string(),reason:z.literal('provider-rejected'),code:z.literal(3030)}).strict()).optional()}).strict();
 class ComparisonEvidenceGap extends Error{
   constructor(readonly urls:string[]){super('The selected story references sources that research has not opened. Additional evidence is required.');}
 }
@@ -30,7 +31,16 @@ export function assetRequests(data:SizeDataset){
 export function applyAssetManifest(data:SizeDataset,raw:unknown){
   const manifest=assetManifestSchema.parse(raw),next=structuredClone(data);
   const expected=next.items.filter(i=>i.visual&&i.visual.kind!=='box').map(i=>i.id);
-  if(new Set(manifest.assets.map(a=>a.id)).size!==manifest.assets.length||manifest.assets.some(a=>!expected.includes(a.id))||expected.some(id=>!manifest.assets.some(a=>a.id===id)))throw new Error('Asset manifest must contain exactly one result for every requested object.');
+  const skipped=manifest.skipped??[],accounted=[...manifest.assets,...skipped].map(a=>a.id);
+  if(new Set(accounted).size!==accounted.length||accounted.some(id=>!expected.includes(id))||expected.some(id=>!accounted.includes(id)))throw new Error('Asset manifest must contain exactly one asset or explicit provider rejection for every requested object.');
+  if(skipped.length){
+    next.items=next.items.filter(item=>!skipped.some(entry=>entry.id===item.id));
+    if(next.items.length<comparisonLimits.minimum)throw new UnworkableTopicError('Too few usable objects after image-provider rejections; at least two are required.');
+    // The old hook/roles can mention excluded objects; rebuild from the subset.
+    next.sources=next.sources.filter(source=>next.items.some(item=>item.sourceIds.includes(source.id)));
+    delete next.editorial;delete next.presentationVersion;
+    next.title='Object comparison';
+  }
   for(const item of next.items){
     const visual=item.visual;if(!visual||visual.kind==='box')continue;
     const asset=manifest.assets.find(a=>a.id===item.id)!;
@@ -38,7 +48,7 @@ export function applyAssetManifest(data:SizeDataset,raw:unknown){
     if(visual.kind==='cutout')visual.src=asset.src;else visual.texture=asset.src;
     if(asset.attribution)visual.attribution=asset.attribution;
   }
-  return sizeDatasetSchema.parse(next);
+  return skipped.length?finalizeComparisonPresentation(sizeDatasetSchema.parse(next)):sizeDatasetSchema.parse(next);
 }
 export function runAssetProvider(data:SizeDataset,options:{configFile:string;directory:string;assetRoot:string;root?:string}){
   if(!assetRequests(data).objects.length)return data;

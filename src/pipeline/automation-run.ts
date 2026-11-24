@@ -80,6 +80,7 @@ async function build(root:string,job:AutomationJob,config:AutomationConfig){
   const log=String(result.stdout??'')+String(result.stderr??'');
   const secrets=[process.env.GROQCLOUD_API_KEY,process.env.CLOUDFLARE_API_TOKEN,process.env.CLOUDFARE_API_TOKEN,process.env.GITHUB_TOKEN].filter(Boolean) as string[];
   const safe=redact(log,secrets);await import('node:fs').then(fs=>fs.writeFileSync(path.join(dir,'automation-build.log'),safe));
+  if(!result.error&&result.status!==0&&safe.includes('Too few usable objects after image-provider rejections'))throw new UnworkableTopicError('Too few usable objects after image-provider rejections; at least two are required.');
   if(result.error||result.status!==0)throw new Error(result.error?.message??safe.slice(-3000));
   const lines=String(result.stdout).trim().split('\n');let completed=false;
   for(const line of lines.reverse()){try{if(JSON.parse(line).status==='complete'){completed=true;break;}}catch{/* Progress logs are not stage results. */}}
@@ -120,11 +121,16 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
     if(archiveOnly&&!cached)throw new Error('Rendered checkpoint no longer matches the source/assets; review before regenerating.');
     if(!cached)await (dependencies.build??build)(root,job,config);
     const verified=(dependencies.verify??verifyVideo)(root,job.id);
+    const renderedDataset=path.join(dir,'dataset.json');
+    if(existsSync(renderedDataset)){
+      const rendered=sizeDatasetSchema.parse(JSON.parse(readFileSync(renderedDataset,'utf8')));
+      job.actualEntityKeys=rendered.items.map(item=>item.label);
+    }
     const files=[...treeFiles(path.join(root,'public/comparisons',job.id)),verified.props,path.join(dir,'dataset.json'),path.join(dir,'brief.json')].filter(f=>existsSync(f)).map(file=>({path:path.relative(root,file),sha:digest(file)}));
     writeJson(receiptFile,{rawSha:digest(rawFile),sourceSha:fingerprint,videoSha:verified.sha256,files});
     const delivery=path.join(root,'out/automation/delivery',job.id);mkdirSync(delivery,{recursive:true});
     copySafe(path.join(root,'out/shorts',job.id),delivery);copySafe(verified.props,path.join(delivery,'video.json'));
-    for(const name of ['dataset.json','comparison-plan.json','dataset-assembly.json','research.json','research-plan.json','research-web.json','research-recovery.json','research-measurements.json','research-receipt.json','idea-plan.json','editorial-plan.json','background-plan.json','measurements.json','asset-manifest.json','quality-warnings.json'])copySafe(path.join(dir,name),path.join(delivery,name));
+    for(const name of ['dataset.json','comparison-plan.json','dataset-assembly.json','research.json','research-plan.json','research-web.json','research-recovery.json','research-measurements.json','research-receipt.json','idea-plan.json','editorial-plan.json','background-plan.json','measurements.json','asset-manifest.json','asset-selection.json','quality-warnings.json'])copySafe(path.join(dir,name),path.join(delivery,name));
     writeJson(path.join(delivery,'delivery.json'),{id:job.id,topic:job.topic,videoSha256:verified.sha256,sourceSha:fingerprint});
     job.videoSha256=verified.sha256;job.artifactName=`short-${job.id}`;job.status=options.archiveTarget==='github'?'rendered':'complete';job.updatedAt=new Date().toISOString();saveLedger(stateFile,ledger);
     return {status:job.status,id:job.id,videoPath:path.join(delivery,`${job.id}.mp4`),deliveryPath:delivery};

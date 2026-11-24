@@ -320,3 +320,11 @@ Image plans describe identity and appearance; trusted code supplies cutout or sp
 The default plan uses plausible general-knowledge estimates (`dataQuality: "estimated"`), marks each value approximate and does not require sources or dates. Model-suggested curiosity questions can be retained; unsupported ranking claims are replaced with a neutral comparison hook. Optional metadata and image-format instructions are repaired locally.
 
 Supplied datasets without `dataQuality: "estimated"` keep the existing source-reference contract. The legacy researched adapter and its diagnostic files remain available for integrations explicitly choosing verified-source work, but neither the CLI default nor GitHub Actions invokes it. Existing curated examples and completed render receipts are preserved.
+
+## Individual image rejections
+
+A Cloudflare moderation refusal (`HTTP 400`, error `3030`) omits that object instead of failing the whole video. The pipeline respects the refusal: it does not rewrite the prompt or switch models. A request fingerprint records the rejection so resumes do not repeatedly request it. Other objects continue, using cached images when available.
+
+A manifest must explicitly account for every object with either an image or a provider-rejected entry. At least two usable objects must remain; otherwise the comparison is unworkable. Missing unexplained assets, bad credentials, unsafe images and provider outages retain their existing failure/deferral behavior. Framing repair is optional and keeps the original usable image if repair fails.
+
+The surviving objects determine the final hook, labels, values, pacing, description and upload metadata. `asset-selection.json` records exclusions, `dataset-assembly.json` reports the rendered count, and the deduplication ledger records the actual rendered names. The original planning dataset stays cached alongside image receipts for recovery.
