@@ -1,6 +1,6 @@
 # Motion Lab
 
-**Current comparison pipeline:** topic → one Groq comparison plan → Cloudflare objects → Remotion MP4 → optional YouTube upload → cleanup. The plan chooses meaningful objects, approximate values, appearance and a related background together. Web research, exact quotations and citation repair are no longer mandatory. Videos display estimates with ≈ and disclose them in the description. Aim for 8–15 recognizable objects; a useful smaller comparison is fine. Existing sourced datasets still work. See [comparison workflow](comparisons/README.md) and [GitHub Actions setup](automation/README.md).
+**Current comparison pipeline:** topic → one Groq comparison plan → Cloudflare objects → Remotion MP4 → Groq YouTube metadata → optional YouTube upload → cleanup. The plan chooses meaningful objects, approximate values, appearance and a related background together. Web research, exact quotations and citation repair are no longer mandatory. Videos display estimates with ≈ and disclose them in the description. Aim for 8–15 recognizable objects; a useful smaller comparison is fine. Existing sourced datasets still work. See [comparison workflow](comparisons/README.md) and [GitHub Actions setup](automation/README.md).
 
 ```sh
 npm run compare -- --topic "How tall are everyday things beside famous structures?" --id everyday-height
@@ -101,4 +101,4 @@ Quantity comparison videos use a fixed linear axis, value-proportional bar growt
 
 Automatic workflow runs can skip unworkable topics and try up to three candidates within one shared usage budget. Explicit manual topics keep their scope. Provider cooldowns defer work; exhausted candidates report `no-video` without uploading an empty or invented result. See [run-level resilience](automation/README.md#run-level-resilience).
 
-New topic runs normally need one comparison-plan model request; automatic topic selection adds one request when the queue is empty. Optional metadata is normalized locally. At least two usable objects, compatible units, safe assets and decodable final media remain required. Provider quotas/outages can still defer a run; approximate numbers are not presented as verified facts.
+New topic runs normally need one comparison-plan model request plus one optional YouTube metadata request after rendering; automatic topic selection adds one request when the queue is empty. Optional metadata is normalized locally. At least two usable objects, compatible units, safe assets and decodable final media remain required. Provider quotas/outages can still defer a run; approximate numbers are not presented as verified facts.

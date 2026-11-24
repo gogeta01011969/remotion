@@ -60,7 +60,9 @@ and Groq/Cloudflare usage still depend on your accounts' allowances.
    backgrounds locally using the explicitly selected ISNet model, calibrate assets,
    retain the concept-linked background, and render with the shared size template.
 6. Verify the actual exported file: H.264, 1080×1920, expected FPS/frame count and
-   duration, with no audio track. Save a render receipt and final delivery folder.
+   duration, with no audio track. Use one optional Groq request to write YouTube
+   metadata from the final rendered objects. Save a render receipt and final
+   delivery folder, including `youtube-metadata.json`.
 7. Upload the finished artifact. Only a successful artifact ID changes `rendered`
    to `complete`. Persist that status, then remove this job's generated directories.
 
@@ -173,7 +175,7 @@ an MP4 was produced.
 
 ### Simple comparison planning
 
-Automatic topic selection normally needs one request when the topic queue is empty; queued or explicit topics skip it. One additional request normally plans the entire video, including object appearance. A malformed plan gets at most one correction request. Local code fills identifiers, palette, visual descriptors, pacing and layout. The existing 12-request/65,000-token run budget remains a guard against retry loops, not a target to spend. Actual provider quotas still apply.
+Automatic topic selection normally needs one request when the topic queue is empty; queued or explicit topics skip it. One additional request normally plans the entire video, including object appearance. After rendering, one optional request writes viewer-facing YouTube metadata from the final objects; this uses the same budget and falls back locally if unavailable. A malformed plan gets at most one correction request. Local code fills identifiers, palette, visual descriptors, pacing and layout. The existing 12-request/65,000-token run budget remains a guard against retry loops, not a target to spend. Actual provider quotas still apply.
 
 Target 8–15 meaningful objects; a coherent smaller set is accepted (minimum two). Typical representative objects and rounded estimates are allowed. Every new estimate is marked approximate and the video description discloses that no source verification was performed. No mandatory web requests, exact quotes, source repair or evidence-ID selection remain in the default path. The optional legacy researched adapter retains its stricter evidence policy for callers explicitly choosing it.
 

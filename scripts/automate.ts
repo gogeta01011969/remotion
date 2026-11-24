@@ -70,6 +70,12 @@ async function main(){
         if(process.env.GITHUB_STEP_SUMMARY&&existsSync(assemblyFile)){
           try{const assembly=JSON.parse(readFileSync(assemblyFile,'utf8'));appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\nDataset assembly: ${assembly.selectedMeasurements} ${assembly.mode==='simple-estimated'?'objects with approximate AI values (no mandatory web research)':'verified objects'}, built locally with ${assembly.modelRequests??0} assembly model requests.\n`);}catch{/* Optional diagnostic, not a generation requirement. */}
         }
+        const metadataFile=path.join(root,'out/comparisons',job.id,'youtube-metadata.json');
+        if(process.env.GITHUB_STEP_SUMMARY&&existsSync(metadataFile)){
+          try{const metadata=JSON.parse(readFileSync(metadataFile,'utf8'));
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY,`\nYouTube metadata: ${metadata.status==='generated'?'Groq-generated':'local fallback'}.\n\nUpload title: ${String(metadata.copy?.title??'').replace(/[\r\n]/g,' ')}\n`);
+          }catch{/* Optional metadata diagnostics do not change the render outcome. */}
+        }
         const warningsFile=path.join(root,'out/comparisons',job.id,'quality-warnings.json');
         if(process.env.GITHUB_STEP_SUMMARY&&existsSync(warningsFile)){
           try{const notes=JSON.parse(readFileSync(warningsFile,'utf8'));

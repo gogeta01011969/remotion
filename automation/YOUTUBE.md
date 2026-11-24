@@ -138,10 +138,30 @@ To disable automatic uploads while keeping generation, change `uploadEnabled` to
 
 ## Metadata, retries and limits
 
-- Titles come from the selected dataset; the description includes the common
-  measurement basis, sources and deduplicated visual credits/references. The
-  uploader checks the title and description limits before uploading. It does
-  not add an extra LLM stage.
+- After rendering/verification, Groq writes a dedicated YouTube title, a short
+  viewer-facing description, topic-specific tags and two or three hashtags.
+  It uses only the final dataset: objects that actually rendered, measurement,
+  values, conditions and approximation status. It cannot change the video or
+  private/audience settings. Image credits, source references and the applicable
+  approximation disclosure are appended by trusted code.
+- The metadata stage makes at most one logical request with a 1,400-token
+  completion cap, within the existing shared 12-request/65,000-token budget.
+  Quota/network errors or unusable copy fall back to existing metadata rather
+  than blocking a finished video. Optional fields are normalized locally.
+- The Actions summary reports whether metadata was Groq-generated or a local
+  fallback, along with the selected upload title.
+- `youtube-metadata.json` records the copy, status, model and final-dataset
+  fingerprint. It is included in the final video artifact and checkpoint.
+  A matching cache (including fallback) is reused; changing the final dataset
+  invalidates it. Upload preparation/dry runs only read this cache and never
+  call Groq. The exact chosen metadata is frozen in the saved upload intent,
+  so transfer retries cannot change titles/descriptions or create extra uploads.
+- Titles aim for clear subjects, honest curiosity and recognizable search terms;
+  descriptions explain the actual comparison. Tags supplement that context,
+  without unrelated keywords, fake trends or unsupported record claims.
+  This is presentation improvement, not a promise of views. See YouTube's
+  [metadata guidance](https://support.google.com/youtube/answer/16559650) and
+  [Shorts discovery guidance](https://support.google.com/youtube/answer/11914225?co=YOUTUBE._YTVideoType%3Dshorts&hl=en).
 - Uploads default to private. Subscriber notifications are disabled. AI-content
   disclosure is enabled; audience settings are explicit, not inferred from topic.
 - The credential token is refreshed automatically. Revocation or an expired

@@ -1,3 +1,5 @@
+import {ensureYouTubeMetadata} from './youtube-metadata';
+import {youtubeSettings} from './youtube-settings';
 import {UnworkableTopicError} from './generation-errors';
 import {requireComparisonCount} from '../shorts/comparison-limits';
 import {createHash} from 'node:crypto';
@@ -125,12 +127,13 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
     if(existsSync(renderedDataset)){
       const rendered=sizeDatasetSchema.parse(JSON.parse(readFileSync(renderedDataset,'utf8')));
       job.actualEntityKeys=rendered.items.map(item=>item.label);
+      if(youtubeSettings.uploadEnabled)await ensureYouTubeMetadata(rendered,{directory:dir,client:options.client,model:options.groqConfig.scriptModel,log:options.log});
     }
     const files=[...treeFiles(path.join(root,'public/comparisons',job.id)),verified.props,path.join(dir,'dataset.json'),path.join(dir,'brief.json')].filter(f=>existsSync(f)).map(file=>({path:path.relative(root,file),sha:digest(file)}));
     writeJson(receiptFile,{rawSha:digest(rawFile),sourceSha:fingerprint,videoSha:verified.sha256,files});
     const delivery=path.join(root,'out/automation/delivery',job.id);mkdirSync(delivery,{recursive:true});
     copySafe(path.join(root,'out/shorts',job.id),delivery);copySafe(verified.props,path.join(delivery,'video.json'));
-    for(const name of ['dataset.json','comparison-plan.json','dataset-assembly.json','research.json','research-plan.json','research-web.json','research-recovery.json','research-measurements.json','research-receipt.json','idea-plan.json','editorial-plan.json','background-plan.json','measurements.json','asset-manifest.json','asset-selection.json','quality-warnings.json'])copySafe(path.join(dir,name),path.join(delivery,name));
+    for(const name of ['dataset.json','comparison-plan.json','dataset-assembly.json','research.json','research-plan.json','research-web.json','research-recovery.json','research-measurements.json','research-receipt.json','idea-plan.json','editorial-plan.json','background-plan.json','measurements.json','asset-manifest.json','asset-selection.json','youtube-metadata.json','quality-warnings.json'])copySafe(path.join(dir,name),path.join(delivery,name));
     writeJson(path.join(delivery,'delivery.json'),{id:job.id,topic:job.topic,videoSha256:verified.sha256,sourceSha:fingerprint});
     job.videoSha256=verified.sha256;job.artifactName=`short-${job.id}`;job.status=options.archiveTarget==='github'?'rendered':'complete';job.updatedAt=new Date().toISOString();saveLedger(stateFile,ledger);
     return {status:job.status,id:job.id,videoPath:path.join(delivery,`${job.id}.mp4`),deliveryPath:delivery};
