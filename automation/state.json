@@ -495,18 +495,24 @@
       "videoSha256": "46b9034c3f526780aeb3a18496c73cb80b0d2b7874764cacc07aa4ff05a84c7a",
       "artifactName": "short-short-2026-11-23-d9b2ac8d5cad",
       "artifactId": "14864889734"
-    }
-  ],
-  "queue": [
+    },
     {
+      "id": "short-2026-11-24-ce4408372cf6",
       "topic": "Fastest land vehicles by top speed",
       "metric": "speed",
       "scopeKey": "topic-ce4408372cf6ec50",
       "entityKeys": [],
+      "actualEntityKeys": [],
       "whyInteresting": "Pits iconic speed machines—like the Bugatti Chiron, a modern hypercar, against legendary land speed record cars and a high‑speed train—highlighting engineering breakthroughs across eras.",
       "family": "speed-comparisons",
       "angle": "familiar-to-extreme",
-      "depth": "accessible"
+      "depth": "accessible",
+      "selectionMode": "automatic",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-24T06:23:55.087Z",
+      "updatedAt": "2026-11-24T06:23:55.087Z"
     }
-  ]
+  ],
+  "queue": []
 }
