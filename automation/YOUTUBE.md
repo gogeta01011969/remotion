@@ -1,9 +1,13 @@
 # Connect the Shorts pipeline to your YouTube channel
 
-The upload integration is optional. The current generation workflow continues to
-work with `YOUTUBE_UPLOAD_ENABLED` unset. Enabling it adds a channel preflight,
-resumable upload, a recorded video ID/URL, and a cleanup gate. No paid API or new
-runtime dependency is required.
+Uploads are enabled in code and fixed to private during testing. The shared settings in [youtube-settings.ts](../src/pipeline/youtube-settings.ts) control local uploads and GitHub Actions:
+
+```ts
+uploadEnabled: true,
+privacy: 'private',
+```
+
+OAuth credentials and the channel ID still come from GitHub settings. No paid API or new runtime dependency is required.
 
 ## 1. Configure Google Cloud once
 
@@ -84,14 +88,16 @@ Add **repository variables**:
 | Variable | Initial value |
 | --- | --- |
 | `YOUTUBE_CHANNEL_ID` | The `UC...` channel ID saved by the helper |
-| `YOUTUBE_PRIVACY_STATUS` | `private` |
-| `YOUTUBE_UPLOAD_ENABLED` | `true` |
 | `YOUTUBE_MADE_FOR_KIDS` | `false` for the intended general-audience comparisons; change if your actual content is directed at children |
 | `YOUTUBE_CONTAINS_SYNTHETIC_MEDIA` | `true`, because this pipeline uses realistic generated imagery |
 
-`YOUTUBE_UPLOAD_ENABLED` and `YOUTUBE_CHANNEL_ID` may also be repository secrets, for compatibility with setups that stored all YouTube settings under Secrets. When the same name exists in both places, the Actions variable takes precedence. Environment-scoped values require a job bound to that environment; this workflow uses repository-level settings. Uploads remain disabled if no enable flag is configured.
+`YOUTUBE_CHANNEL_ID` may also be a repository secret; the Actions variable takes precedence if both exist. OAuth credentials remain secrets. Environment-scoped values require a job bound to that environment; this workflow uses repository-level settings.
 
-Every run reports **YouTube upload configuration** at the start and in its summary, including whether uploads are enabled and whether the enable flag came from Variables, Secrets or the default. Disabled uploads produce a notice rather than silently appearing to upload. Invalid enable values stop before generation. OAuth credentials remain secrets; their values are never printed.
+Every run reads the hardcoded upload settings and reports **YouTube upload configuration** in its summary. `YOUTUBE_UPLOAD_ENABLED` and `YOUTUBE_PRIVACY_STATUS` secrets/variables are no longer read and may be removed. The settings command makes no API calls and does not upload anything:
+
+```sh
+npm run youtube:upload -- --settings
+```
 
 The existing Groq/Cloudflare secrets remain required. The scheduled trigger still
 uses the existing `AUTOMATION_ENABLED=true` variable; upload enablement alone does
@@ -122,13 +128,13 @@ YouTube Studio by the channel owner. YouTube processing can continue after the
 upload API accepts the video; this integration confirms the transfer/video ID,
 not processing completion or publication availability.
 
-Once the private test looks correct, set `YOUTUBE_PRIVACY_STATUS=public`. Future
+Once the private test looks correct, change `privacy: 'private'` to `privacy: 'public'` in `src/pipeline/youtube-settings.ts` and push to main. Future
 runs request public uploads. Existing private videos remain private; change them
 in Studio if you want to publish them. YouTube recognizes eligible portrait
 uploads as Shorts automatically—there is no separate Shorts upload endpoint.
 See [YouTube's Shorts rules](https://support.google.com/youtube/answer/15424877).
 
-To disable uploads while keeping generation, set `YOUTUBE_UPLOAD_ENABLED=false`.
+To disable automatic uploads while keeping generation, change `uploadEnabled` to `false` in the same settings file.
 
 ## Metadata, retries and limits
 

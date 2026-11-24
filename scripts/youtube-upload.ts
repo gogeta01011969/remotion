@@ -4,12 +4,19 @@ import {parseArgs} from 'node:util';
 import {YouTubeClient,loadYouTubeConfig} from '../src/pipeline/youtube';
 import {ledgerSchema,lockAutomation} from '../src/pipeline/topic-automation';
 import {prepareYouTubeJob,sendYouTubeJob,youtubeJobMetadata} from '../src/pipeline/youtube-job';
+import {youtubeSettings} from '../src/pipeline/youtube-settings';
 import {verifyVideo} from '../src/pipeline/automation-run';
 
 async function main(){
-  const {values}=parseArgs({options:{job:{type:'string'},check:{type:'boolean'},prepare:{type:'boolean'},send:{type:'boolean'},'dry-run':{type:'boolean'},help:{type:'boolean'}}});
-  if(values.help){console.log('npm run youtube:check\nnpm run youtube:upload -- --job short-... --dry-run\nCI upload: --job short-... --prepare, persist .automation/state.json, then --job short-... --send.\nPreparation and dry runs do not upload videos.');return;}
-  if([values.check,values.prepare,values.send,values['dry-run']].filter(Boolean).length!==1)throw new Error('Choose --check, --dry-run, --prepare or --send.');
+  const {values}=parseArgs({options:{job:{type:'string'},check:{type:'boolean'},settings:{type:'boolean'},prepare:{type:'boolean'},send:{type:'boolean'},'dry-run':{type:'boolean'},help:{type:'boolean'}}});
+  if(values.help){console.log('npm run youtube:upload -- --settings (show hardcoded upload settings; no API calls)\nnpm run youtube:check\nnpm run youtube:upload -- --job short-... --dry-run\nCI upload: --job short-... --prepare, persist .automation/state.json, then --job short-... --send.\nPreparation and dry runs do not upload videos.');return;}
+  if([values.settings,values.check,values.prepare,values.send,values['dry-run']].filter(Boolean).length!==1)throw new Error('Choose --settings, --check, --dry-run, --prepare or --send.');
+  if(values.settings){
+    console.log(JSON.stringify(youtubeSettings));
+    if(process.env.GITHUB_OUTPUT)appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${youtubeSettings.uploadEnabled}\nprivacy=${youtubeSettings.privacy}\n`);
+    if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### YouTube upload configuration\n\nUploads: ${youtubeSettings.uploadEnabled?'enabled':'disabled'} (hardcoded in src/pipeline/youtube-settings.ts).\n\nPrivacy: ${youtubeSettings.privacy}.\n`);
+    return;
+  }
   const config=loadYouTubeConfig(),client=new YouTubeClient(config);
   if(values.check){const channel=await client.checkChannel();console.log(`YouTube connection verified: ${channel.title} (${channel.id}). Upload privacy: ${config.privacy}. No video uploaded.`);return;}
   if(!values.job)throw new Error('Provide --job with the generated automation job ID.');

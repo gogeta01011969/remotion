@@ -1,4 +1,4 @@
-import {spawn} from 'node:child_process';
+import {spawn,spawnSync} from 'node:child_process';
 import {statSync} from 'node:fs';
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
@@ -29,6 +29,7 @@ function videoFile(bytes=8){const root=mkdtempSync(path.join(tmpdir(),'youtube-c
 test('YouTube credentials default to private uploads and reject ambiguous config',()=>{
   const env={YOUTUBE_CLIENT_ID:'client',YOUTUBE_CLIENT_SECRET:'secret',YOUTUBE_REFRESH_TOKEN:'refresh',YOUTUBE_CHANNEL_ID:channelId};
   const parsed=loadYouTubeConfig('unused',env);assert.equal(parsed.privacy,'private');assert.equal(parsed.containsSyntheticMedia,true);
+  assert.equal(loadYouTubeConfig('unused',{...env,YOUTUBE_PRIVACY_STATUS:'public'}).privacy,'private','Environment settings cannot publish private test uploads.');
   assert.throws(()=>loadYouTubeConfig('unused',{...env,YOUTUBE_MADE_FOR_KIDS:'yes'}),/true or false/);
   assert.throws(()=>loadYouTubeConfig('unused',{...env,YOUTUBE_CHANNEL_ID:'wrong-channel'}));
 });
@@ -180,4 +181,18 @@ test('a changed delivered video is rejected before authorizing an upload intent'
     await assert.rejects(()=>prepareYouTubeJob({...run,client}),/verified delivery hash/);
     assert.equal(requests,0);assert.equal(run.job.youtube,undefined);
   }finally{rmSync(run.root,{recursive:true,force:true});}
+});
+
+test('Actions reads enabled/private settings without credentials or environment overrides',()=>{
+  const root=mkdtempSync(path.join(tmpdir(),'youtube-hardcoded-settings-'));
+  try{
+    const env={...process.env,GITHUB_OUTPUT:path.join(root,'outputs.txt'),GITHUB_STEP_SUMMARY:path.join(root,'summary.md'),YOUTUBE_UPLOAD_ENABLED:'false',YOUTUBE_PRIVACY_STATUS:'public'};
+    for(const key of ['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN','YOUTUBE_CHANNEL_ID'])delete (env as NodeJS.ProcessEnv)[key];
+    const result=spawnSync(process.execPath,['--import',path.resolve('node_modules/tsx/dist/loader.mjs'),path.resolve('scripts/youtube-upload.ts'),'--settings'],{cwd:root,env,encoding:'utf8',timeout:30000});
+    assert.equal(result.status,0,result.stderr);
+    assert.deepEqual(JSON.parse(result.stdout),{uploadEnabled:true,privacy:'private'});
+    assert.equal(readFileSync(env.GITHUB_OUTPUT,'utf8'),'enabled=true\nprivacy=private\n');
+    assert.match(readFileSync(env.GITHUB_STEP_SUMMARY,'utf8'),/Uploads: enabled/);
+    assert.match(readFileSync(env.GITHUB_STEP_SUMMARY,'utf8'),/Privacy: private/);
+  }finally{rmSync(root,{recursive:true,force:true});}
 });

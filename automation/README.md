@@ -2,7 +2,7 @@
 
 The workflow selects a topic, checks history, runs the existing comparison pipeline,
 renders a silent MP4, archives the result, and cleans that job's intermediate files.
-Optional YouTube upload is available after [one-time OAuth setup](YOUTUBE.md). Uploads stay disabled until `YOUTUBE_UPLOAD_ENABLED=true`. Existing `compare` commands and Mac foreground
+Optional YouTube upload is available after [one-time OAuth setup](YOUTUBE.md). Uploads are enabled and fixed to private in `src/pipeline/youtube-settings.ts`. Existing `compare` commands and Mac foreground
 extraction remain available.
 
 ## Start on GitHub

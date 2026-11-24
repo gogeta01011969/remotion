@@ -1,6 +1,7 @@
 import {existsSync,readFileSync,openSync,readSync,closeSync,statSync} from 'node:fs';
 import {loadEnvFile} from 'node:process';
 import {z} from 'zod';
+import {youtubeSettings} from './youtube-settings';
 
 export const youtubeScopes=['https://www.googleapis.com/auth/youtube.upload','https://www.googleapis.com/auth/youtube.readonly'];
 export const youtubeConfigSchema=z.object({
@@ -17,7 +18,7 @@ const boolean=(value:string|undefined,fallback:boolean)=>{
 };
 export function loadYouTubeConfig(envFile='.env.local',env:NodeJS.ProcessEnv=process.env):YouTubeConfig{
   if(env===process.env&&existsSync(envFile))loadEnvFile(envFile);
-  return youtubeConfigSchema.parse({clientId:env.YOUTUBE_CLIENT_ID,clientSecret:env.YOUTUBE_CLIENT_SECRET,refreshToken:env.YOUTUBE_REFRESH_TOKEN,channelId:env.YOUTUBE_CHANNEL_ID,privacy:env.YOUTUBE_PRIVACY_STATUS||'private',madeForKids:boolean(env.YOUTUBE_MADE_FOR_KIDS,false),containsSyntheticMedia:boolean(env.YOUTUBE_CONTAINS_SYNTHETIC_MEDIA,true),notifySubscribers:boolean(env.YOUTUBE_NOTIFY_SUBSCRIBERS,false)});
+  return youtubeConfigSchema.parse({clientId:env.YOUTUBE_CLIENT_ID,clientSecret:env.YOUTUBE_CLIENT_SECRET,refreshToken:env.YOUTUBE_REFRESH_TOKEN,channelId:env.YOUTUBE_CHANNEL_ID,privacy:youtubeSettings.privacy,madeForKids:boolean(env.YOUTUBE_MADE_FOR_KIDS,false),containsSyntheticMedia:boolean(env.YOUTUBE_CONTAINS_SYNTHETIC_MEDIA,true),notifySubscribers:boolean(env.YOUTUBE_NOTIFY_SUBSCRIBERS,false)});
 }
 export const youtubeMetadataSchema=z.object({
   snippet:z.object({title:z.string().min(1).max(100).refine(t=>!/[<>]/.test(t),'YouTube titles cannot contain angle brackets.'),description:z.string().refine(t=>Buffer.byteLength(t,'utf8')<=5000,'YouTube description must fit 5,000 UTF-8 bytes.').refine(t=>!/[<>]/.test(t),'YouTube descriptions cannot contain angle brackets.'),categoryId:z.literal('27'),defaultLanguage:z.literal('en'),tags:z.array(z.string()).max(10)}).strict(),
