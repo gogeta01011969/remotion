@@ -25,7 +25,7 @@ extraction remain available.
 5. Download the `short-<job-id>` artifact from the run. Review the MP4, thumbnail,
    render inputs, metadata, sources and available editorial/background plans.
 6. After a successful hosted run, set repository Actions variable
-   `AUTOMATION_ENABLED=true` to enable the daily 03:17 UTC schedule. Leave it unset
+   `AUTOMATION_ENABLED=true` to enable the weekly two/three-runs-per-day schedule. Leave it unset
    to use manual runs only. GitHub schedules can be delayed.
 
 The production job requires `contents: write` to maintain its state branch and
@@ -268,6 +268,18 @@ Failed runs have up to 72 hours of artifact recovery; only the newest checkpoint
 
 The end-of-run sweep and **Pipeline storage cleanup** workflow (daily and after generation/verification workflows finish) use `actions: write`. The maintenance workflow also runs on relevant code pushes for one-time cleanup. Maintenance is serialized separately so it cannot replace queued generation triggers; active generation artifacts are protected through the run-status API. It deletes at most 200 artifacts per invocation; larger backlogs continue on subsequent sweeps. Existing source fixtures, branding, credentials and durable history are preserved. Terminal history is bounded to 200 jobs and a 512 KiB target; pending work and unresolved upload intents are kept. Older terminal topics may eventually become eligible again. Git commit history is not rewritten.
 
-The production video schedule remains daily at 03:17 UTC (08:47 India time), enabled by the existing `AUTOMATION_ENABLED=true` repository variable. Manual `auto` runs are available independently. The storage maintenance schedule runs daily regardless of generation enablement.
+The production video schedule uses a weekly 2/3/2/3/2/3/2 pattern: 17 scheduled runs per week and at most three per IST day. It is enabled by the existing `AUTOMATION_ENABLED=true` repository variable. GitHub cron expressions are UTC; the table below is IST. Manual `auto` runs are available independently and consume additional quota. The storage maintenance schedule runs daily regardless of generation enablement.
+
+| Day | Runs | IST times |
+| --- | --- | --- |
+| Monday | 2 | 08:00, 20:00 |
+| Tuesday | 3 | 07:00, 14:00, 21:00 |
+| Wednesday | 2 | 10:00, 22:00 |
+| Thursday | 3 | 09:00, 16:00, 23:00 |
+| Friday | 2 | 11:00, 19:00 |
+| Saturday | 3 | 08:00, 13:00, 18:00 |
+| Sunday | 2 | 12:00, 21:00 |
+
+This calendar pattern repeats each week, so Sunday and the following Monday both have two runs. Scheduled runs are at least five hours apart. GitHub can delay scheduled workflow starts; these are requested times rather than exact publication guarantees.
 
 Topic-policy version 2 discards older queued suggestions once, while preserving posted-topic history and in-progress jobs. Newly generated ideas and objects prioritize familiar, relatable comparisons for a general audience.

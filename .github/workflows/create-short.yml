@@ -16,7 +16,21 @@ on:
         default: ''
         description: Optional saved job ID to retry after fixing a needs-review failure
   schedule:
-    - cron: '17 3 * * *'
+    # GitHub cron uses UTC; the times in these comments are IST (UTC+05:30).
+    # Monday: 2 runs (08:00, 20:00 IST)
+    - cron: '30 2,14 * * 1'
+    # Tuesday: 3 runs (07:00, 14:00, 21:00 IST)
+    - cron: '30 1,8,15 * * 2'
+    # Wednesday: 2 runs (10:00, 22:00 IST)
+    - cron: '30 4,16 * * 3'
+    # Thursday: 3 runs (09:00, 16:00, 23:00 IST)
+    - cron: '30 3,10,17 * * 4'
+    # Friday: 2 runs (11:00, 19:00 IST)
+    - cron: '30 5,13 * * 5'
+    # Saturday: 3 runs (08:00, 13:00, 18:00 IST)
+    - cron: '30 2,7,12 * * 6'
+    # Sunday: 2 runs (12:00, 21:00 IST)
+    - cron: '30 6,15 * * 0'
 permissions:
   contents: read
 concurrency:
