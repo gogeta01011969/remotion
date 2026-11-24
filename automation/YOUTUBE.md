@@ -179,8 +179,8 @@ To disable automatic uploads while keeping generation, change `uploadEnabled` to
   render/delivery/recovery copies after status persistence. Failed runs retain a
   short recovery window (72 hours); housekeeping keeps only the newest checkpoint
   per job and enforces a 128 MiB / 20 managed-artifact target. Diagnostics live for
-  24 hours, with GitHub expiry as a fallback. Active runs are protected. A daily
-  maintenance workflow and end-of-run cleanup sweep existing artifacts. This does
+  24 hours, with GitHub expiry as a fallback. Active runs are protected. Daily/post-workflow
+  maintenance and end-of-run cleanup sweep existing artifacts. This does
   not touch other applications' artifacts, YouTube videos or credential secrets.
 - Google currently documents a default allowance of 100 `videos.insert` calls
   per day; check your project's actual quota in Cloud Console. This pipeline

@@ -1,6 +1,10 @@
 name: Pipeline storage cleanup
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Linux verification', 'Create a comparison Short']
+    types: [completed]
+    branches: [main]
   schedule:
     - cron: '47 4 * * *'
   push:
@@ -13,16 +17,19 @@ permissions:
   contents: read
   actions: write
 concurrency:
-  group: comparison-short-production
+  group: comparison-short-storage
   cancel-in-progress: false
 jobs:
   cleanup:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
+          # workflow_run must always execute trusted default-branch code.
+          ref: ${{ github.event.repository.default_branch }}
       - uses: actions/setup-node@v7.1.0
         with:
           node-version: '22'
