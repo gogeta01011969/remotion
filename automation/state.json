@@ -502,16 +502,28 @@
       "metric": "speed",
       "scopeKey": "topic-ce4408372cf6ec50",
       "entityKeys": [],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Eurostar high‑speed train (London‑Paris)",
+        "TGV POS (Paris‑Lyon)",
+        "Shanghai Maglev",
+        "Koenigsegg Agera RS",
+        "SSC Tuatara",
+        "Hennessey Venom F5",
+        "Bugatti Chiron Super Sport 300+",
+        "North American X-15 (air‑drop land run)",
+        "Thrust SSC",
+        "Bloodhound LSR"
+      ],
       "whyInteresting": "Pits iconic speed machines—like the Bugatti Chiron, a modern hypercar, against legendary land speed record cars and a high‑speed train—highlighting engineering breakthroughs across eras.",
       "family": "speed-comparisons",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
       "selectionMode": "automatic",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "needs-review",
+      "attempts": 1,
       "createdAt": "2026-11-24T06:23:55.087Z",
-      "updatedAt": "2026-11-24T06:23:55.087Z"
+      "updatedAt": "2026-11-24T06:24:05.385Z",
+      "error": "Generating Eurostar high‑speed train (London‑Paris) with flux-2-klein-4b\nNo usable optional editorial plan; using the measured object progression.\nCloudflare image request failed (HTTP 400): [{\"message\":\"AiError: AiError: Your output has been flagged. Please choose another prompt / input image combination (8f3e19f0-6b9c-4d1d-bd87-0fe52834cdfc)\",\"code\":3030}]\nAsset provider failed: exit 1\n"
     }
   ],
   "queue": []
