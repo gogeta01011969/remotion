@@ -1,5 +1,5 @@
 {
-  "niche": "Silent, visually engaging comparison YouTube Shorts with honest measurement-specific visualizations",
+  "niche": "Silent, visually engaging comparison YouTube Shorts for a general audience: familiar, relatable subjects and meaningful contrasts across recognizable categories, using honest measurement-specific visualizations",
   "allowedMetrics": [
     "diameter",
     "height",
@@ -29,5 +29,6 @@
     "comparisons/examples/volume.json",
     "comparisons/examples/zoom.json"
   ],
-  "maxTopicsPerRun": 3
+  "maxTopicsPerRun": 3,
+  "topicPolicyVersion": 2
 }

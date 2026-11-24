@@ -1,10 +1,11 @@
 # Connect the Shorts pipeline to your YouTube channel
 
-Uploads are enabled in code and fixed to private during testing. The shared settings in [youtube-settings.ts](../src/pipeline/youtube-settings.ts) control local uploads and GitHub Actions:
+Uploads are enabled in code and public for production. The shared settings in [youtube-settings.ts](../src/pipeline/youtube-settings.ts) control local uploads and GitHub Actions:
 
 ```ts
 uploadEnabled: true,
-privacy: 'private',
+privacy: 'public',
+containsSyntheticMedia: false,
 ```
 
 OAuth credentials and the channel ID still come from GitHub settings. No paid API or new runtime dependency is required.
@@ -89,11 +90,10 @@ Add **repository variables**:
 | --- | --- |
 | `YOUTUBE_CHANNEL_ID` | The `UC...` channel ID saved by the helper |
 | `YOUTUBE_MADE_FOR_KIDS` | `false` for the intended general-audience comparisons; change if your actual content is directed at children |
-| `YOUTUBE_CONTAINS_SYNTHETIC_MEDIA` | `true`, because this pipeline uses realistic generated imagery |
 
 `YOUTUBE_CHANNEL_ID` may also be a repository secret; the Actions variable takes precedence if both exist. OAuth credentials remain secrets. Environment-scoped values require a job bound to that environment; this workflow uses repository-level settings.
 
-Every run reads the hardcoded upload settings and reports **YouTube upload configuration** in its summary. `YOUTUBE_UPLOAD_ENABLED` and `YOUTUBE_PRIVACY_STATUS` secrets/variables are no longer read and may be removed. The settings command makes no API calls and does not upload anything:
+Every run reads the hardcoded upload settings and reports **YouTube upload configuration** in its summary. `YOUTUBE_UPLOAD_ENABLED`, `YOUTUBE_PRIVACY_STATUS` and `YOUTUBE_CONTAINS_SYNTHETIC_MEDIA` secrets/variables are no longer read and may be removed. The settings command makes no API calls and does not upload anything:
 
 ```sh
 npm run youtube:upload -- --settings
@@ -103,7 +103,7 @@ The existing Groq/Cloudflare secrets remain required. The scheduled trigger stil
 uses the existing `AUTOMATION_ENABLED=true` variable; upload enablement alone does
 not turn on scheduling.
 
-## 4. Run one private test
+## 4. Run a production video
 
 On **Actions → Create a comparison Short → Run workflow**:
 
@@ -123,16 +123,11 @@ The workflow will:
 5. Upload the MP4 via one resumable session and save the returned video ID/URL.
 6. Persist the outcome, then clean generated intermediates after confirmed upload.
 
-The Actions summary includes the video link. A private video can be reviewed in
-YouTube Studio by the channel owner. YouTube processing can continue after the
+The Actions summary includes the video link. Newly uploaded videos request public visibility; review them in YouTube Studio. YouTube processing can continue after the
 upload API accepts the video; this integration confirms the transfer/video ID,
 not processing completion or publication availability.
 
-Once the private test looks correct, change `privacy: 'private'` to `privacy: 'public'` in `src/pipeline/youtube-settings.ts` and push to main. Future
-runs request public uploads. Existing private videos remain private; change them
-in Studio if you want to publish them. YouTube recognizes eligible portrait
-uploads as Shorts automatically—there is no separate Shorts upload endpoint.
-See [YouTube's Shorts rules](https://support.google.com/youtube/answer/15424877).
+The shared code settings control visibility and disclosure. Existing private videos stay private unless edited in Studio. The synthetic-content flag is disabled for these clearly animated comparison diagrams, not footage presented as real-world events. Image-generation credits and approximation disclosures remain truthful. Realistic generated scenes can require disclosure even without people; reassess if the visual approach changes. See [YouTube's guidance](https://support.google.com/youtube/answer/14328491).
 
 To disable automatic uploads while keeping generation, change `uploadEnabled` to `false` in the same settings file.
 
@@ -142,7 +137,7 @@ To disable automatic uploads while keeping generation, change `uploadEnabled` to
   viewer-facing description, topic-specific tags and two or three hashtags.
   It uses only the final dataset: objects that actually rendered, measurement,
   values, conditions and approximation status. It cannot change the video or
-  private/audience settings. Image credits, source references and the applicable
+  visibility/audience settings. Image credits, source references and the applicable
   approximation disclosure are appended by trusted code.
 - The metadata stage makes at most one logical request with a 1,400-token
   completion cap, within the existing shared 12-request/65,000-token budget.
@@ -162,8 +157,8 @@ To disable automatic uploads while keeping generation, change `uploadEnabled` to
   This is presentation improvement, not a promise of views. See YouTube's
   [metadata guidance](https://support.google.com/youtube/answer/16559650) and
   [Shorts discovery guidance](https://support.google.com/youtube/answer/11914225?co=YOUTUBE._YTVideoType%3Dshorts&hl=en).
-- Uploads default to private. Subscriber notifications are disabled. AI-content
-  disclosure is enabled; audience settings are explicit, not inferred from topic.
+- Uploads are public. Subscriber notifications are disabled. The synthetic-content
+  flag is disabled for the animated comparison format; audience settings are explicit.
 - The credential token is refreshed automatically. Revocation or an expired
   Testing token requires repeating local authorization and updating GitHub's
   refresh-token secret.
@@ -180,9 +175,13 @@ To disable automatic uploads while keeping generation, change `uploadEnabled` to
 - Refresh tokens, access tokens and resumable session URLs are never stored in
   the public ledger, logs or generated artifacts. The ledger does contain video
   IDs/URLs and channel IDs.
-- Existing fallback artifacts retain their configured 30-day retention and
-  checkpoints seven days. Removing these after successful YouTube delivery is a
-  separate storage-policy change; no permanent video store has been added.
+- Confirmed YouTube uploads delete their video/checkpoint artifacts and all local
+  render/delivery/recovery copies after status persistence. Failed runs retain a
+  short recovery window (72 hours); housekeeping keeps only the newest checkpoint
+  per job and enforces a 128 MiB / 20 managed-artifact target. Diagnostics live for
+  24 hours, with GitHub expiry as a fallback. Active runs are protected. A daily
+  maintenance workflow and end-of-run cleanup sweep existing artifacts. This does
+  not touch other applications' artifacts, YouTube videos or credential secrets.
 - Google currently documents a default allowance of 100 `videos.insert` calls
   per day; check your project's actual quota in Cloud Console. This pipeline
   starts at most one upload session per job attempt and uses no YouTube search.

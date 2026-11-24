@@ -14,3 +14,8 @@ __pycache__/
 
 # Google downloaded OAuth client credentials
 /client_secret*.json
+
+# Per-run generated objects, downloaded artifacts and diagnostics
+public/comparisons/
+/checkpoint-*/
+/short-short-*/

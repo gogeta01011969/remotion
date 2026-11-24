@@ -2,7 +2,7 @@
 
 The workflow selects a topic, checks history, runs the existing comparison pipeline,
 renders a silent MP4, archives the result, and cleans that job's intermediate files.
-Optional YouTube upload is available after [one-time OAuth setup](YOUTUBE.md). Uploads are enabled and fixed to private in `src/pipeline/youtube-settings.ts`. Existing `compare` commands and Mac foreground
+Optional YouTube upload is available after [one-time OAuth setup](YOUTUBE.md). Uploads are enabled and public in `src/pipeline/youtube-settings.ts`. Existing `compare` commands and Mac foreground
 extraction remain available.
 
 ## Start on GitHub
@@ -259,3 +259,15 @@ Outcomes are explicit:
 To test automatic recovery, start a **new** `Create a comparison Short` workflow from `main`, choose `auto`, and leave both `topic` and `resume_job` blank. An explicit resume is supported but is no longer required to move past an unsuitable automatic topic. External provider outages and quotas cannot guarantee a video on every trigger; they are reported honestly rather than passed off as successful deliveries.
 
 Cloudflare moderation refusals (`3030`) are handled per object: cache the refusal, omit that object and continue when at least two usable objects remain. No alternative prompt/model is used. The final delivery includes `asset-selection.json` and reflects only rendered objects. Authentication failures and provider-wide quotas/outages are not converted into per-object skips.
+
+## Production storage policy
+
+After upload and durable status persistence, all generated local job directories, delivery copies, staged/restored checkpoints and upload manifests are removed. The GitHub artifact sweeper deletes video/checkpoint artifacts for uploaded jobs. The ledger retains the YouTube ID and URL.
+
+Failed runs have up to 72 hours of artifact recovery; only the newest checkpoint per job is retained. Diagnostics have a 24-hour window. Known pipeline artifacts target at most 128 MiB and 20 artifacts; oldest finished-run artifacts can be removed earlier to stay within that budget, so recovery is best effort. Active runs and unrelated artifacts are protected. Repository-level limits do not cover other repositories' storage. GitHub caches retain their platform-managed eviction policy.
+
+The end-of-run sweep and daily **Pipeline storage cleanup** workflow use `actions: write`. The maintenance workflow also runs on relevant code pushes for one-time cleanup. It deletes at most 200 artifacts per invocation; larger backlogs continue on subsequent sweeps. Existing source fixtures, branding, credentials and durable history are preserved. Terminal history is bounded to 200 jobs and a 512 KiB target; pending work and unresolved upload intents are kept. Older terminal topics may eventually become eligible again. Git commit history is not rewritten.
+
+The production video schedule remains daily at 03:17 UTC (08:47 India time), enabled by the existing `AUTOMATION_ENABLED=true` repository variable. Manual `auto` runs are available independently. The storage maintenance schedule runs daily regardless of generation enablement.
+
+Topic-policy version 2 discards older queued suggestions once, while preserving posted-topic history and in-progress jobs. Newly generated ideas and objects prioritize familiar, relatable comparisons for a general audience.

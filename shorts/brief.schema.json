@@ -40,8 +40,8 @@
           "maxLength": 180
         },
         "beats": {
-          "minItems": 4,
-          "maxItems": 8,
+          "minItems": 2,
+          "maxItems": 15,
           "type": "array",
           "items": {
             "type": "object",
@@ -52,7 +52,7 @@
                 "maxLength": 80
               },
               "durationSeconds": {
-                "type": "integer",
+                "type": "number",
                 "minimum": 2,
                 "maximum": 60
               }
@@ -197,6 +197,18 @@
               "data": {
                 "type": "object",
                 "properties": {
+                  "dataQuality": {
+                    "type": "string",
+                    "enum": [
+                      "sourced",
+                      "estimated"
+                    ]
+                  },
+                  "presentationVersion": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
                   "template": {
                     "type": "string",
                     "const": "size-comparison"
@@ -235,7 +247,14 @@
                       "width",
                       "wingspan",
                       "area",
-                      "volume"
+                      "volume",
+                      "mass",
+                      "count",
+                      "speed",
+                      "duration",
+                      "energy",
+                      "power",
+                      "temperature"
                     ]
                   },
                   "unit": {
@@ -258,18 +277,67 @@
                       "m3",
                       "km3",
                       "mL",
-                      "L"
+                      "L",
+                      "mg",
+                      "g",
+                      "kg",
+                      "t",
+                      "lb",
+                      "count",
+                      "m/s",
+                      "km/h",
+                      "mph",
+                      "s",
+                      "min",
+                      "h",
+                      "day",
+                      "year",
+                      "J",
+                      "kJ",
+                      "MJ",
+                      "GJ",
+                      "Wh",
+                      "kWh",
+                      "W",
+                      "kW",
+                      "MW",
+                      "GW",
+                      "C",
+                      "K",
+                      "F"
                     ]
+                  },
+                  "countBasis": {
+                    "type": "string",
+                    "enum": [
+                      "fixed",
+                      "inventory",
+                      "population"
+                    ]
+                  },
+                  "raceDistanceM": {
+                    "default": 100,
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000000
                   },
                   "basis": {
                     "type": "string",
-                    "minLength": 5,
+                    "minLength": 1,
                     "maxLength": 500
                   },
                   "asOf": {
-                    "type": "string",
-                    "format": "date",
-                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^(?:19|20)\\d{2}$"
+                      }
+                    ]
                   },
                   "environment": {
                     "default": "auto",
@@ -291,7 +359,7 @@
                   },
                   "backgroundReason": {
                     "type": "string",
-                    "minLength": 15,
+                    "minLength": 1,
                     "maxLength": 400
                   },
                   "displayUnits": {
@@ -331,17 +399,17 @@
                       },
                       "viewerQuestion": {
                         "type": "string",
-                        "minLength": 15,
+                        "minLength": 1,
                         "maxLength": 180
                       },
                       "throughline": {
                         "type": "string",
-                        "minLength": 25,
+                        "minLength": 1,
                         "maxLength": 400
                       },
                       "selectionRule": {
                         "type": "string",
-                        "minLength": 25,
+                        "minLength": 1,
                         "maxLength": 400
                       },
                       "opening": {
@@ -354,7 +422,7 @@
                           },
                           "reason": {
                             "type": "string",
-                            "minLength": 25,
+                            "minLength": 1,
                             "maxLength": 400
                           }
                         },
@@ -374,7 +442,7 @@
                           },
                           "reason": {
                             "type": "string",
-                            "minLength": 25,
+                            "minLength": 1,
                             "maxLength": 400
                           }
                         },
@@ -399,7 +467,7 @@
                           },
                           "reason": {
                             "type": "string",
-                            "minLength": 25,
+                            "minLength": 1,
                             "maxLength": 400
                           }
                         },
@@ -420,7 +488,7 @@
                           },
                           "reason": {
                             "type": "string",
-                            "minLength": 25,
+                            "minLength": 1,
                             "maxLength": 400
                           }
                         },
@@ -431,8 +499,8 @@
                         "additionalProperties": false
                       },
                       "items": {
-                        "minItems": 4,
-                        "maxItems": 8,
+                        "minItems": 2,
+                        "maxItems": 15,
                         "type": "array",
                         "items": {
                           "type": "object",
@@ -453,7 +521,7 @@
                             },
                             "reason": {
                               "type": "string",
-                              "minLength": 25,
+                              "minLength": 1,
                               "maxLength": 400
                             }
                           },
@@ -478,7 +546,7 @@
                             },
                             "reason": {
                               "type": "string",
-                              "minLength": 25,
+                              "minLength": 1,
                               "maxLength": 400
                             }
                           },
@@ -515,7 +583,7 @@
                             },
                             "reason": {
                               "type": "string",
-                              "minLength": 25,
+                              "minLength": 1,
                               "maxLength": 400
                             }
                           },
@@ -533,12 +601,12 @@
                         "properties": {
                           "originalQuestion": {
                             "type": "string",
-                            "minLength": 15,
+                            "minLength": 1,
                             "maxLength": 180
                           },
                           "reason": {
                             "type": "string",
-                            "minLength": 25,
+                            "minLength": 1,
                             "maxLength": 400
                           }
                         },
@@ -560,7 +628,7 @@
                           },
                           "scope": {
                             "type": "string",
-                            "minLength": 25,
+                            "minLength": 1,
                             "maxLength": 400
                           },
                           "sourceIds": {
@@ -599,8 +667,8 @@
                     "additionalProperties": false
                   },
                   "items": {
-                    "minItems": 4,
-                    "maxItems": 8,
+                    "minItems": 2,
+                    "maxItems": 15,
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -613,11 +681,16 @@
                         "label": {
                           "type": "string",
                           "minLength": 1,
+                          "maxLength": 80
+                        },
+                        "displayLabel": {
+                          "type": "string",
+                          "minLength": 1,
                           "maxLength": 24
                         },
                         "value": {
                           "type": "number",
-                          "minimum": 1e-30,
+                          "minimum": -1e+30,
                           "maximum": 1e+30
                         },
                         "color": {
@@ -683,7 +756,6 @@
                                   "maxLength": 1000
                                 },
                                 "referenceUrls": {
-                                  "minItems": 1,
                                   "maxItems": 8,
                                   "type": "array",
                                   "items": {
@@ -824,7 +896,6 @@
                                   "maxLength": 1000
                                 },
                                 "referenceUrls": {
-                                  "minItems": 1,
                                   "maxItems": 8,
                                   "type": "array",
                                   "items": {
@@ -950,13 +1021,30 @@
                             }
                           ]
                         },
+                        "asOf": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "date",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                            },
+                            {
+                              "type": "string",
+                              "pattern": "^(?:19|20)\\d{2}$"
+                            }
+                          ]
+                        },
+                        "conditionLabel": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 40
+                        },
                         "country": {
                           "type": "string",
                           "minLength": 1,
                           "maxLength": 56
                         },
                         "sourceIds": {
-                          "minItems": 1,
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -972,14 +1060,10 @@
                           "type": "object",
                           "properties": {
                             "min": {
-                              "type": "number",
-                              "minimum": 1e-30,
-                              "maximum": 1e+30
+                              "type": "number"
                             },
                             "max": {
-                              "type": "number",
-                              "minimum": 1e-30,
-                              "maximum": 1e+30
+                              "type": "number"
                             }
                           },
                           "required": [
@@ -1008,7 +1092,6 @@
                     }
                   },
                   "sources": {
-                    "minItems": 1,
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -1043,6 +1126,7 @@
                   "subject",
                   "metric",
                   "unit",
+                  "raceDistanceM",
                   "environment",
                   "displayUnits",
                   "scaleReference",
@@ -1052,19 +1136,38 @@
                 ],
                 "additionalProperties": false
               },
+              "quantityTiming": {
+                "minItems": 2,
+                "maxItems": 15,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "growthSeconds": {
+                      "type": "number",
+                      "minimum": 1,
+                      "maximum": 3
+                    }
+                  },
+                  "required": [
+                    "growthSeconds"
+                  ],
+                  "additionalProperties": false
+                }
+              },
               "headings": {
-                "minItems": 4,
-                "maxItems": 9,
+                "minItems": 2,
+                "maxItems": 16,
                 "type": "array",
                 "items": {
                   "type": "string",
                   "minLength": 1,
-                  "maxLength": 50
+                  "maxLength": 80
                 }
               },
               "shots": {
-                "minItems": 4,
-                "maxItems": 9,
+                "minItems": 2,
+                "maxItems": 16,
                 "type": "array",
                 "items": {
                   "type": "object",
@@ -1093,21 +1196,21 @@
                     "focus": {
                       "type": "integer",
                       "minimum": 0,
-                      "maximum": 7
+                      "maximum": 14
                     },
                     "reference": {
                       "type": "integer",
                       "minimum": 0,
-                      "maximum": 7
+                      "maximum": 14
                     },
                     "visible": {
                       "minItems": 1,
-                      "maxItems": 8,
+                      "maxItems": 15,
                       "type": "array",
                       "items": {
                         "type": "integer",
                         "minimum": 0,
-                        "maximum": 7
+                        "maximum": 14
                       }
                     },
                     "metric": {
@@ -2523,8 +2626,8 @@
       "maxLength": 5000
     },
     "scenes": {
-      "minItems": 4,
-      "maxItems": 8,
+      "minItems": 2,
+      "maxItems": 15,
       "type": "array",
       "items": {
         "type": "object",

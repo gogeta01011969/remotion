@@ -26,12 +26,15 @@ function mockClient(handler:(url:string,init:RequestInit)=>Promise<Response>|Res
 }
 function videoFile(bytes=8){const root=mkdtempSync(path.join(tmpdir(),'youtube-client-')),file=path.join(root,'video.mp4');writeFileSync(file,Buffer.alloc(bytes,9));return {root,file};}
 
-test('YouTube credentials default to private uploads and reject ambiguous config',()=>{
+test('YouTube credentials use public production settings and reject ambiguous config',()=>{
   const env={YOUTUBE_CLIENT_ID:'client',YOUTUBE_CLIENT_SECRET:'secret',YOUTUBE_REFRESH_TOKEN:'refresh',YOUTUBE_CHANNEL_ID:channelId};
-  const parsed=loadYouTubeConfig('unused',env);assert.equal(parsed.privacy,'private');assert.equal(parsed.containsSyntheticMedia,true);
-  assert.equal(loadYouTubeConfig('unused',{...env,YOUTUBE_PRIVACY_STATUS:'public'}).privacy,'private','Environment settings cannot publish private test uploads.');
+  const parsed=loadYouTubeConfig('unused',env);assert.equal(parsed.privacy,'public');assert.equal(parsed.containsSyntheticMedia,false);
+  assert.equal(makeYouTubeMetadata(data,parsed).status.privacyStatus,'public');
+  assert.equal(makeYouTubeMetadata(data,parsed).status.containsSyntheticMedia,false);
+  assert.equal(loadYouTubeConfig('unused',{...env,YOUTUBE_PRIVACY_STATUS:'private'}).privacy,'public','Environment settings cannot override production privacy.');
   assert.throws(()=>loadYouTubeConfig('unused',{...env,YOUTUBE_MADE_FOR_KIDS:'yes'}),/true or false/);
   assert.throws(()=>loadYouTubeConfig('unused',{...env,YOUTUBE_CHANNEL_ID:'wrong-channel'}));
+  assert.equal(loadYouTubeConfig('unused',{...env,YOUTUBE_CONTAINS_SYNTHETIC_MEDIA:'true'}).containsSyntheticMedia,false);
 });
 test('upload metadata preserves sources and credit, and rejects oversized descriptions before transfer',()=>{
   const result=metadata();assert.equal(result.status.privacyStatus,'private');assert.equal(result.status.containsSyntheticMedia,true);assert.equal(result.status.selfDeclaredMadeForKids,false);
@@ -183,16 +186,16 @@ test('a changed delivered video is rejected before authorizing an upload intent'
   }finally{rmSync(run.root,{recursive:true,force:true});}
 });
 
-test('Actions reads enabled/private settings without credentials or environment overrides',()=>{
+test('Actions reads enabled/public settings without credentials or environment overrides',()=>{
   const root=mkdtempSync(path.join(tmpdir(),'youtube-hardcoded-settings-'));
   try{
-    const env={...process.env,GITHUB_OUTPUT:path.join(root,'outputs.txt'),GITHUB_STEP_SUMMARY:path.join(root,'summary.md'),YOUTUBE_UPLOAD_ENABLED:'false',YOUTUBE_PRIVACY_STATUS:'public'};
+    const env={...process.env,GITHUB_OUTPUT:path.join(root,'outputs.txt'),GITHUB_STEP_SUMMARY:path.join(root,'summary.md'),YOUTUBE_UPLOAD_ENABLED:'false',YOUTUBE_PRIVACY_STATUS:'private'};
     for(const key of ['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN','YOUTUBE_CHANNEL_ID'])delete (env as NodeJS.ProcessEnv)[key];
     const result=spawnSync(process.execPath,['--import',path.resolve('node_modules/tsx/dist/loader.mjs'),path.resolve('scripts/youtube-upload.ts'),'--settings'],{cwd:root,env,encoding:'utf8',timeout:30000});
     assert.equal(result.status,0,result.stderr);
-    assert.deepEqual(JSON.parse(result.stdout),{uploadEnabled:true,privacy:'private'});
-    assert.equal(readFileSync(env.GITHUB_OUTPUT,'utf8'),'enabled=true\nprivacy=private\n');
+    assert.deepEqual(JSON.parse(result.stdout),{uploadEnabled:true,privacy:'public',containsSyntheticMedia:false});
+    assert.equal(readFileSync(env.GITHUB_OUTPUT,'utf8'),'enabled=true\nprivacy=public\n');
     assert.match(readFileSync(env.GITHUB_STEP_SUMMARY,'utf8'),/Uploads: enabled/);
-    assert.match(readFileSync(env.GITHUB_STEP_SUMMARY,'utf8'),/Privacy: private/);
+    assert.match(readFileSync(env.GITHUB_STEP_SUMMARY,'utf8'),/Privacy: public/);
   }finally{rmSync(root,{recursive:true,force:true});}
 });

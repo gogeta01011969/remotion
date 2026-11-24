@@ -14,7 +14,7 @@ async function main(){
   if(values.settings){
     console.log(JSON.stringify(youtubeSettings));
     if(process.env.GITHUB_OUTPUT)appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${youtubeSettings.uploadEnabled}\nprivacy=${youtubeSettings.privacy}\n`);
-    if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### YouTube upload configuration\n\nUploads: ${youtubeSettings.uploadEnabled?'enabled':'disabled'} (hardcoded in src/pipeline/youtube-settings.ts).\n\nPrivacy: ${youtubeSettings.privacy}.\n`);
+    if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,`### YouTube upload configuration\n\nUploads: ${youtubeSettings.uploadEnabled?'enabled':'disabled'} (hardcoded in src/pipeline/youtube-settings.ts).\n\nPrivacy: ${youtubeSettings.privacy}.\n\nAI-content disclosure: ${youtubeSettings.containsSyntheticMedia?'enabled':'disabled'} for the animated comparison template.\n`);
     return;
   }
   const config=loadYouTubeConfig(),client=new YouTubeClient(config);

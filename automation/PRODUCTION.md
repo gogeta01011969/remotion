@@ -1,91 +1,25 @@
-# Production readiness
+# Production operation
 
-Updated: November 17, 2026 (Asia/Kolkata), bounded best-effort recovery policy.
+Reviewed November 24, 2026 (Asia/Kolkata).
 
-Current scope: automatically create silent measurement-comparison Shorts on Linux,
-ending in a verified MP4 delivery. Optional YouTube OAuth/resumable upload is implemented; real channel authorization and an end-to-end private test remain required. The current system is a working beta; unattended production
-reliability has not yet been established across subjects.
+The active pipeline is topic selection → a simple approximate comparison plan → Cloudflare objects → local cutouts and Remotion rendering → Groq YouTube metadata → public upload → cleanup. Private upload has been confirmed during testing; future uploads request public visibility. Existing private videos are unchanged.
 
-## Implemented
+Topics and object choices prioritize a general audience: familiar subjects, common names, meaningful contrasts across recognizable categories and a clear payoff. Specialist catalogs and barely different obscure variants are discouraged. These are editorial guidelines, not brittle validation rules.
 
-| Piece | Responsibility | Evidence / limit |
-| --- | --- | --- |
-| Topic engine | Choose topics across 25 families, eight angles and three depths | Live planning preview passed; editorial appeal remains model judgment |
-| Deduplication | Compare titles, scopes and object sets against durable history | Tested; aliases and shortened labels can still escape matching |
-| Bounded research | Discover/open sources locally, extract exact quotations, convert units | Live tested; source availability and semantic interpretation remain variable |
-| Editorial and visual planning | Select objects, order, background and per-object image briefs | Schema/evidence checks and resumable drafts implemented |
-| Cloudflare image policy | Require raster imagery for physical-size objects and chart subject thumbnails | Enforced in code; no fresh complete hosted run of this policy confirmed yet |
-| Foreground preparation | Local CPU cutouts, alpha checks, calibration and frozen assets | Linux smoke test passes; image identity/likeness is not automatically verified |
-| Remotion / FFmpeg | Deterministic composition, MP4 encoding and media verification | Hosted render succeeded; latest Linux offline verification passes |
-| Workflow controller | Manual/scheduled jobs, serial execution, checkpoints, retries and ledger | Implemented/tested; due deferrals await another trigger |
-| Delivery and cleanup | Archive final artifact, persist completion, then remove intermediates | Hosted confirmation/cleanup succeeded; retention is temporary |
-| Usage and diagnostics | Stage/token reports, image usage receipts and saved errors | Implemented; hard 12-request/65,000-token limits still active |
+The synthetic-content flag is disabled for the clearly animated comparison-diagram format. AI image credits and numerical approximation disclosures remain. This setting is not a blanket rule for all AI images: realistic generated scenes may require disclosure under [YouTube's policy](https://support.google.com/youtube/answer/14328491).
 
-Evidence:
+## Verified boundaries
 
-- [Latest Linux verification](https://github.com/gogeta01011969/remotion/actions/runs/43012875918): revision `3ccc6ab`, successful.
-- [Completed hosted video](https://github.com/gogeta01011969/remotion/actions/runs/42977953181): revision `3690890`, rendered, archived and marked complete. Its objects used local plain materials; this does not validate the later mandatory Cloudflare policy.
-- 139 TypeScript tests passed locally for `3ccc6ab`; Linux CI also runs the real CPU extraction test and a fixed offline render.
+- Deterministic templates, compatible units, at least two usable objects and decoded asset/media checks remain required.
+- Cloudflare image refusals omit the affected object without prompt/model workarounds. Provider outages/quotas retain bounded retries and checkpoint deferrals.
+- Metadata uses final rendered objects, one optional budgeted request and a cache/local fallback. Upload intents freeze the exact metadata and video hash.
+- Uploads verify the intended channel and persist intent before sending. Ambiguous transfers require review rather than duplicate uploads.
+- Confirmed uploads delete generated files and remote video/checkpoint artifacts. Failed recovery is temporary and storage-bounded; the durable ledger retains delivery IDs and recent deduplication history.
 
-New measurement support: sequential vertical bars for mass, count, speed,
-duration, energy and power, plus signed temperature bars. Quantity charts identify subjects using concise colored names and real cutout thumbnails. Automated selection now supports 13 measurements;
-manual geographic area inputs remain available.
+## Storage and scheduling
 
-## Work before unattended production
+See [operation and storage policy](README.md#production-storage-policy). Automatic generation runs daily when `AUTOMATION_ENABLED=true`; housekeeping runs daily independently and after generation. No permanent video archive is maintained. The root README and obsolete generated previews/downloads have been removed; source fixtures and channel artwork remain.
 
-1. **Validate the current revision end to end.** Exercise generated sphere
-   textures, vertical cutouts, horizontal/winged cutouts and capacity graphics.
-   Check the actual Cloudflare assets and finished videos. Also exercise an
-   interrupted run and an archive failure on hosted runners. Offline tests and
-   one older completed video do not establish this coverage.
-2. **Add content and visual quality gates.** Bind dataset identities to stable
-   research records, check claims/titles against the evidence, and define how to
-   review image likeness, markings, orientation, crop, texture seams and readability.
-   Existing checks establish file/geometry validity, not semantic correctness or
-   audience appeal. Keep initial production outputs reviewable before publishing.
-3. **Verify simple recovery on hosted runners.** Started attempts, including
-   quota deferrals and archive retries, are bounded at three. Active backoff pauses
-   only that job; new topics can proceed. Missing or unusable checkpoints abandon
-   the job as `needs-review`. Cancellation recovery remains best-effort. No retry
-   worker, prompt rescheduling or complex reconstruction is required. Exercise
-   cancellation, expired checkpoints and failed archival in Actions.
-4. **Keep storage temporary.** Permanent video/asset archival is not required.
-   Actions currently holds final artifacts for 30 days and checkpoints for seven.
-   When YouTube is connected, delete videos/assets after confirmed upload while
-   retaining lightweight de-duplication/status/upload-ID history. Preserve the
-   ledger; do not let cleanup discard delivery that has not been confirmed.
-5. **Set the intended usage policy.** The proposed warning/optional-ceiling
-   approach has not been implemented: config still enforces 12 logical calls and
-   65,000 reported tokens per invocation, with conservative reservations. Separate
-   estimates, reported usage and unknown usage. Establish expected per-video
-   consumption across subject types and a daily output policy; do not rely on
-   provider free quotas as a per-job budget.
-6. **Produce one final operational report.** Report delivered, deferred,
-   needs-review, duplicate and skipped outcomes distinctly, with actual artifact
-   links, final ledger status, next action, durations and usage. The generation
-   summary is written before archival and can still say `rendered` after the job
-   has become `complete`. Track delivery success and recurring failure reasons.
+## Practical limits
 
-## Improvements after the core is reliable
-
-- Canonical entity IDs/aliases for stronger deduplication.
-- Better source discovery, primary-source coverage and explicitly dated records.
-- More consistent Cloudflare identity/detail accuracy across object categories.
-- Better topic ranking from observed performance once channel data is available.
-- Reduced repair calls and better pacing based on real run measurements.
-- Long-history storage/archival beyond one ever-growing ledger file.
-
-## Explicitly deferred
-
-- YouTube processing-status polling and publication scheduling. OAuth, guarded uploads and video-ID tracking are implemented; see [setup](YOUTUBE.md).
-- Narration, music and audio finishing; current target remains silent video.
-- Automatic geographic area acquisition: the renderer already supports supplied
-  real outlines, but automatic source acquisition remains unfinished.
-
-Suggested next milestone: reliable delivery on the current Cloudflare-required
-pipeline across its supported visual modes, plus hosted recovery/archival checks.
-The seven new measurement modes are implemented and locally rendered with synthetic
-fixtures. Their live source-to-video reliability still needs broader verification;
-a live animal-mass trial exposed incomplete and age-incompatible evidence. The new
-adult/juvenile contradiction guard rejects that case; a complete live quantity
-video has not yet been verified.
+Approximate values and generated-image identity are not automatically fact-checked. Model judgment cannot guarantee interesting topics or audience performance. Provider availability, quotas and GitHub scheduling can still delay or skip a run. Manage consent/token revocation through [YouTube setup](YOUTUBE.md). Monitor the initial public outputs in Studio; no view/reach guarantee is implied.

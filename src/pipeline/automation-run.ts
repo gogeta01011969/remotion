@@ -67,9 +67,23 @@ export function restoreJobCheckpoint(root:string,job:AutomationJob,from:string){
   }
 }
 export function cleanupJob(root:string,id:string,ledger:TopicLedger){
-  if(ledger.jobs.find(j=>j.id===id)?.status!=='complete')throw new Error('Archive confirmation is required before cleanup.');
-  for(const folder of runPaths(root,id))rmSync(folder,{recursive:true,force:true});
-  // Final delivery and the durable ledger remain available.
+  const job=ledger.jobs.find(j=>j.id===id);
+  if(job?.status!=='complete')throw new Error('Archive confirmation is required before cleanup.');
+  if(job.youtube&&job.youtube.status!=='uploaded')throw new Error('YouTube upload is unresolved; preserve files for review.');
+  const folders=runPaths(root,id);
+  for(const relative of ['out/automation','out/automation/delivery','.automation']){
+    const base=path.join(root,relative);if(existsSync(base)&&lstatSync(base).isSymbolicLink())throw new Error('Cleanup ancestors cannot be symlinks.');
+  }
+  for(const folder of folders)rmSync(folder,{recursive:true,force:true});
+  if(job.youtube?.status==='uploaded'){
+    rmSync(path.join(root,'out/automation/delivery',id),{recursive:true,force:true});
+    rmSync(path.join(root,'.automation',`youtube-upload-${id}.json`),{force:true});
+    for(const relative of ['out/automation/checkpoint','.automation/restored']){
+      const directory=path.join(root,relative),manifest=path.join(directory,'checkpoint.json');
+      if(existsSync(manifest)&&JSON.parse(readFileSync(manifest,'utf8')).jobId===id)rmSync(directory,{recursive:true,force:true});
+    }
+  }
+  // Artifact-only local runs keep their final delivery; uploaded runs retain only the ledger.
 }
 export function confirmArchive(job:AutomationJob,artifactId:string){
   if(job.status!=='rendered'||!job.videoSha256)throw new Error('Only a verified rendered job can be confirmed as archived.');

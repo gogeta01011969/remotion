@@ -53,5 +53,5 @@ jobs:
             out/shorts/suite-mass-comparison/
             out/shorts/suite-speed-comparison/
             out/shorts/suite-temperature-comparison/
-          retention-days: 7
+          retention-days: 1
           if-no-files-found: warn

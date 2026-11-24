@@ -1,6 +1,7 @@
-// Shared by local uploads and GitHub Actions. Change privacy to 'public' here
-// after private testing; GitHub variables/secrets do not override these settings.
-export const youtubeSettings: {uploadEnabled:boolean;privacy:'private'|'unlisted'|'public'} = {
+// Shared by local uploads and GitHub Actions; environment values do not override these.
+// These are clearly animated comparison diagrams, not simulated real-world footage.
+export const youtubeSettings: {uploadEnabled:boolean;privacy:'private'|'unlisted'|'public';containsSyntheticMedia:boolean} = {
   uploadEnabled: true,
-  privacy: 'private',
+  privacy: 'public',
+  containsSyntheticMedia: false,
 };

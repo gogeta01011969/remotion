@@ -90,7 +90,7 @@ test('archive failure resumes a verified render without new generation; completi
     const second=await createAutomationVideo(run.options,run.dependencies);assert.equal(second.status,'rendered');assert.deepEqual(run.counts(),{builds:1,generations:1});
     confirmArchive(run.current,'123456');saveLedger(run.options.stateFile,run.ledger);cleanupJob(root,run.current.id,run.ledger);
     assert.ok(!existsSync(path.join(root,'out/shorts',run.current.id)));
-    assert.ok(existsSync(path.join(root,'out/automation/delivery',run.current.id,`${run.current.id}.mp4`)));
+    assert.ok(existsSync(path.join(root,'out/automation/delivery',run.current.id,`${run.current.id}.mp4`))); // Artifact-only delivery remains available.
     assert.equal(ledgerSchema.parse(JSON.parse(readFileSync(run.options.stateFile,'utf8'))).jobs[0].status,'complete');
   }finally{rmSync(root,{recursive:true,force:true});}
 });

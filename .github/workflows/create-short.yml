@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 45
     permissions:
       contents: write
-      actions: read
+      actions: write
     env:
       AUTOMATION_ARCHIVE_TARGET: github
       BACKGROUND_REMOVAL_PYTHON: python
@@ -143,7 +143,7 @@ jobs:
         with:
           name: checkpoint-${{ steps.active.outputs.job_id }}
           path: out/automation/checkpoint/
-          retention-days: 7
+          retention-days: 3
           if-no-files-found: error
       - uses: actions/upload-artifact@v7.0.2
         id: video
@@ -151,7 +151,7 @@ jobs:
         with:
           name: short-${{ steps.active.outputs.job_id }}
           path: out/automation/delivery/${{ steps.active.outputs.job_id }}/
-          retention-days: 30
+          retention-days: 3
           compression-level: 0
           if-no-files-found: error
       - name: Confirm successful artifact archival
@@ -170,7 +170,6 @@ jobs:
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID || secrets.YOUTUBE_CHANNEL_ID }}
           YOUTUBE_MADE_FOR_KIDS: ${{ vars.YOUTUBE_MADE_FOR_KIDS || 'false' }}
-          YOUTUBE_CONTAINS_SYNTHETIC_MEDIA: ${{ vars.YOUTUBE_CONTAINS_SYNTHETIC_MEDIA || 'true' }}
           CURRENT_JOB_ID: ${{ steps.active.outputs.job_id }}
         run: npm run youtube:upload -- --job "$CURRENT_JOB_ID" --prepare
       - name: Persist upload intent before contacting the upload endpoint
@@ -188,7 +187,6 @@ jobs:
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID || secrets.YOUTUBE_CHANNEL_ID }}
           YOUTUBE_MADE_FOR_KIDS: ${{ vars.YOUTUBE_MADE_FOR_KIDS || 'false' }}
-          YOUTUBE_CONTAINS_SYNTHETIC_MEDIA: ${{ vars.YOUTUBE_CONTAINS_SYNTHETIC_MEDIA || 'true' }}
           CURRENT_JOB_ID: ${{ steps.active.outputs.job_id }}
         run: npm run youtube:upload -- --job "$CURRENT_JOB_ID" --send
       - name: Persist final status (including failures)
@@ -215,8 +213,14 @@ jobs:
             out/automation/topic-candidates-*.json
             .automation/state.json
           include-hidden-files: true
-          retention-days: 7
+          retention-days: 1
           if-no-files-found: warn
+      - name: Remove uploaded and expired pipeline artifacts
+        if: always() && steps.ledger.outcome == 'success'
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node --import tsx .github/scripts/cleanup-artifacts.ts --finished-generation
       - name: Surface generation failure
         if: always() && steps.create.outcome == 'failure'
         run: exit 1

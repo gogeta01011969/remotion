@@ -1,0 +1,34 @@
+name: Pipeline storage cleanup
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '47 4 * * *'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/storage-cleanup.yml'
+      - '.github/scripts/cleanup-artifacts.ts'
+      - 'src/pipeline/artifact-cleanup.ts'
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: comparison-short-production
+  cancel-in-progress: false
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Delete uploaded, superseded and expired pipeline artifacts
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node --import tsx .github/scripts/cleanup-artifacts.ts
