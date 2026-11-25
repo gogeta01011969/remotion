@@ -589,16 +589,35 @@
       "metric": "height",
       "scopeKey": "topic-feedecf0c13220bb",
       "entityKeys": [],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "African Baobab (Sunland)",
+        "Giant Sequoia (General Sherman)",
+        "Coast Redwood (Hyperion)",
+        "Eiffel Tower",
+        "Empire State Building",
+        "Burj Khalifa"
+      ],
       "whyInteresting": "A giant sequoia, a coast redwood, and a baobab measured against the Eiffel Tower, Burj Khalifa, and the Empire State Building give a dramatic visual of nature’s scale versus human engineering, sparking awe and curiosity.",
       "family": "landmarks",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
       "selectionMode": "automatic",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "createdAt": "2026-11-25T14:44:23.819Z",
-      "updatedAt": "2026-11-25T14:44:23.819Z"
+      "updatedAt": "2026-11-25T14:46:41.448Z",
+      "videoSha256": "0ccadcf7d06f9e21f95a10df524222bf66e6f9e656b9494d451aa59aae5db191",
+      "artifactName": "short-short-2026-11-25-feedecf0c132",
+      "artifactId": "15032799663",
+      "youtube": {
+        "status": "uploading",
+        "intentId": "d2c0f5c4-cb11-4296-b270-597282da136b",
+        "channelId": "UC6syYZxbMxbhOSmjj8AXJuA",
+        "videoSha256": "0ccadcf7d06f9e21f95a10df524222bf66e6f9e656b9494d451aa59aae5db191",
+        "metadataSha256": "3dc7c9f8803895e04159e111fdb1d0fc04028e7a437c162acbc1cb8acdab83d1",
+        "requestedAt": "2026-11-25T14:46:42.079Z",
+        "privacy": "public"
+      }
     }
   ],
   "queue": [
