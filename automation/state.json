@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "topicPolicyVersion": 2,
   "jobs": [
     {
       "id": "seed-suite-diameter",
@@ -537,7 +538,45 @@
         "url": "https://www.youtube.com/shorts/f51ujVsr99Q",
         "uploadedAt": "2026-11-24T07:29:22.713Z"
       }
+    },
+    {
+      "id": "short-2026-11-25-3412f1fc0a2b",
+      "topic": "Everyday kitchen appliances by power consumption",
+      "metric": "power",
+      "scopeKey": "topic-3412f1fc0a2b71d8",
+      "entityKeys": [],
+      "actualEntityKeys": [],
+      "whyInteresting": "Viewers instantly recognize a toaster, microwave, coffee maker, and dishwasher, and seeing their real‑world wattage side‑by‑side reveals surprising energy hogs and helps people understand household electricity bills.",
+      "family": "power-comparisons",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible",
+      "selectionMode": "automatic",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-25T00:03:28.947Z",
+      "updatedAt": "2026-11-25T00:03:28.947Z"
     }
   ],
-  "queue": []
+  "queue": [
+    {
+      "topic": "World's tallest trees compared to famous skyscrapers",
+      "metric": "height",
+      "scopeKey": "topic-feedecf0c13220bb",
+      "entityKeys": [],
+      "whyInteresting": "A giant sequoia, a coast redwood, and a baobab measured against the Eiffel Tower, Burj Khalifa, and the Empire State Building give a dramatic visual of nature’s scale versus human engineering, sparking awe and curiosity.",
+      "family": "landmarks",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible"
+    },
+    {
+      "topic": "Fastest animals vs. common transport speeds",
+      "metric": "speed",
+      "scopeKey": "topic-de43afe2eba7333e",
+      "entityKeys": [],
+      "whyInteresting": "Putting the sprint of a cheetah, the dive of a peregrine falcon, and the burst of a sailfish next to a city bus, a commuter train, and a sports car shows how nature still outpaces many everyday machines, delivering an instantly relatable wow factor.",
+      "family": "speed-comparisons",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible"
+    }
+  ]
 }
