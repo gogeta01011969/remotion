@@ -610,13 +610,16 @@
       "artifactName": "short-short-2026-11-25-feedecf0c132",
       "artifactId": "15032799663",
       "youtube": {
-        "status": "uploading",
+        "status": "uploaded",
         "intentId": "d2c0f5c4-cb11-4296-b270-597282da136b",
         "channelId": "UC6syYZxbMxbhOSmjj8AXJuA",
         "videoSha256": "0ccadcf7d06f9e21f95a10df524222bf66e6f9e656b9494d451aa59aae5db191",
         "metadataSha256": "3dc7c9f8803895e04159e111fdb1d0fc04028e7a437c162acbc1cb8acdab83d1",
         "requestedAt": "2026-11-25T14:46:42.079Z",
-        "privacy": "public"
+        "privacy": "public",
+        "videoId": "s1fiG8BEM98",
+        "url": "https://www.youtube.com/shorts/s1fiG8BEM98",
+        "uploadedAt": "2026-11-25T14:46:45.997Z"
       }
     }
   ],
