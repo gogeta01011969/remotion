@@ -545,16 +545,40 @@
       "metric": "power",
       "scopeKey": "topic-3412f1fc0a2b71d8",
       "entityKeys": [],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Refrigerator (full‑size)",
+        "Slow cooker",
+        "Rice cooker",
+        "Blender",
+        "Coffee maker (drip)",
+        "Microwave oven",
+        "Toaster",
+        "Electric kettle",
+        "Air fryer",
+        "Dishwasher",
+        "Electric oven (convection)"
+      ],
       "whyInteresting": "Viewers instantly recognize a toaster, microwave, coffee maker, and dishwasher, and seeing their real‑world wattage side‑by‑side reveals surprising energy hogs and helps people understand household electricity bills.",
       "family": "power-comparisons",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
       "selectionMode": "automatic",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "createdAt": "2026-11-25T00:03:28.947Z",
-      "updatedAt": "2026-11-25T00:03:28.947Z"
+      "updatedAt": "2026-11-25T00:06:56.773Z",
+      "videoSha256": "b2936224b85fa3c895eefe2fb4fa16942d0b3fdb2e1febe279522ee7c23e3519",
+      "artifactName": "short-short-2026-11-25-3412f1fc0a2b",
+      "artifactId": "14976943894",
+      "youtube": {
+        "status": "uploading",
+        "intentId": "af9ce765-d91f-46b2-a477-1136f39c6558",
+        "channelId": "UC6syYZxbMxbhOSmjj8AXJuA",
+        "videoSha256": "b2936224b85fa3c895eefe2fb4fa16942d0b3fdb2e1febe279522ee7c23e3519",
+        "metadataSha256": "596c3d9e9856a5b2e442b94a742ebb927cb757af3b88efb40a97875c3578b1a5",
+        "requestedAt": "2026-11-25T00:06:57.388Z",
+        "privacy": "public"
+      }
     }
   ],
   "queue": [
