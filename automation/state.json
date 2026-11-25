@@ -582,19 +582,26 @@
         "url": "https://www.youtube.com/shorts/tC_BKBr7O4g",
         "uploadedAt": "2026-11-25T00:07:01.086Z"
       }
-    }
-  ],
-  "queue": [
+    },
     {
+      "id": "short-2026-11-25-feedecf0c132",
       "topic": "World's tallest trees compared to famous skyscrapers",
       "metric": "height",
       "scopeKey": "topic-feedecf0c13220bb",
       "entityKeys": [],
+      "actualEntityKeys": [],
       "whyInteresting": "A giant sequoia, a coast redwood, and a baobab measured against the Eiffel Tower, Burj Khalifa, and the Empire State Building give a dramatic visual of nature’s scale versus human engineering, sparking awe and curiosity.",
       "family": "landmarks",
       "angle": "familiar-to-extreme",
-      "depth": "accessible"
-    },
+      "depth": "accessible",
+      "selectionMode": "automatic",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-25T14:44:23.819Z",
+      "updatedAt": "2026-11-25T14:44:23.819Z"
+    }
+  ],
+  "queue": [
     {
       "topic": "Fastest animals vs. common transport speeds",
       "metric": "speed",
