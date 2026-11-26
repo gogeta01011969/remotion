@@ -662,6 +662,23 @@
         "url": "https://www.youtube.com/shorts/oNdmwqjYrfg",
         "uploadedAt": "2026-11-26T00:37:35.949Z"
       }
+    },
+    {
+      "id": "short-2026-11-26-c4cd7a773a35",
+      "topic": "How tall are the world’s most iconic monuments compared to everyday objects",
+      "metric": "height",
+      "scopeKey": "topic-c4cd7a773a35dfbd",
+      "entityKeys": [],
+      "actualEntityKeys": [],
+      "whyInteresting": "Viewers instantly recognize landmarks like the Eiffel Tower, Statue of Liberty, and Great Pyramid, then see how many common items—like a refrigerator, a two‑story house, or a city bus—stack up against them, creating a clear visual scale that’s both surprising and relatable.",
+      "family": "everyday-objects",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible",
+      "selectionMode": "automatic",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-26T12:59:44.947Z",
+      "updatedAt": "2026-11-26T12:59:44.947Z"
     }
   ],
   "queue": []
