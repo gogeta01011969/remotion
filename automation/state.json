@@ -628,16 +628,37 @@
       "metric": "speed",
       "scopeKey": "topic-de43afe2eba7333e",
       "entityKeys": [],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Electric scooter",
+        "Bicycle (road)",
+        "City bus (urban)",
+        "Sailfish",
+        "Cheetah",
+        "Commuter train (regional)",
+        "Peregrine falcon (stoop)",
+        "Sports car (supercar)"
+      ],
       "whyInteresting": "Putting the sprint of a cheetah, the dive of a peregrine falcon, and the burst of a sailfish next to a city bus, a commuter train, and a sports car shows how nature still outpaces many everyday machines, delivering an instantly relatable wow factor.",
       "family": "speed-comparisons",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
       "selectionMode": "automatic",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "createdAt": "2026-11-26T00:34:45.581Z",
-      "updatedAt": "2026-11-26T00:34:45.581Z"
+      "updatedAt": "2026-11-26T00:37:31.768Z",
+      "videoSha256": "5a2ca865745b471f6fecb79f0d6a39862d4986f57ef6d0403843afaf4c3e2d19",
+      "artifactName": "short-short-2026-11-26-de43afe2eba7",
+      "artifactId": "15076645716",
+      "youtube": {
+        "status": "uploading",
+        "intentId": "11472394-7f25-46dd-8eff-5dcb068a88b8",
+        "channelId": "UC6syYZxbMxbhOSmjj8AXJuA",
+        "videoSha256": "5a2ca865745b471f6fecb79f0d6a39862d4986f57ef6d0403843afaf4c3e2d19",
+        "metadataSha256": "8ae73b4ec5dc15dc95103e87d981c1eb55ee46b1f5df7c7eb0734f6ced8cb01d",
+        "requestedAt": "2026-11-26T00:37:32.432Z",
+        "privacy": "public"
+      }
     }
   ],
   "queue": []
