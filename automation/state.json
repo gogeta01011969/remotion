@@ -669,16 +669,38 @@
       "metric": "height",
       "scopeKey": "topic-c4cd7a773a35dfbd",
       "entityKeys": [],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Average adult male",
+        "Refrigerator",
+        "Basketball hoop (rim height)",
+        "Giraffe",
+        "Two‑story house",
+        "City bus",
+        "Statue of Liberty (to torch)",
+        "Great Pyramid of Giza",
+        "Eiffel Tower"
+      ],
       "whyInteresting": "Viewers instantly recognize landmarks like the Eiffel Tower, Statue of Liberty, and Great Pyramid, then see how many common items—like a refrigerator, a two‑story house, or a city bus—stack up against them, creating a clear visual scale that’s both surprising and relatable.",
       "family": "everyday-objects",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
       "selectionMode": "automatic",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "createdAt": "2026-11-26T12:59:44.947Z",
-      "updatedAt": "2026-11-26T12:59:44.947Z"
+      "updatedAt": "2026-11-26T13:03:36.844Z",
+      "videoSha256": "1ac6456b43f2e30b80dbcd00459fbb8b746b46b017ad30a3cdb314d67763e35c",
+      "artifactName": "short-short-2026-11-26-c4cd7a773a35",
+      "artifactId": "15119607143",
+      "youtube": {
+        "status": "uploading",
+        "intentId": "d3091eba-4a40-46ba-900a-04cd49cf7b4e",
+        "channelId": "UC6syYZxbMxbhOSmjj8AXJuA",
+        "videoSha256": "1ac6456b43f2e30b80dbcd00459fbb8b746b46b017ad30a3cdb314d67763e35c",
+        "metadataSha256": "07851f134ce9b523a56d30b13b3c2c3ebb341bb8133c21cc388fb4d4c00c5f4f",
+        "requestedAt": "2026-11-26T13:03:37.683Z",
+        "privacy": "public"
+      }
     }
   ],
   "queue": []
