@@ -621,18 +621,24 @@
         "url": "https://www.youtube.com/shorts/s1fiG8BEM98",
         "uploadedAt": "2026-11-25T14:46:45.997Z"
       }
-    }
-  ],
-  "queue": [
+    },
     {
+      "id": "short-2026-11-26-de43afe2eba7",
       "topic": "Fastest animals vs. common transport speeds",
       "metric": "speed",
       "scopeKey": "topic-de43afe2eba7333e",
       "entityKeys": [],
+      "actualEntityKeys": [],
       "whyInteresting": "Putting the sprint of a cheetah, the dive of a peregrine falcon, and the burst of a sailfish next to a city bus, a commuter train, and a sports car shows how nature still outpaces many everyday machines, delivering an instantly relatable wow factor.",
       "family": "speed-comparisons",
       "angle": "familiar-to-extreme",
-      "depth": "accessible"
+      "depth": "accessible",
+      "selectionMode": "automatic",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-26T00:34:45.581Z",
+      "updatedAt": "2026-11-26T00:34:45.581Z"
     }
-  ]
+  ],
+  "queue": []
 }
