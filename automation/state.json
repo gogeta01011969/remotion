@@ -704,7 +704,45 @@
         "url": "https://www.youtube.com/shorts/FaU4xYD9l74",
         "uploadedAt": "2026-11-26T13:03:42.195Z"
       }
+    },
+    {
+      "id": "short-2026-11-27-aec025cd2e92",
+      "topic": "Which household appliances store the most energy in their batteries",
+      "metric": "energy",
+      "scopeKey": "topic-aec025cd2e9214fb",
+      "entityKeys": [],
+      "actualEntityKeys": [],
+      "whyInteresting": "Battery capacity is a hidden but tangible figure; contrasting a cordless drill, a robot vacuum, a power bank, and a portable speaker shows everyday power reserves in a visual, silent showdown.",
+      "family": "energy-stores",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible",
+      "selectionMode": "automatic",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-27T01:07:10.515Z",
+      "updatedAt": "2026-11-27T01:07:10.515Z"
     }
   ],
-  "queue": []
+  "queue": [
+    {
+      "topic": "How tall are the world’s most iconic bridges compared to familiar structures",
+      "metric": "height",
+      "scopeKey": "topic-15d3bf262c4c6f71",
+      "entityKeys": [],
+      "whyInteresting": "Bridges span continents and cities, yet their towering heights are rarely visualized; stacking them against a skyscraper, a lighthouse, a wind turbine, and a giant sequoia makes the vertical scale instantly understandable.",
+      "family": "infrastructure",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible"
+    },
+    {
+      "topic": "How long are the world’s most famous roller coasters compared to everyday travel distances",
+      "metric": "length",
+      "scopeKey": "topic-78b25583be92bc7b",
+      "entityKeys": [],
+      "whyInteresting": "Viewers instantly grasp the scale when a coaster’s track stretches farther than a city commute or a popular hiking trail, turning thrill‑ride stats into relatable distance comparisons.",
+      "family": "everyday-objects",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible"
+    }
+  ]
 }
