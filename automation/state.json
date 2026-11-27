@@ -791,16 +791,39 @@
       "metric": "length",
       "scopeKey": "topic-78b25583be92bc7b",
       "entityKeys": [],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Kingda Ka (Six Flags Great Adventure)",
+        "Fury 325 (Carowinds)",
+        "Steel Vengeance (Cedar Point)",
+        "The Beast (Kings Island)",
+        "Daily walk to work (5 km round‑trip)",
+        "Drive from San Francisco to Oakland",
+        "Bike ride across Manhattan (East to West)",
+        "Hike to Half Dome (Yosemite)",
+        "Average NYC‑JFK commute (by car)",
+        "London to Brighton train"
+      ],
       "whyInteresting": "Viewers instantly grasp the scale when a coaster’s track stretches farther than a city commute or a popular hiking trail, turning thrill‑ride stats into relatable distance comparisons.",
       "family": "everyday-objects",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
       "selectionMode": "automatic",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "createdAt": "2026-11-27T15:29:01.071Z",
-      "updatedAt": "2026-11-27T15:29:01.071Z"
+      "updatedAt": "2026-11-27T15:31:54.742Z",
+      "videoSha256": "55820df5987db799e96e022ed8826082431241ce0f66acb6b88211cbdb02002b",
+      "artifactName": "short-short-2026-11-27-78b25583be92",
+      "artifactId": "15212082454",
+      "youtube": {
+        "status": "uploading",
+        "intentId": "a5b7a665-0a67-4c66-af1e-1cfbf4eadae2",
+        "channelId": "UC6syYZxbMxbhOSmjj8AXJuA",
+        "videoSha256": "55820df5987db799e96e022ed8826082431241ce0f66acb6b88211cbdb02002b",
+        "metadataSha256": "4147a95634a49c9502914c367c1738933e9e2baf846dd5c967a95ea4ff073e55",
+        "requestedAt": "2026-11-27T15:31:55.352Z",
+        "privacy": "public"
+      }
     }
   ],
   "queue": []
