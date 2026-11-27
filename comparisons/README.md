@@ -332,7 +332,7 @@ The surviving objects determine the final hook, labels, values, pacing, descript
 
 ## Optional background audio
 
-Scheduled/public comparison videos try background music by default: `src/pipeline/comparison-audio-settings.ts` has `enabled: true`. Each run selects one of the two bundled tracks using its ID, keeping retries deterministic. To try this locally:
+Scheduled/public comparison videos try background music by default: `src/pipeline/comparison-audio-settings.ts` has `enabled: true`. Each run selects one of the 12 bundled tracks using its ID, keeping retries deterministic. To try this locally:
 
 ```sh
 npm run compare -- --data comparisons/examples/diameter.json --id audio-size-preview --soundtrack calm-curiosity
@@ -341,6 +341,6 @@ npm run dev -- --props=public/shorts/audio-size-preview/video.json
 
 `--soundtrack off` forces a muted export. `--prepare-only` builds the audio and Studio props without rendering an MP4. The existing `silent` presentation means no narration; a soundtrack uses the explicit `audioPurpose: "background"` marker. Existing muted inputs retain their behavior.
 
-The bundled two-track CC0 library is selected deterministically from the run ID. See `public/assets/audio/CREDITS.md` and `catalog.json` for source pages, creators, licenses and original file hashes. The music bed targets −24 LUFS with a 0.75-second opening fade and 1.5-second closing fade. Short loops crossfade. Up to two soft whooshes follow existing object-arrival timings, and one warm tap marks the final overview; cue starts are at least three seconds apart. Effects peak at −20 dBFS. An oversampled limiter leaves headroom below the −3 dB true-peak ceiling. Audio never changes animation frames, scene durations or model requests.
+The bundled 12-track CC0 library is selected deterministically from the run ID. See `public/assets/audio/CREDITS.md` and `catalog.json` for source pages, creators, licenses and original file hashes. The music bed targets −24 LUFS with a 0.75-second opening fade and 1.5-second closing fade. Short loops crossfade. Up to two soft whooshes follow existing object-arrival timings, and one warm tap marks the final overview; cue starts are at least three seconds apart. Effects peak at −20 dBFS. An oversampled limiter leaves headroom below the −3 dB true-peak ceiling. Audio never changes animation frames, scene durations or model requests.
 
 `out/shorts/<id>/audio-plan.json` records the actual track, cue frames, measured levels and waveform hash. Studio plays `public/shorts/<id>/background-mix.wav`; MP4 exports contain stereo 48 kHz AAC. A missing, changed or unusable music asset falls back to a muted export with a warning. If adding or verifying optional audio fails during final export, the existing picture is remuxed without sound, Studio props and the audio report are updated, and upload proceeds without a music credit. The selected track's voluntary credit is included only when a matching mix exists.

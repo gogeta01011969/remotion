@@ -20,5 +20,117 @@
     "license": "CC0-1.0",
     "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
     "sha256": "8c49a37fb9ee5994c919d0e43cf397dd990cb7f2c6c1200b9710a8fe942ad969"
+  },
+  {
+    "id": "calm-loop",
+    "file": "assets/audio/calm-loop.mp3",
+    "title": "Calm Loop",
+    "creator": "wipics",
+    "source": "https://opengameart.org/content/calm-loop",
+    "download": "https://opengameart.org/sites/default/files/Relaxing_0.mp3",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "1d7e386c079d4add6b3b1592054846e4977035f26844466e409467c6dc7bdbde"
+  },
+  {
+    "id": "calm-theme",
+    "file": "assets/audio/calm-theme.ogg",
+    "title": "Calm Theme",
+    "creator": "pebonius",
+    "source": "https://opengameart.org/content/calm-music-0",
+    "download": "https://opengameart.org/sites/default/files/calm_theme.ogg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "8a701a803f365c8fe1257b2e18276a7fa8b0d62a9af601f973d43ccf4e354705"
+  },
+  {
+    "id": "a-brand-new-wisdom",
+    "file": "assets/audio/a-brand-new-wisdom.ogg",
+    "title": "A Brand New Wisdom",
+    "creator": "hernandack",
+    "source": "https://opengameart.org/content/short-loops-background-music-pack",
+    "download": "https://opengameart.org/sites/default/files/A%20Brand%20New%20Wisdom.ogg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "99d0095c328d598f5fb1bca9fbb4a518112bbf676dc662f0c0c6edfee88d788c"
+  },
+  {
+    "id": "just-saying-tho",
+    "file": "assets/audio/just-saying-tho.ogg",
+    "title": "Just Saying Tho",
+    "creator": "hernandack",
+    "source": "https://opengameart.org/content/short-loops-background-music-pack",
+    "download": "https://opengameart.org/sites/default/files/Just%20Saying%20Tho.ogg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "687aa35987b89797af14735348c5b2f1b766ac0ba528dc001746aaf4ca1cc82f"
+  },
+  {
+    "id": "winter-dust",
+    "file": "assets/audio/winter-dust.ogg",
+    "title": "Winter Dust",
+    "creator": "hernandack",
+    "source": "https://opengameart.org/content/short-loops-background-music-pack",
+    "download": "https://opengameart.org/sites/default/files/Winter%20Dust_0.ogg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "8c0da93d35ddfb3c8e4cc01ce4ba6611fb407eec4b6c23f17a691ad7dc0f1fe0"
+  },
+  {
+    "id": "swinging-sweet",
+    "file": "assets/audio/swinging-sweet.ogg",
+    "title": "Swinging Sweet",
+    "creator": "hernandack",
+    "source": "https://opengameart.org/content/short-loops-background-music-pack",
+    "download": "https://opengameart.org/sites/default/files/Swinging%20Sweet_0.ogg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "5a22466a7ec28c324324217aff836809ccbc9e2489cc22ebf72725f4bfd320bb"
+  },
+  {
+    "id": "sunset-walk",
+    "file": "assets/audio/sunset-walk.ogg",
+    "title": "Sunset Walk",
+    "creator": "KiluaBoy",
+    "source": "https://opengameart.org/content/sunset-walk-ambient-quiet-sweet-loop",
+    "download": "https://opengameart.org/sites/default/files/SunsetWalk.ogg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "1d230721e6200276065b913e44943d0e0503af88fc2dd793be1249738e06d98c"
+  },
+  {
+    "id": "ambient-relaxing-loop",
+    "file": "assets/audio/ambient-relaxing-loop.ogg",
+    "title": "Ambient Relaxing Loop",
+    "creator": "isaiah658",
+    "source": "https://opengameart.org/content/ambient-relaxing-loop",
+    "download": "https://opengameart.org/sites/default/files/Ambient-Loop-isaiah658_0.ogg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "3c328794b77d3f3742a5a8fa36606c3b780d15b0b8f6148b29a78ec6caffcd9e"
+  },
+  {
+    "id": "feel-good-ambient",
+    "file": "assets/audio/feel-good-ambient.ogg",
+    "title": "Feel Good Slow Ambient Track",
+    "creator": "annandistance",
+    "source": "https://opengameart.org/content/feel-good-slow-ambient-track-with-a-beat",
+    "download": "https://opengameart.org/sites/default/files/ambienttrack_1.ogg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "d49c2572259faf2c296dd59aa50feb19788f0b2cf82f9852340e9eeec27c8114"
+  },
+  {
+    "id": "exploration-theme",
+    "file": "assets/audio/exploration-theme.ogg",
+    "title": "Exploration Theme",
+    "creator": "Cleyton Kauffman",
+    "source": "https://opengameart.org/content/exploration-theme",
+    "download": "https://opengameart.org/sites/default/files/exploration_theme.zip",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "1546f1e6d7f42e380b9f608a41e640f98ed48a96f3df3bc704663f4c824f2e8d",
+    "archiveMember": "Exploration Theme/Exploration Theme.ogg",
+    "archiveSha256": "81601fb33319491973803edeebb5ab5d2d05d943c0accb48ea79e84a9680fa43"
   }
 ]
