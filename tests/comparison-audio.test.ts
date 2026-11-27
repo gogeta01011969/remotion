@@ -12,6 +12,7 @@ import {prepareSilentInput} from '../src/shorts/silent';
 import {shortSchema,shortDuration,briefSchema} from '../src/shorts/schema';
 import {compileStory} from '../src/shorts/motion';
 import {verifyVideo} from '../src/pipeline/automation-run';
+import {finalizePreparedVideo} from '../src/pipeline/render-prepared';
 import {normalizeComparisonGeneration} from '../src/pipeline/comparison-ideas';
 import {sizeDatasetSchema} from '../src/shorts/size-data';
 import diameter from '../comparisons/examples/diameter.json';
@@ -20,8 +21,8 @@ function fixture(metric:'height'|'speed'|'temperature'='height',n=8,fps=30){
  const data={template:'size-comparison',id:'audio-fixture',title:'Synthetic comparison audio fixture',metric,unit:metric==='speed'?'km/h':metric==='temperature'?'C':'m',basis:'Synthetic measurements for audio testing only.',context:'Synthetic fixture',sources:[{id:'s1',title:'Synthetic reference',url:'https://example.com/test'}],items:Array.from({length:n},(_,i)=>({id:`item-${i}`,label:`Reference ${i}`,value:metric==='temperature'?i*10-20:i+1,color:'#AABBCC',sourceIds:['s1'],visual:{kind:'box',widthToHeight:1,depthToHeight:1}}))};
  const brief=compileSizeComparison(data,defaultSizeEpisode(data));return {brief,input:prepareSilentInput(brief,fps)};
 }
-test('audio is preview-only by default and existing mapped-sphere inputs remain supported',()=>{
- assert.equal(comparisonAudioSettings.enabled,false);
+test('music is enabled by default and existing mapped-sphere inputs remain supported',()=>{
+ assert.equal(comparisonAudioSettings.enabled,true);
  assert.ok(sizeDatasetSchema.safeParse(normalizeComparisonGeneration(diameter)).success);
  const {input}=fixture();assert.equal(input.audio,undefined);
  assert.equal(shortSchema.safeParse({...input,audio:'shorts/test/background.wav'}).success,false);
@@ -74,5 +75,19 @@ test('automation validates a declared AAC mix and rejects undeclared or missing 
   writeFileSync(props,JSON.stringify(input));assert.throws(()=>verifyVideo(root,id),/media checks/);
   const muted=path.join(root,'muted.mp4');const stripped=spawnSync('ffmpeg',['-v','error','-y','-i',video,'-c:v','copy','-an',muted]);assert.equal(stripped.status,0);cpSync(muted,video);
   writeFileSync(props,JSON.stringify({...input,audio:`shorts/${id}/background-mix.wav`,audioPurpose:'background'}));assert.throws(()=>verifyVideo(root,id),/media checks/);
+  const withAudio=finalizePreparedVideo({input:{...input,audio:`shorts/${id}/background-mix.wav`,audioPurpose:'background'},root,id,outputDir:path.join(root,`out/shorts/${id}`),picture:muted});
+  assert.equal(withAudio.audioPurpose,'background');assert.ok(verifyVideo(root,id));
+  // Exercise the real export fallback for both a missing and an unreadable optional soundtrack.
+  for(const corrupt of [false,true]){
+   const mix=path.join(root,`public/shorts/${id}/background-mix.wav`);
+   rmSync(mix,{force:true});if(corrupt)writeFileSync(mix,'invalid audio');
+   writeFileSync(path.join(root,`out/shorts/${id}/audio-plan.json`),JSON.stringify({status:'mixed',credit:'stale credit',trackId:'overworld',mixSha256:'old'}));
+   const effective=finalizePreparedVideo({input:{...input,audio:`shorts/${id}/background-mix.wav`,audioPurpose:'background'},root,id,outputDir:path.join(root,`out/shorts/${id}`),picture:muted});
+   assert.equal(effective.audio,undefined);assert.equal(effective.audioPurpose,undefined);assert.ok(verifyVideo(root,id));assert.equal(musicCredit(root,id),undefined);assert.equal(existsSync(mix),false);
+   const report=JSON.parse(readFileSync(path.join(root,`out/shorts/${id}/audio-plan.json`),'utf8'));assert.equal(report.status,'fallback-muted');assert.equal(report.credit,undefined);
+  }
+  // A missing required narration asset still fails rather than silently losing the story.
+  assert.throws(()=>finalizePreparedVideo({input:{...input,audio:'missing-narration.wav'},root,id,outputDir:path.join(root,`out/shorts/${id}`),picture:muted}),/ffmpeg failed/);
+  assert.throws(()=>finalizePreparedVideo({input,root,id,outputDir:path.join(root,`out/shorts/${id}`),picture:path.join(root,'missing-picture.mp4')}),/ffmpeg failed/);
  }finally{rmSync(root,{recursive:true,force:true});}
 });

@@ -1,6 +1,6 @@
-// Preview first: turn this on only after the local mixes have been reviewed.
+// Music is optional: any soundtrack failure must leave a usable muted video.
 export const comparisonAudioSettings = {
-  enabled: false,
+  enabled: true,
   musicLufs: -24,
   effectPeakDb: -20,
   truePeakCeilingDb: -3,

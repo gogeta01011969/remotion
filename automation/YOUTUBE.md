@@ -203,4 +203,4 @@ Do not clear upload intents to blindly retry an ambiguous run. If a video exists
 in Studio, do not repost it; use its existing video ID for manual reconciliation.
 
 
-Optional soundtrack previews do not change public upload settings. Scheduled audio remains disabled until review. When a soundtrack is enabled, the uploader appends a voluntary music credit from the bundled catalog only after verifying the prepared waveform hash; a muted or failed mix gets no music credit. Music sources and CC0 licensing are documented in `public/assets/audio/CREDITS.md`.
+Comparison runs attempt background music by default, without changing public upload settings. If soundtrack preparation or final audio attachment fails, the video is exported and uploaded without sound. When a soundtrack is enabled, the uploader appends a voluntary music credit from the bundled catalog only after verifying the prepared waveform hash; a muted or failed mix gets no music credit. Music sources and CC0 licensing are documented in `public/assets/audio/CREDITS.md`.

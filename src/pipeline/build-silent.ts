@@ -25,10 +25,12 @@ export async function buildSilent(brief:Brief,root:string,prepareOnly:boolean) {
   let offset=0,index=0;const subtitles:string[]=[];
   input.scenes.forEach(scene=>{scene.captions.forEach(cue=>subtitles.push(`${++index}\n${srtTime(offset+cue.from)} --> ${srtTime(offset+cue.from+cue.duration)}\n${cue.text}\n`));offset+=scene.durationInFrames;});
   writeFileSync(path.join(outputDir,'captions.srt'),subtitles.join('\n'));
-  writeFileSync(path.join(outputDir,'youtube.txt'),`${brief.topic}\n\n${brief.description}\n\n${input.audio?'Visual story with background music and no narration.':'Visual story without narration or soundtrack.'}${audioPlan.credit?`\n\n${audioPlan.credit}`:''}${brief.sources.length?`\n\nReferences:\n${brief.sources.map(s=>`${s.title}: ${s.url}`).join('\n')}`:''}\n`);
+  const writeDescription=()=>writeFileSync(path.join(outputDir,'youtube.txt'),`${brief.topic}\n\n${brief.description}\n\n${input.audio?'Visual story with background music and no narration.':'Visual story without narration or soundtrack.'}${input.audio&&audioPlan.credit?`\n\n${audioPlan.credit}`:''}${brief.sources.length?`\n\nReferences:\n${brief.sources.map(s=>`${s.title}: ${s.url}`).join('\n')}`:''}\n`);
+  writeDescription();
   console.log(`Prepared narration-free visual story: ${shortDuration(input)/input.fps}s; ${subtitles.length} brief notes. No speech service required.`);
   if(prepareOnly)return;
-  await renderPrepared({input,root,outputDir,id:brief.id});
+  input=await renderPrepared({input,root,outputDir,id:brief.id});
+  writeDescription();
   // Remove obsolete audio left by a previous narrated version of this episode.
   [path.join(assetDir,'soundtrack.wav'),...['narration.wav','mix.wav'].map(file=>path.join(outputDir,file))].forEach(file=>rmSync(file,{force:true}));
 }

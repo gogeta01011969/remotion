@@ -1,7 +1,7 @@
 # Automatic comparison Shorts on Linux
 
 The workflow selects a topic, checks history, runs the existing comparison pipeline,
-renders a silent MP4, archives the result, and cleans that job's intermediate files.
+renders a narration-free MP4 with optional background music, archives the result, and cleans that job's intermediate files.
 Optional YouTube upload is available after [one-time OAuth setup](YOUTUBE.md). Uploads are enabled and public in `src/pipeline/youtube-settings.ts`. Existing `compare` commands and Mac foreground
 extraction remain available.
 
@@ -287,6 +287,6 @@ Topic-policy version 2 discards older queued suggestions once, while preserving 
 
 ## Background audio rollout and cleanup
 
-Background audio is implemented but disabled for scheduled/public runs pending local preview approval. The switch lives in `src/pipeline/comparison-audio-settings.ts`; no new secret, workflow input, paid service or model call is needed. Local `compare --soundtrack calm-curiosity` runs opt in independently. See `comparisons/README.md` for preview commands and mixing policy.
+Background music is enabled by default for scheduled/public comparison runs. The switch lives in `src/pipeline/comparison-audio-settings.ts`; no new secret, workflow input, paid service or model call is needed. One of the two bundled tracks is selected deterministically per run ID. Local `compare --soundtrack off` runs can explicitly disable music. See `comparisons/README.md` for preview commands and mixing policy.
 
-Audio belongs to the existing per-job directories: the plan in `out/shorts/<id>/`, the prepared WAV in `public/shorts/<id>/`, and AAC inside the delivered MP4. Render receipts hash the waveform and plan, in addition to source/settings/assets, so changed soundtracks invalidate cached renders. The normal checkpoint and post-delivery cleanup paths include those directories. Bundled source music under `public/assets/audio/` is a fixed reusable library, not growing per-run storage. Temporary raw audio is removed after mixing, including on failure. Optional audio preparation errors export a muted video; a declared audio stream must still pass the final media checks.
+Audio belongs to the existing per-job directories: the plan in `out/shorts/<id>/`, the prepared WAV in `public/shorts/<id>/`, and AAC inside the delivered MP4. Render receipts hash the waveform and plan, in addition to source/settings/assets, so changed soundtracks invalidate cached renders. The normal checkpoint and post-delivery cleanup paths include those directories. Bundled source music under `public/assets/audio/` is a fixed reusable library, not growing per-run storage. Temporary raw audio is removed after mixing, including on failure. Optional audio preparation errors export a muted video. Failed background-audio attachment or audio verification retries the final export without sound, clears the audio declaration/credit and allows upload. Final picture/media failures still stop the run; required narration in legacy narrated jobs is not silently dropped.

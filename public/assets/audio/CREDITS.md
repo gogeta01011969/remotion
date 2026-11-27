@@ -10,4 +10,4 @@ Rendered versions are normalized, looped/crossfaded when needed, mixed with quie
 
 The two sound effects are synthesized locally by `src/pipeline/comparison-audio.ts` using a fixed seed and elementary waveforms; they contain no downloaded samples, speech, or third-party recordings.
 
-Scheduled soundtrack rollout remains disabled until the local previews are reviewed.
+Comparison runs try a deterministically selected track by default. Soundtrack preparation or attachment failures fall back to a muted export.
