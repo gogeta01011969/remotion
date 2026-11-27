@@ -2588,6 +2588,13 @@
       "maxLength": 60,
       "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
     },
+    "soundtrack": {
+      "type": "string",
+      "enum": [
+        "off",
+        "calm-curiosity"
+      ]
+    },
     "voice": {
       "default": "Daniel",
       "type": "string",

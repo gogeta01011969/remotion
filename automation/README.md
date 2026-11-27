@@ -283,3 +283,10 @@ The production video schedule uses a weekly 2/3/2/3/2/3/2 pattern: 17 scheduled 
 This calendar pattern repeats each week, so Sunday and the following Monday both have two runs. Scheduled runs are at least five hours apart. GitHub can delay scheduled workflow starts; these are requested times rather than exact publication guarantees.
 
 Topic-policy version 2 discards older queued suggestions once, while preserving posted-topic history and in-progress jobs. Newly generated ideas and objects prioritize familiar, relatable comparisons for a general audience.
+
+
+## Background audio rollout and cleanup
+
+Background audio is implemented but disabled for scheduled/public runs pending local preview approval. The switch lives in `src/pipeline/comparison-audio-settings.ts`; no new secret, workflow input, paid service or model call is needed. Local `compare --soundtrack calm-curiosity` runs opt in independently. See `comparisons/README.md` for preview commands and mixing policy.
+
+Audio belongs to the existing per-job directories: the plan in `out/shorts/<id>/`, the prepared WAV in `public/shorts/<id>/`, and AAC inside the delivered MP4. Render receipts hash the waveform and plan, in addition to source/settings/assets, so changed soundtracks invalidate cached renders. The normal checkpoint and post-delivery cleanup paths include those directories. Bundled source music under `public/assets/audio/` is a fixed reusable library, not growing per-run storage. Temporary raw audio is removed after mixing, including on failure. Optional audio preparation errors export a muted video; a declared audio stream must still pass the final media checks.

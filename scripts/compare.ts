@@ -16,8 +16,9 @@ import {ensureComparisonImages} from '../src/pipeline/comparison-images';
 import {GroqClient,loadGroqConfig} from '../src/pipeline/groq';
 
 async function main(){
-  const {values}=parseArgs({options:{data:{type:'string'},topic:{type:'string'},id:{type:'string'},episode:{type:'string'},'asset-root':{type:'string'},'asset-manifest':{type:'string'},'asset-provider':{type:'string'},'ideas-only':{type:'boolean'},'plan-only':{type:'boolean'},'prepare-only':{type:'boolean'},help:{type:'boolean'}}});
-  if(values.help){console.log('npm run compare -- --data dataset.json [--asset-root directory] [--episode episode.json]\nPrompt: npm run compare -- --topic "Tallest structures" --id structure-run [--asset-provider provider.json]\nOptional: --ideas-only (topic input only; three concepts, no research/images/render), --asset-manifest manifest.json, --plan-only, --prepare-only.\nRepeat the same topic and ID to reuse saved stages.');return;}
+  const {values}=parseArgs({options:{data:{type:'string'},topic:{type:'string'},id:{type:'string'},episode:{type:'string'},'asset-root':{type:'string'},'asset-manifest':{type:'string'},'asset-provider':{type:'string'},soundtrack:{type:'string'},'ideas-only':{type:'boolean'},'plan-only':{type:'boolean'},'prepare-only':{type:'boolean'},help:{type:'boolean'}}});
+  if(values.help){console.log('npm run compare -- --data dataset.json [--asset-root directory] [--episode episode.json]\nPrompt: npm run compare -- --topic "Tallest structures" --id structure-run [--asset-provider provider.json]\nOptional: --soundtrack off|calm-curiosity, --ideas-only (topic input only; three concepts, no research/images/render), --asset-manifest manifest.json, --plan-only, --prepare-only.\nRepeat the same topic and ID to reuse saved stages.');return;}
+  if(values.soundtrack!==undefined&&!['off','calm-curiosity'].includes(values.soundtrack))throw new Error('--soundtrack must be off or calm-curiosity.');
   if(Boolean(values.data)===Boolean(values.topic))throw new Error('Provide exactly one of --data dataset.json or --topic.');
   if(values.topic&&!values.id)throw new Error('Prompt runs require --id so planning and assets can be resumed.');
   if(values['asset-provider']&&values['asset-manifest'])throw new Error('Use either --asset-provider or --asset-manifest.');
@@ -72,7 +73,7 @@ async function main(){
     }
     data=prepareComparisonAssets(data,{root,assetRoot,runId:id});writeJson(path.join(directory,'dataset.json'),data);
     const chosen={...(episode??defaultSizeEpisode(data)),id};
-    const story=planComparisonStory(data),brief=compileSizeComparison(data,chosen);
+    const story=planComparisonStory(data),brief={...compileSizeComparison(data,chosen),...(values.soundtrack?{soundtrack:values.soundtrack as 'off'|'calm-curiosity'}:{})};
     writeJson(path.join(directory,'episode.json'),chosen);writeJson(path.join(directory,'story-plan.json'),story);
     writeJson(path.join(directory,'background-plan.json'),story.background);
     writeJson(path.join(directory,'brief.json'),brief);

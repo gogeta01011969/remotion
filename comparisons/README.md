@@ -116,7 +116,7 @@ An optional `--episode episode.json` controls durations and references; the epis
 
 `out/comparisons/<id>/` contains status, prepared dataset, episode, story plan, measurement report, visual manifest and compiled brief. Prompt runs additionally save the simple comparison plan, raw dataset and asset requests/provider state. `status.json` distinguishes `needs-assets`, `planned`, `prepared`, `rendering`, `complete` and `failed` states. Only a successful renderer exit marks a video complete.
 
-`out/shorts/<id>/<id>.mp4` is the final silent H.264 MP4, with thumbnail, media verification, timing/motion reports and YouTube description containing sources and visual credits. `public/shorts/<id>/video.json` contains Studio props. No narration or soundtrack is generated.
+`out/shorts/<id>/<id>.mp4` is the final silent H.264 MP4, with thumbnail, media verification, timing/motion reports and YouTube description containing sources and visual credits. `public/shorts/<id>/video.json` contains Studio props. No narration is generated. Soundtracks are off by default; see the optional preview mode below.
 
 ```sh
 # Existing examples remain supported
@@ -328,3 +328,19 @@ A Cloudflare moderation refusal (`HTTP 400`, error `3030`) omits that object ins
 A manifest must explicitly account for every object with either an image or a provider-rejected entry. At least two usable objects must remain; otherwise the comparison is unworkable. Missing unexplained assets, bad credentials, unsafe images and provider outages retain their existing failure/deferral behavior. Framing repair is optional and keeps the original usable image if repair fails.
 
 The surviving objects determine the final hook, labels, values, pacing, description and upload metadata. `asset-selection.json` records exclusions, `dataset-assembly.json` reports the rendered count, and the deduplication ledger records the actual rendered names. The original planning dataset stays cached alongside image receipts for recovery.
+
+
+## Optional background audio: preview first
+
+Scheduled/public videos remain muted: `src/pipeline/comparison-audio-settings.ts` has `enabled: false`. To review audio locally, explicitly opt in:
+
+```sh
+npm run compare -- --data comparisons/examples/diameter.json --id audio-size-preview --soundtrack calm-curiosity
+npm run dev -- --props=public/shorts/audio-size-preview/video.json
+```
+
+`--soundtrack off` forces a muted export. `--prepare-only` builds the audio and Studio props without rendering an MP4. The existing `silent` presentation means no narration; a soundtrack uses the explicit `audioPurpose: "background"` marker. Existing muted inputs retain their behavior.
+
+The bundled two-track CC0 library is selected deterministically from the run ID. See `public/assets/audio/CREDITS.md` and `catalog.json` for source pages, creators, licenses and original file hashes. The music bed targets −24 LUFS with a 0.75-second opening fade and 1.5-second closing fade. Short loops crossfade. Up to two soft whooshes follow existing object-arrival timings, and one warm tap marks the final overview; cue starts are at least three seconds apart. Effects peak at −20 dBFS. An oversampled limiter leaves headroom below the −3 dB true-peak ceiling. Audio never changes animation frames, scene durations or model requests.
+
+`out/shorts/<id>/audio-plan.json` records the actual track, cue frames, measured levels and waveform hash. Studio plays `public/shorts/<id>/background-mix.wav`; MP4 exports contain stereo 48 kHz AAC. A missing, changed or unusable music asset falls back to a muted export with a warning. The selected track's voluntary credit is included only when a matching mix exists.

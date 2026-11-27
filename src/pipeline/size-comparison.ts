@@ -33,7 +33,7 @@ export const comparisonEpisodeSchema = z.object({
 // Optional authored episodes only tune reading time, timing and reference choices.
 export function defaultSizeEpisode(rawData:unknown) {
   const data=sizeDatasetSchema.parse(rawData);
-  return comparisonEpisodeSchema.parse({id:`${data.id.slice(0,48).replace(/-$/,'')}-comparison`,language:'en',presentation:'silent',description:`${data.title}. A silent smallest-to-largest ${data.metric} comparison. ${isQuantityMetric(data.metric)?'Colored names identify subjects; bar heights encode the measured values.':'Object dimensions use the correct dimensional scale; display spacing is illustrative.'} Measurements and applicable visual credits are included below.`,scenes:data.items.map((item,i)=>({itemId:item.id,heading:item.label,durationSeconds:comparisonObjectTiming(data,i).detailSeconds+(i===data.items.length-1?comparisonPacing.overviewSeconds:0),cues:[]}))});
+  return comparisonEpisodeSchema.parse({id:`${data.id.slice(0,48).replace(/-$/,'')}-comparison`,language:'en',presentation:'silent',description:`${data.title}. A visual smallest-to-largest ${data.metric} comparison. ${isQuantityMetric(data.metric)?'Colored names identify subjects; bar heights encode the measured values.':'Object dimensions use the correct dimensional scale; display spacing is illustrative.'} Measurements and applicable visual credits are included below.`,scenes:data.items.map((item,i)=>({itemId:item.id,heading:item.label,durationSeconds:comparisonObjectTiming(data,i).detailSeconds+(i===data.items.length-1?comparisonPacing.overviewSeconds:0),cues:[]}))});
 }
 
 export function compileSizeComparison(rawData: unknown, rawEpisode: unknown) {

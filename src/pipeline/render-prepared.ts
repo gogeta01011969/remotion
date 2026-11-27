@@ -26,10 +26,10 @@ export async function renderPrepared({input,root,outputDir,id}:{input:ShortInput
   const audio = input.audio ? ['-i',path.join(root,'public',input.audio),'-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','aac','-b:a','192k','-ac','2'] : ['-map','0:v:0','-c:v','copy','-an'];
   run('ffmpeg',['-hide_banner','-loglevel','error','-y','-i',picture,...audio,'-t',String(shortDuration(input)/input.fps),'-movflags','+faststart',finalPath]);
   await renderStill({serveUrl,composition,inputProps:input,output:path.join(outputDir,'thumbnail.png'),frame:45,imageFormat:'png'});
-  const metadata=JSON.parse(run('ffprobe',['-v','error','-show_entries','stream=codec_type,codec_name,width,height,r_frame_rate,nb_frames,sample_rate:format=duration','-of','json',finalPath]));
+  const metadata=JSON.parse(run('ffprobe',['-v','error','-show_entries','stream=codec_type,codec_name,width,height,r_frame_rate,nb_frames,sample_rate,channels:format=duration','-of','json',finalPath]));
   const video=metadata.streams.find((s:{codec_type:string})=>s.codec_type==='video');
   const audioStreams=metadata.streams.filter((s:{codec_type:string})=>s.codec_type==='audio');
-  if(!video||video.codec_name!=='h264'||video.width!==1080||video.height!==1920||video.r_frame_rate!==`${input.fps}/1`||Math.abs(Number(metadata.format.duration)-shortDuration(input)/input.fps)>.1|| (input.audio ? audioStreams.length!==1||audioStreams[0].codec_name!=='aac' : audioStreams.length!==0))throw new Error('Final export failed media verification.');
+  if(!video||video.codec_name!=='h264'||video.width!==1080||video.height!==1920||video.r_frame_rate!==`${input.fps}/1`||Math.abs(Number(metadata.format.duration)-shortDuration(input)/input.fps)>.1|| (input.audio ? audioStreams.length!==1||audioStreams[0].codec_name!=='aac'||(input.audioPurpose==='background'&&(audioStreams[0].sample_rate!=='48000'||audioStreams[0].channels!==2)) : audioStreams.length!==0))throw new Error('Final export failed media verification.');
   writeFileSync(path.join(outputDir,'verification.json'),JSON.stringify(metadata,null,2)+'\n');
   rmSync(picture,{force:true});
   console.log(`Ready: ${path.relative(root,finalPath)}`);

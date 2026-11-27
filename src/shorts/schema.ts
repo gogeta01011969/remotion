@@ -110,6 +110,7 @@ function checkStory(input: {structure?:z.infer<typeof comparisonStructureSchema>
 export const briefSchema = z.object({
   ...shared,
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(60),
+  soundtrack:z.enum(['off','calm-curiosity']).optional(),
   voice: z.string().min(1).max(80).default('Daniel'), wordsPerMinute: z.number().int().min(130).max(210).default(172),
   sources: z.array(z.object({title: z.string(), url: z.string().url()})).default([]), description: z.string().max(5000),
   scenes: z.array(z.object({...sceneFields, delivery: deliverySchema.optional(), spokenCues: z.array(z.string().min(1).max(300)).min(1).max(5).optional(), cues: z.array(z.string().min(1).max(240)).max(5)}).strict()).min(comparisonLimits.minimum).max(comparisonLimits.maximum),
@@ -117,6 +118,7 @@ export const briefSchema = z.object({
   checkStory(input, ctx);
   if(input.scenes.length<4&&!input.actors.every(a=>a.kind==='size-comparison'))ctx.addIssue({code:'custom',message:'General stories still require at least four scenes.'});
   if (input.presentation === 'silent' && input.scenes.some(scene => scene.spokenCues || scene.delivery || scene.cues.length > 2 || scene.cues.some(cue => cue.split(/\s+/).length > 12))) ctx.addIssue({code: 'custom', message: 'Silent scenes use at most two concise on-screen notes (12 words each), without speech or delivery settings.'});
+  if(input.soundtrack==='calm-curiosity'&&(input.presentation!=='silent'||!input.actors.some(a=>a.kind==='size-comparison')))ctx.addIssue({code:'custom',message:'Comparison background music requires a narration-free comparison.'});
   if (input.presentation === 'narrated' && input.scenes.some(scene => !scene.cues.length)) ctx.addIssue({code:'custom',message:'Narrated scenes need at least one speech cue.'});
   if (input.presentation === 'narrated' && input.language === 'hinglish' && input.scenes.some(scene => !scene.spokenCues)) ctx.addIssue({code: 'custom', message: 'Hinglish briefs need pronunciation-ready spokenCues for every scene.'});
   if (input.structure && input.scenes.length !== input.structure.beats.length) ctx.addIssue({code: 'custom', message: 'Timed structure must have one scene per beat.'});
@@ -126,7 +128,7 @@ export const storyFragmentSchema = z.object({actors: z.array(actorSchema).min(1)
 const captionChunkSchema = z.object({text: z.string().min(1).max(240), from: z.number().int().min(0), duration: z.number().int().positive()}).strict();
 const assetPath = z.string().regex(/^[a-zA-Z0-9_./-]+$/).refine(p => !p.startsWith('/') && !p.split('/').includes('..'), 'Use a relative public asset path');
 export const shortSchema = z.object({
-  ...shared, fps: z.number().int().min(24).max(60), audio: assetPath.optional(),
+  ...shared, fps: z.number().int().min(24).max(60), audio: assetPath.optional(), audioPurpose:z.literal('background').optional(),
   scenes: z.array(z.object({
     ...sceneFields, durationInFrames: z.number().int().min(24),
     captions: z.array(z.object({text: z.string().min(1).max(240), from: z.number().int().min(0), duration: z.number().int().positive(), chunks: z.array(captionChunkSchema).min(1).max(12).optional()}).strict()).max(5),
@@ -134,7 +136,8 @@ export const shortSchema = z.object({
 }).strict().superRefine((input, ctx) => {
   checkStory(input, ctx);
   if(input.scenes.length<4&&!input.actors.every(a=>a.kind==='size-comparison'))ctx.addIssue({code:'custom',message:'General stories still require at least four scenes.'});
-  if (input.presentation === 'silent' && (input.audio || input.scenes.some(scene => scene.captions.length > 2 || scene.captions.some(cue => cue.chunks || cue.text.split(/\s+/).length > 12 || cue.duration < readingFrames(cue.text, input.fps))))) ctx.addIssue({code:'custom',message:'Silent videos have no audio and use brief notes with sufficient reading time, not speech caption fragments.'});
+  if (input.presentation === 'silent' && (input.audio&&input.audioPurpose!=='background' || input.scenes.some(scene => scene.captions.length > 2 || scene.captions.some(cue => cue.chunks || cue.text.split(/\s+/).length > 12 || cue.duration < readingFrames(cue.text, input.fps))))) ctx.addIssue({code:'custom',message:'Narration-free videos require declared background audio and brief notes with sufficient reading time.'});
+  if(input.audioPurpose&&(!input.audio||input.presentation!=='silent'))ctx.addIssue({code:'custom',message:'Background audio declarations require an audio asset and a narration-free presentation.'});
   if (input.presentation === 'narrated' && input.scenes.some(scene => !scene.captions.length)) ctx.addIssue({code:'custom',message:'Narrated scenes need captions.'});
   const total = input.scenes.reduce((sum, s) => sum + s.durationInFrames, 0);
   if (input.structure) {

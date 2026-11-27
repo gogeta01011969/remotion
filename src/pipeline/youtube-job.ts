@@ -1,3 +1,4 @@
+import {musicCredit} from './comparison-audio';
 import {cachedYouTubeCopy} from './youtube-metadata';
 import {randomUUID,createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -18,7 +19,7 @@ export function youtubeJobMetadata(root:string,job:AutomationJob,config:YouTubeC
   // Validate the ID before using any per-job path.
   manifestFile(root,job.id);
   const data=sizeDatasetSchema.parse(JSON.parse(readFileSync(path.join(root,'out/comparisons',job.id,'dataset.json'),'utf8')));
-  return makeYouTubeMetadata(data,config,cachedYouTubeCopy(data,path.join(root,'out/comparisons',job.id)));
+  return makeYouTubeMetadata(data,config,cachedYouTubeCopy(data,path.join(root,'out/comparisons',job.id)),musicCredit(root,job.id));
 }
 export async function prepareYouTubeJob(context:Context){
   const {root,ledger,stateFile,job,config,client}=context;

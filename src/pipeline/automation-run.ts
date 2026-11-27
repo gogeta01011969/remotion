@@ -32,10 +32,13 @@ export function verifyVideo(root:string,id:string){
   const input=shortSchema.parse(JSON.parse(readFileSync(props,'utf8')));
   const brief=briefSchema.parse(JSON.parse(readFileSync(path.join(root,'out/comparisons',id,'brief.json'),'utf8')));
   if(brief.id!==id||input.topic!==brief.topic||input.presentation!=='silent')throw new Error('Unexpected rendered job or audio mode.');
-  const result=spawnSync('ffprobe',['-v','error','-show_entries','stream=codec_type,codec_name,width,height,r_frame_rate,nb_frames:format=duration','-of','json',file],{encoding:'utf8',timeout:30000});
+  const result=spawnSync('ffprobe',['-v','error','-show_entries','stream=codec_type,codec_name,width,height,r_frame_rate,nb_frames,sample_rate,channels:format=duration','-of','json',file],{encoding:'utf8',timeout:30000});
   if(result.error||result.status!==0)throw new Error('Final video is missing or FFprobe verification failed.');
   const info=JSON.parse(result.stdout),videos=info.streams.filter((s:{codec_type:string})=>s.codec_type==='video'),video=videos[0];
-  if(videos.length!==1||video.codec_name!=='h264'||video.width!==1080||video.height!==1920||video.r_frame_rate!==`${input.fps}/1`||Number(video.nb_frames)!==shortDuration(input)||Math.abs(Number(info.format.duration)-shortDuration(input)/input.fps)>.1||info.streams.some((s:{codec_type:string})=>s.codec_type==='audio'))throw new Error('Final video did not pass Shorts media checks.');
+  if(input.audio&&!existsSync(path.join(root,'public',input.audio)))throw new Error('Prepared background audio asset is missing.');
+  const audio=info.streams.filter((s:{codec_type:string})=>s.codec_type==='audio');
+  const validAudio=input.audio?input.audioPurpose==='background'&&audio.length===1&&audio[0].codec_name==='aac'&&audio[0].sample_rate==='48000'&&audio[0].channels===2:audio.length===0;
+  if(videos.length!==1||video.codec_name!=='h264'||video.width!==1080||video.height!==1920||video.r_frame_rate!==`${input.fps}/1`||Number(video.nb_frames)!==shortDuration(input)||Math.abs(Number(info.format.duration)-shortDuration(input)/input.fps)>.1||!validAudio)throw new Error('Final video did not pass Shorts media checks.');
   return {file,props,sha256:digest(file),info};
 }
 export function copySafe(source:string,target:string){
@@ -131,7 +134,7 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
     let cached=false;
     if(existsSync(receiptFile)){
       const r=JSON.parse(readFileSync(receiptFile,'utf8'));
-      cached=r.rawSha===digest(rawFile)&&r.sourceSha===fingerprint&&Array.isArray(r.files)&&r.files.every((f:{path:string;sha:string})=>!f.path.split('/').includes('..')&&['public/comparisons/','public/shorts/','out/comparisons/'].some(prefix=>f.path.startsWith(prefix+job.id+'/'))&&existsSync(path.join(root,f.path))&&digest(path.join(root,f.path))===f.sha);
+      cached=r.rawSha===digest(rawFile)&&r.sourceSha===fingerprint&&Array.isArray(r.files)&&r.files.every((f:{path:string;sha:string})=>!f.path.split('/').includes('..')&&['public/comparisons/','public/shorts/','out/comparisons/','out/shorts/'].some(prefix=>f.path.startsWith(prefix+job.id+'/'))&&existsSync(path.join(root,f.path))&&digest(path.join(root,f.path))===f.sha);
       if(cached){try{cached=(dependencies.verify??verifyVideo)(root,job.id).sha256===r.videoSha;}catch{cached=false;}}
     }
     if(archiveOnly&&!cached)throw new Error('Rendered checkpoint no longer matches the source/assets; review before regenerating.');
@@ -143,7 +146,7 @@ export async function createAutomationVideo(options:AutomationRunOptions,depende
       job.actualEntityKeys=rendered.items.map(item=>item.label);
       if(youtubeSettings.uploadEnabled)await ensureYouTubeMetadata(rendered,{directory:dir,client:options.client,model:options.groqConfig.scriptModel,log:options.log});
     }
-    const files=[...treeFiles(path.join(root,'public/comparisons',job.id)),verified.props,path.join(dir,'dataset.json'),path.join(dir,'brief.json')].filter(f=>existsSync(f)).map(file=>({path:path.relative(root,file),sha:digest(file)}));
+    const files=[...treeFiles(path.join(root,'public/comparisons',job.id)),verified.props,path.join(root,'public/shorts',job.id,'background-mix.wav'),path.join(root,'out/shorts',job.id,'audio-plan.json'),path.join(dir,'dataset.json'),path.join(dir,'brief.json')].filter(f=>existsSync(f)).map(file=>({path:path.relative(root,file),sha:digest(file)}));
     writeJson(receiptFile,{rawSha:digest(rawFile),sourceSha:fingerprint,videoSha:verified.sha256,files});
     const delivery=path.join(root,'out/automation/delivery',job.id);mkdirSync(delivery,{recursive:true});
     copySafe(path.join(root,'out/shorts',job.id),delivery);copySafe(verified.props,path.join(delivery,'video.json'));

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "overworld",
+    "file": "assets/audio/overworld.mp3",
+    "title": "Overworld (BGM)",
+    "creator": "Another Page Studio / IntelligentGene",
+    "source": "https://opengameart.org/content/overworld-bgm",
+    "download": "https://opengameart.org/sites/default/files/overworld.mp3",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "d32949f8467ac463a52ca88ed250e505545bc98a46e4e472c1f994bf447a1beb"
+  },
+  {
+    "id": "calm-track",
+    "file": "assets/audio/calm_track-loop.ogg",
+    "title": "Calm Track",
+    "creator": "pmiller",
+    "source": "https://opengameart.org/content/calm-track",
+    "download": "https://opengameart.org/sites/default/files/calm_track-loop.ogg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha256": "8c49a37fb9ee5994c919d0e43cf397dd990cb7f2c6c1200b9710a8fe942ad969"
+  }
+]

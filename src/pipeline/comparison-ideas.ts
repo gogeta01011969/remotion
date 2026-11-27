@@ -50,7 +50,7 @@ export function normalizeComparisonGeneration(raw:unknown,log?:(line:string)=>vo
     if(typeof item.color!=='string'||!/^#[0-9a-f]{6}$/i.test(item.color)){item.color=['#73DDD1','#75A9F4','#BE9BEA','#FFC181'][i%4];log?.(`Using a readable default color for object ${i+1}.`);}
     if(item.country!==undefined&&(typeof item.country!=='string'||!item.country.trim())){delete item.country;log?.(`Omitting unavailable country metadata for object ${i+1}.`);}
     const references=Array.isArray(data.sources)?data.sources.filter(source=>source&&Array.isArray(item.sourceIds)&&item.sourceIds.includes(source.id)).map(source=>source.url):[];
-    if(!item.visual&&typeof item.id==='string'&&typeof data.metric==='string'&&!isQuantityMetric(data.metric)){
+    if(!item.visual&&!item.appearance&&typeof item.id==='string'&&typeof data.metric==='string'&&!isQuantityMetric(data.metric)){
       item.visual=data.metric==='diameter'?{kind:'sphere',texture:`${item.id}.png`,attribution:'Cloudflare generation pending',referenceUrls:references}:data.metric==='volume'?{kind:'box',widthToHeight:1,depthToHeight:1,projection:'isometric'}:{kind:'cutout',src:`${item.id}.png`,view:data.metric==='height'?'front':data.metric==='wingspan'?'top':'side',attribution:'Cloudflare generation pending',referenceUrls:references};
       log?.(`Using the standard visual descriptor for object ${i+1}; assets will be prepared separately.`);
     }

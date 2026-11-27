@@ -1,7 +1,9 @@
+import {buildComparisonAudio} from './comparison-audio';
+import {comparisonAudioSettings} from './comparison-audio-settings';
 import {quantityFrameTiming} from '../shorts/comparison-timing';
 import {mkdirSync, rmSync, writeFileSync} from 'node:fs';
 import path from 'node:path';
-import {type Brief, shortDuration} from '../shorts/schema';
+import {shortSchema,type Brief, shortDuration} from '../shorts/schema';
 import {prepareSilentInput} from '../shorts/silent';
 import {compileStory, motionReport} from '../shorts/motion';
 import {renderPrepared} from './render-prepared';
@@ -9,7 +11,9 @@ import {renderPrepared} from './render-prepared';
 export async function buildSilent(brief:Brief,root:string,prepareOnly:boolean) {
   const assetDir=path.join(root,'public','shorts',brief.id), outputDir=path.join(root,'out','shorts',brief.id);
   [assetDir,outputDir].forEach(dir=>mkdirSync(dir,{recursive:true}));
-  const input=prepareSilentInput(brief);
+  let input=prepareSilentInput(brief);
+  const audioPlan=buildComparisonAudio(input,{root,id:brief.id,outputDir,profile:brief.soundtrack??(comparisonAudioSettings.enabled&&input.actors.some(a=>a.kind==='size-comparison')?'calm-curiosity':'off'),log:console.warn});
+  if(audioPlan.status==='mixed')input=shortSchema.parse({...input,audio:`shorts/${brief.id}/background-mix.wav`,audioPurpose:'background'});
   compileStory(input);
   writeFileSync(path.join(assetDir,'video.json'),JSON.stringify(input,null,2)+'\n');
   writeFileSync(path.join(outputDir,'motion-report.json'),JSON.stringify(motionReport(input),null,2)+'\n');
@@ -21,8 +25,8 @@ export async function buildSilent(brief:Brief,root:string,prepareOnly:boolean) {
   let offset=0,index=0;const subtitles:string[]=[];
   input.scenes.forEach(scene=>{scene.captions.forEach(cue=>subtitles.push(`${++index}\n${srtTime(offset+cue.from)} --> ${srtTime(offset+cue.from+cue.duration)}\n${cue.text}\n`));offset+=scene.durationInFrames;});
   writeFileSync(path.join(outputDir,'captions.srt'),subtitles.join('\n'));
-  writeFileSync(path.join(outputDir,'youtube.txt'),`${brief.topic}\n\n${brief.description}\n\nSilent visual story. No narration or soundtrack.${brief.sources.length?`\n\nReferences:\n${brief.sources.map(s=>`${s.title}: ${s.url}`).join('\n')}`:''}\n`);
-  console.log(`Prepared silent visual story: ${shortDuration(input)/input.fps}s; ${subtitles.length} brief notes. No speech service required.`);
+  writeFileSync(path.join(outputDir,'youtube.txt'),`${brief.topic}\n\n${brief.description}\n\n${input.audio?'Visual story with background music and no narration.':'Visual story without narration or soundtrack.'}${audioPlan.credit?`\n\n${audioPlan.credit}`:''}${brief.sources.length?`\n\nReferences:\n${brief.sources.map(s=>`${s.title}: ${s.url}`).join('\n')}`:''}\n`);
+  console.log(`Prepared narration-free visual story: ${shortDuration(input)/input.fps}s; ${subtitles.length} brief notes. No speech service required.`);
   if(prepareOnly)return;
   await renderPrepared({input,root,outputDir,id:brief.id});
   // Remove obsolete audio left by a previous narrated version of this episode.
