@@ -784,18 +784,24 @@
         "url": "https://www.youtube.com/shorts/mLw5N0he7AI",
         "uploadedAt": "2026-11-27T11:19:42.388Z"
       }
-    }
-  ],
-  "queue": [
+    },
     {
+      "id": "short-2026-11-27-78b25583be92",
       "topic": "How long are the world’s most famous roller coasters compared to everyday travel distances",
       "metric": "length",
       "scopeKey": "topic-78b25583be92bc7b",
       "entityKeys": [],
+      "actualEntityKeys": [],
       "whyInteresting": "Viewers instantly grasp the scale when a coaster’s track stretches farther than a city commute or a popular hiking trail, turning thrill‑ride stats into relatable distance comparisons.",
       "family": "everyday-objects",
       "angle": "familiar-to-extreme",
-      "depth": "accessible"
+      "depth": "accessible",
+      "selectionMode": "automatic",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-27T15:29:01.071Z",
+      "updatedAt": "2026-11-27T15:29:01.071Z"
     }
-  ]
+  ],
+  "queue": []
 }
