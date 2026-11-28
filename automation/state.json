@@ -834,16 +834,38 @@
       "metric": "speed",
       "scopeKey": "topic-41edd76f469bf480",
       "entityKeys": [],
-      "actualEntityKeys": [],
+      "actualEntityKeys": [
+        "Electric scooter",
+        "City bus",
+        "Road bicycle (racing)",
+        "Sailfish",
+        "Cheetah",
+        "Commuter train",
+        "Sports car",
+        "Peregrine falcon (stoop)",
+        "High‑speed bullet train"
+      ],
       "whyInteresting": "Putting the sprint of a cheetah, the dive of a peregrine falcon, and the burst of a sailfish next to the top speeds of a city bus, a commuter train, and an electric scooter creates an instantly relatable speed showdown that surprises viewers with how close (or far) nature’s champions are to everyday",
       "family": "speed-comparisons",
       "angle": "familiar-to-extreme",
       "depth": "accessible",
       "selectionMode": "automatic",
-      "status": "reserved",
-      "attempts": 0,
+      "status": "complete",
+      "attempts": 1,
       "createdAt": "2026-11-28T10:47:42.862Z",
-      "updatedAt": "2026-11-28T10:47:42.862Z"
+      "updatedAt": "2026-11-28T10:50:34.506Z",
+      "videoSha256": "cdac5d8d0eadda78dcc028fe61d54aeff5bfbb5b2f5168a851e99bcfe6b59288",
+      "artifactName": "short-short-2026-11-28-41edd76f469b",
+      "artifactId": "15260451135",
+      "youtube": {
+        "status": "uploading",
+        "intentId": "456a6d97-68e4-4a92-ad73-a88faf774c64",
+        "channelId": "UC6syYZxbMxbhOSmjj8AXJuA",
+        "videoSha256": "cdac5d8d0eadda78dcc028fe61d54aeff5bfbb5b2f5168a851e99bcfe6b59288",
+        "metadataSha256": "43ded19a5e3287186d8e0007c6b75aff8d01804b952b03646fa5809d4e382627",
+        "requestedAt": "2026-11-28T10:50:35.141Z",
+        "privacy": "public"
+      }
     }
   ],
   "queue": [
