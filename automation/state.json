@@ -827,7 +827,35 @@
         "url": "https://www.youtube.com/shorts/mHWg8xsGaTg",
         "uploadedAt": "2026-11-27T15:31:59.522Z"
       }
+    },
+    {
+      "id": "short-2026-11-28-41edd76f469b",
+      "topic": "Fastest animals versus common transportation speeds",
+      "metric": "speed",
+      "scopeKey": "topic-41edd76f469bf480",
+      "entityKeys": [],
+      "actualEntityKeys": [],
+      "whyInteresting": "Putting the sprint of a cheetah, the dive of a peregrine falcon, and the burst of a sailfish next to the top speeds of a city bus, a commuter train, and an electric scooter creates an instantly relatable speed showdown that surprises viewers with how close (or far) nature’s champions are to everyday",
+      "family": "speed-comparisons",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible",
+      "selectionMode": "automatic",
+      "status": "reserved",
+      "attempts": 0,
+      "createdAt": "2026-11-28T10:47:42.862Z",
+      "updatedAt": "2026-11-28T10:47:42.862Z"
     }
   ],
-  "queue": []
+  "queue": [
+    {
+      "topic": "Everyday kitchen tools measured by length",
+      "metric": "length",
+      "scopeKey": "topic-3da258c3c5cf1589",
+      "entityKeys": [],
+      "whyInteresting": "Viewers instantly recognize the size differences between common items like a spatula, rolling pin, chef’s knife, cutting board, kitchen shears, and a standard kitchen countertop, creating a quick visual ladder that feels both familiar and surprising.",
+      "family": "everyday-objects",
+      "angle": "familiar-to-extreme",
+      "depth": "accessible"
+    }
+  ]
 }
